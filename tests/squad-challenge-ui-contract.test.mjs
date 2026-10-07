@@ -34,3 +34,15 @@ test('fighter browser supports search, series, role, tag, cost, and deterministi
  assert.match(ui,/option value="name"/);
  assert.match(ui,/option value="series"/);
 });
+
+
+test('profile favorites expose the complete fighter catalog including the expanded roster',()=>{
+ assert.match(page,/One-Punch Man/);
+ assert.match(page,/Favourite characters<div className="choice-chips">\{fighters\.map/);
+ assert.doesNotMatch(page,/fighters\.slice\(0,14\)/);
+});
+
+test('moderator-removed challenge submissions are surfaced as unavailable to their owner',()=>{
+ assert.match(ui,/submissionRemoved/);
+ assert.match(ui,/removed by moderation and cannot be resubmitted/);
+});
