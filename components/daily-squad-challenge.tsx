@@ -234,6 +234,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
 
  const deleteEntry=async()=>{
   if(!editingId||!challenge||viewer?.submissionLocked)return;
+  if(!confirm('Delete this challenge entry? You can submit a new version only while the challenge remains active and before voting begins.'))return;
   setBusy(true);
   try{
    await api('/api/squad-submissions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',submissionId:editingId})});
