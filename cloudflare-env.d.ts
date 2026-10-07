@@ -7,6 +7,7 @@ declare namespace Cloudflare {
     ENVIRONMENT?: "development" | "preview" | "production";
     AUTH_DEV_EMAIL_LOG?: string;
     AUTH_TRUST_HOSTED_IDENTITY_HEADERS?: string;
+    AUTH_TRUST_PROXY_IP_HEADERS?: string;
 
     GOOGLE_CLIENT_ID?: string;
     GOOGLE_CLIENT_SECRET?: string;
