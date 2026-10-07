@@ -140,3 +140,11 @@ button.profile{width:100%;background:transparent;border:0;text-align:left}.nav-c
 @media(max-width:1100px){.daily-builder-layout{grid-template-columns:1fr}.daily-squad-summary{position:static}.daily-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.challenge-rule-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:767px){.daily-challenge-hero{padding:20px}.daily-challenge-hero h2{font-size:25px}.daily-challenge-hero>svg{display:none}.daily-target{grid-template-columns:1fr}.challenge-rule-grid{grid-template-columns:1fr 1fr}.daily-fighter-grid,.daily-submission-grid{grid-template-columns:1fr}.daily-filters{grid-template-columns:1fr 1fr}.history-chips{grid-template-columns:1fr}.submission-members{grid-template-columns:1fr}.daily-submission-grid{gap:10px}}
 @media(max-width:430px){.daily-filters,.challenge-rule-grid{grid-template-columns:1fr}.daily-challenge-meta{flex-direction:column;align-items:flex-start}.daily-squad-summary{padding:16px}.daily-filter-panel{padding:12px}.daily-fighter-card{min-height:0}.feed-sort{width:100%}.feed-sort button{flex:1}}
+
+.profile-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.profile-challenge-history{display:flex;flex-direction:column;gap:10px}
+.profile-challenge-entry{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.profile-challenge-entry h3{margin:8px 0 4px}
+.profile-challenge-entry small{color:#94879f}
+@media(max-width:767px){.profile-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-challenge-entry{align-items:flex-start;flex-direction:column}}
+@media(max-width:430px){.profile-stats{grid-template-columns:1fr}}
