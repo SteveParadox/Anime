@@ -1,7 +1,6 @@
 import {database} from '@/db/raw';
 import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
 import {sameOrigin} from '@/lib/auth-request';
-import {sameOrigin} from '@/lib/auth-request';
 import {fighters,starterBattles} from '@/lib/catalog';
 import {
  EVIDENCE_SOURCE_TYPES,
