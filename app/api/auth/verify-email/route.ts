@@ -1,6 +1,7 @@
 import {database} from '@/db/raw';
 import {hashOpaqueToken} from '@/lib/auth-crypto';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
+import {enforceAuthRateLimits} from '@/lib/auth-rate-limit';
 
 async function lookup(token:string){
  const hash=await hashOpaqueToken(token),now=Date.now();
@@ -20,14 +21,18 @@ export async function POST(request:Request){
   if(!sameOrigin(request))return authJson({error:'Invalid origin.'},403);
   const body=await readJson(request),token=typeof body?.token==='string'?body.token:'';
   if(token.length<20)return authJson({error:'Invalid verification link.'},400);
+  const limit=await enforceAuthRateLimits(request,'verify-email',undefined,{ipLimit:30,windowMs:15*60_000});
+  if(!limit.allowed)return authJson({error:'Too many verification attempts. Try again later.'},429,{'Retry-After':String(limit.retryAfterSeconds)});
   const {row,now}=await lookup(token);
   if(!row)return authJson({error:'Invalid verification link.'},400);
   if(row.emailVerified)return authJson({ok:true,alreadyVerified:true});
   if(row.used)return authJson({error:'This verification link has already been used.'},400);
   if(Number(row.expires)<=now)return authJson({error:'This verification link has expired.'},400);
-  const db=database();
+  const db=database(),consumeNow=Date.now();
+  const consumed=await db.prepare('UPDATE email_verification_tokens SET used=1 WHERE id=? AND used=0 AND expires>?').bind(row.id,consumeNow).run();
+  if(!consumed.success||Number(consumed.meta.changes||0)!==1)return authJson({error:'This verification link is invalid or has expired.'},400);
   await db.batch([
-   db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,row.userId),
+   db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(consumeNow,row.userId),
    db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=?').bind(row.userId)
   ]);
   return authJson({ok:true});
