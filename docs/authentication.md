@@ -42,7 +42,7 @@ Normal sessions expire after 30 days and each account is capped at 12 active ser
 
 ## Cookie and CSRF policy
 
-The session cookie is HttpOnly, SameSite=Lax, Path=/, and Secure everywhere except explicit local development. State-changing auth/community/evidence endpoints enforce same-origin Origin/Fetch-Metadata checks in addition to SameSite protection. Google sign-in validates state, PKCE and nonce, atomically consumes OAuth state, and validates the signed ID token against Google's JWKS. Return paths accept only safe relative URLs and reject absolute/cross-origin redirects.
+The session cookie is HttpOnly, SameSite=Lax, Path=/, and Secure everywhere except explicit local development. Non-development session and Google OAuth cookies use the `__Host-` prefix so browsers enforce Secure, host-only scope, and Path=/. State-changing auth/community/evidence endpoints enforce same-origin Origin/Fetch-Metadata checks in addition to SameSite protection. Google sign-in validates state, PKCE and nonce, atomically consumes OAuth state, and validates the signed ID token against Google's JWKS. Return paths accept only safe relative URLs and reject absolute/cross-origin redirects.
 
 ## Contribution policy
 
@@ -60,6 +60,9 @@ ENVIRONMENT=production
 
 # Only behind a trusted hosted-auth proxy that strips/injects oai-authenticated-user-*:
 # AUTH_TRUST_HOSTED_IDENTITY_HEADERS=true
+
+# Only for a non-Cloudflare trusted reverse proxy that overwrites client IP headers:
+# AUTH_TRUST_PROXY_IP_HEADERS=true
 
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
