@@ -80,7 +80,10 @@ test('account reconciliation preserves squad ownership without creating self vot
 });
 
 
-test('top ranking requires the minimum vote count',()=>{
+test('top ranking requires five votes and uses aggregate net YES ordering',()=>{
  assert.match(submissions,/sort==='top'&&row\.totalVotes>=5/);
- assert.match(submissions,/wilsonLowerBound\(a\.yesVotes,a\.totalVotes\)/);
+ assert.match(submissions,/COUNT\(v\.user\)>=5/);
+ assert.match(submissions,/v\.verdict='yes'/);
+ assert.match(submissions,/v\.verdict='no'/);
+ assert.doesNotMatch(submissions,/wilsonLowerBound/);
 });
