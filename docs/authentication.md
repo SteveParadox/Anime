@@ -28,7 +28,7 @@ Migration `0005_auth_accounts.sql` converts existing hosted-platform ownership I
 
 Email registration requires email, password, username, and display name. The user, email identity, and profile are created in one D1 batch. A verification token is then generated and delivered through the email service. Email/password users may sign in before verification, but community contribution actions require a completed profile and verified email.
 
-Google sign-in uses Authorization Code + PKCE, state, nonce, server-side code exchange, and server-side ID-token verification. Only `openid email profile` scopes are requested. Google access/refresh tokens are not persisted. A verified Google email can link to an existing account with the same normalized email. New Google accounts receive a temporary username and must complete the profile before contributing. Google avatar data initializes an empty avatar only and never overwrites a custom one.
+Google sign-in uses Authorization Code + PKCE, state, nonce, server-side code exchange, and server-side ID-token verification. Only `openid email profile` scopes are requested. Google access/refresh tokens are not persisted. A verified Google email can link to an existing account with the same normalized email. If that address only has an unverified password registration, its password identity, reset tokens, and sessions are revoked before the trusted provider is linked; this prevents pre-registration of somebody else's email from becoming a persistent account-takeover path. New Google accounts receive a temporary username and must complete the profile before contributing. Google avatar data initializes an empty avatar only and never overwrites a custom one.
 
 Hosted ChatGPT/platform authentication remains supported for backward compatibility. Provider-specific headers are resolved centrally in `lib/auth.ts`; feature routes no longer read those headers directly. Existing platform IDs migrated by `0005` resolve to their previous content.
 
@@ -50,7 +50,7 @@ Public browsing is allowed without authentication. Profile setup is allowed afte
 
 ## Email delivery
 
-The email abstraction in `lib/email.ts` currently supports Resend when `RESEND_API_KEY` and `EMAIL_FROM` are configured. If no provider is configured, registration still succeeds but real verification/reset delivery does not. Local development may opt in to development URL logging with `AUTH_DEV_EMAIL_LOG=true`; this must never be enabled in production.
+The email abstraction in `lib/email.ts` currently supports Resend when `RESEND_API_KEY` and `EMAIL_FROM` are configured. Account creation and verification-token creation are committed atomically before delivery is attempted, and a Resend/network failure does not falsely roll back an account that was already created. If no provider is configured, registration still succeeds but real verification/reset delivery does not. Local development may opt in to development URL logging with `AUTH_DEV_EMAIL_LOG=true`; this must never be enabled in production.
 
 ## Required deployment variables
 
