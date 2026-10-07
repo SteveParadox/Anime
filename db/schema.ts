@@ -5,7 +5,7 @@ export const argumentEvidence=sqliteTable('argument_evidence',{id:text('id').pri
 export const progress=sqliteTable('progress',{user:text('user').notNull(),club:text('club').notNull(),episode:integer('episode').notNull()},t=>[primaryKey({columns:[t.user,t.club]})]);
 export const posts=sqliteTable('posts',{id:text('id').primaryKey(),user:text('user').notNull(),club:text('club').notNull(),episode:integer('episode').notNull(),body:text('body').notNull(),edited:integer('edited').notNull().default(0),deleted:integer('deleted').notNull().default(0),created:integer('created').notNull()},t=>[index('idx_posts_club_episode').on(t.club,t.episode)]);
 export const squads=sqliteTable('squads',{id:text('id').primaryKey(),owner:text('owner').notNull(),name:text('name').notNull(),members:text('members').notNull(),strategy:text('strategy').notNull(),challenge:text('challenge').notNull(),created:integer('created').notNull()},t=>[index('idx_squads_owner').on(t.owner)]);
-export const profiles=sqliteTable('profiles',{user:text('user').primaryKey(),handle:text('handle').notNull(),displayName:text('display_name').notNull(),bio:text('bio').notNull().default(''),favoriteAnime:text('favorite_anime').notNull().default('[]'),favoriteCharacters:text('favorite_characters').notNull().default('[]'),created:integer('created').notNull(),updated:integer('updated').notNull()},t=>[uniqueIndex('idx_profiles_handle').on(t.handle)]);
+export const profiles=sqliteTable('profiles',{user:text('user').primaryKey(),handle:text('handle').notNull(),displayName:text('display_name').notNull(),avatarUrl:text('avatar_url'),bio:text('bio').notNull().default(''),favoriteAnime:text('favorite_anime').notNull().default('[]'),favoriteCharacters:text('favorite_characters').notNull().default('[]'),created:integer('created').notNull(),updated:integer('updated').notNull()},t=>[uniqueIndex('idx_profiles_handle').on(t.handle)]);
 export const comments=sqliteTable('comments',{id:text('id').primaryKey(),battle:text('battle').notNull(),argumentUser:text('argument_user').notNull(),user:text('user').notNull(),body:text('body').notNull(),created:integer('created').notNull()},t=>[index('idx_comments_argument').on(t.battle,t.argumentUser)]);
 export const reactions=sqliteTable('reactions',{subjectType:text('subject_type').notNull(),subjectId:text('subject_id').notNull(),user:text('user').notNull(),reaction:text('reaction').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.subjectType,t.subjectId,t.user]})]);
 export const squadChallenges=sqliteTable('squad_challenges',{id:text('id').primaryKey(),challenger:text('challenger').notNull(),challengerSquad:text('challenger_squad').notNull(),opponentSquad:text('opponent_squad').notNull(),rules:text('rules').notNull(),status:text('status').notNull().default('open'),created:integer('created').notNull()},t=>[index('idx_challenges_created').on(t.created)]);
@@ -76,3 +76,67 @@ export const versionAbilities=sqliteTable('version_abilities',{
  notes:text('notes').notNull().default('')
 },t=>[primaryKey({columns:[t.versionId,t.abilityId]}),index('idx_version_abilities_version').on(t.versionId),index('idx_version_abilities_ability').on(t.abilityId)]);
 
+
+export const users=sqliteTable('users',{
+ id:text('id').primaryKey(),
+ email:text('email'),
+ emailNormalized:text('email_normalized'),
+ emailVerified:integer('email_verified').notNull().default(0),
+ profileCompleted:integer('profile_completed').notNull().default(0),
+ created:integer('created').notNull(),
+ updated:integer('updated').notNull()
+},t=>[uniqueIndex('idx_users_email_normalized').on(t.emailNormalized)]);
+
+export const authIdentities=sqliteTable('auth_identities',{
+ id:text('id').primaryKey(),
+ userId:text('user_id').notNull(),
+ provider:text('provider').notNull(),
+ providerUserId:text('provider_user_id').notNull(),
+ providerEmail:text('provider_email'),
+ credentialHash:text('credential_hash'),
+ created:integer('created').notNull()
+},t=>[uniqueIndex('idx_auth_identity_provider_subject').on(t.provider,t.providerUserId),index('idx_auth_identity_user').on(t.userId)]);
+
+export const authSessions=sqliteTable('auth_sessions',{
+ id:text('id').primaryKey(),
+ userId:text('user_id').notNull(),
+ tokenHash:text('token_hash').notNull(),
+ created:integer('created').notNull(),
+ expires:integer('expires').notNull(),
+ lastUsed:integer('last_used').notNull()
+},t=>[uniqueIndex('idx_auth_sessions_token_hash').on(t.tokenHash),index('idx_auth_sessions_user_expires').on(t.userId,t.expires)]);
+
+export const emailVerificationTokens=sqliteTable('email_verification_tokens',{
+ id:text('id').primaryKey(),
+ userId:text('user_id').notNull(),
+ tokenHash:text('token_hash').notNull(),
+ created:integer('created').notNull(),
+ expires:integer('expires').notNull(),
+ used:integer('used').notNull().default(0)
+},t=>[uniqueIndex('idx_email_verification_token_hash').on(t.tokenHash),index('idx_email_verification_user').on(t.userId,t.expires)]);
+
+export const passwordResetTokens=sqliteTable('password_reset_tokens',{
+ id:text('id').primaryKey(),
+ userId:text('user_id').notNull(),
+ tokenHash:text('token_hash').notNull(),
+ created:integer('created').notNull(),
+ expires:integer('expires').notNull(),
+ used:integer('used').notNull().default(0)
+},t=>[uniqueIndex('idx_password_reset_token_hash').on(t.tokenHash),index('idx_password_reset_user').on(t.userId,t.expires)]);
+
+export const authOauthStates=sqliteTable('auth_oauth_states',{
+ stateHash:text('state_hash').primaryKey(),
+ pkceVerifierHash:text('pkce_verifier_hash').notNull(),
+ returnTo:text('return_to').notNull(),
+ created:integer('created').notNull(),
+ expires:integer('expires').notNull(),
+ used:integer('used').notNull().default(0)
+},t=>[index('idx_auth_oauth_states_expires').on(t.expires)]);
+
+export const authRateLimits=sqliteTable('auth_rate_limits',{
+ keyHash:text('key_hash').primaryKey(),
+ scope:text('scope').notNull(),
+ windowStart:integer('window_start').notNull(),
+ count:integer('count').notNull(),
+ blockedUntil:integer('blocked_until').notNull().default(0)
+},t=>[index('idx_auth_rate_limits_window').on(t.windowStart)]);

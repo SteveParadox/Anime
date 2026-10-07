@@ -1,5 +1,8 @@
+// Compatibility-only helper for hosted platform auth routes.
+// Community and feature code must use lib/auth.ts so ownership resolves through internal users.
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { hostedPlatformHeadersTrusted } from "@/lib/auth";
 
 export type ChatGPTUser = {
   userId: string;
@@ -19,6 +22,7 @@ const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+  if (!(await hostedPlatformHeadersTrusted())) return null;
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);

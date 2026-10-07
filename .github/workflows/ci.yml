@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Bootstrap source and Node
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git clone --depth 1 --branch "$REF" "https://github.com/${GITHUB_REPOSITORY}.git" repo
+          curl -fsSL "https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-x64.tar.xz" -o "$RUNNER_TEMP/node.tar.xz"
+          mkdir -p "$RUNNER_TEMP/node22"
+          tar -xJf "$RUNNER_TEMP/node.tar.xz" -C "$RUNNER_TEMP/node22" --strip-components=1
+          echo "$RUNNER_TEMP/node22/bin" >> "$GITHUB_PATH"
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd repo
+          corepack enable
+          corepack prepare pnpm@11.25.0 --activate
+          pnpm install --frozen-lockfile
+      - name: Authentication tests
+        run: cd repo && pnpm test:auth
+      - name: Domain regression tests
+        run: cd repo && pnpm test:domain
+      - name: TypeScript
+        run: cd repo && pnpm exec tsc --noEmit
+      - name: Lint
+        run: cd repo && pnpm lint
+      - name: Build
+        run: cd repo && pnpm build

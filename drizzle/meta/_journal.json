@@ -36,6 +36,13 @@
       "when": 1791375000000,
       "tag": "0004_character_versions",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1791378000000,
+      "tag": "0005_auth_accounts",
+      "breakpoints": true
     }
   ]
 }

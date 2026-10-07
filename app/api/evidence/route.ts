@@ -1,5 +1,6 @@
 import {database} from '@/db/raw';
-import {getChatGPTUser} from '@/app/chatgpt-auth';
+import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
+import {sameOrigin} from '@/lib/auth-request';
 import {fighters,starterBattles} from '@/lib/catalog';
 import {
  EVIDENCE_SOURCE_TYPES,
@@ -16,7 +17,6 @@ import {
  characterVersions,
  versionById
 } from '@/lib/characters';
-import {env} from 'cloudflare:workers';
 import {z} from 'zod';
 
 const idText=z.string().trim().min(1).max(180);
@@ -43,7 +43,7 @@ const mutationSchema=z.discriminatedUnion('action',[
 ]);
 
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
-const admin=(userId?:string)=>Boolean(userId&&env.ANIME_CLASH_ADMIN_ID&&userId===env.ANIME_CLASH_ADMIN_ID);
+const admin=(user?:CurrentUser|null)=>isAdminUser(user);
 const recordSelect=`SELECT er.id,er.character_id AS characterId,er.version_id AS versionId,er.ability_id AS abilityId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.submitted_by AS submittedBy,er.created,er.updated,er.deleted,COALESCE(p.handle,'anime_fan') AS submittedByHandle FROM evidence_records er LEFT JOIN profiles p ON p.user=er.submitted_by`;
 
 function publicRecord(row:any,userId?:string){
@@ -123,7 +123,7 @@ async function potentialDuplicates(db:D1Database,evidence:z.infer<typeof evidenc
 }
 
 export async function GET(req:Request){try{
- const db=database(),user=await getChatGPTUser(),url=new URL(req.url);
+ const db=database(),user=await getCurrentUser(),url=new URL(req.url);
  const character=url.searchParams.get('character')?.trim()||'';
  const charactersRaw=url.searchParams.get('characters')?.split(',').map(x=>x.trim()).filter(Boolean)||[];
  const requestedCharacters=[...new Set([...(character?[character]:[]),...charactersRaw])].slice(0,10);
@@ -175,8 +175,8 @@ export async function GET(req:Request){try{
  }catch(e){console.error('Evidence load failed',e);return json({error:'Could not load evidence. Please try again.'},503);}}
 
 export async function POST(req:Request){try{
- const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)return json({error:'Invalid origin'},403);
- const user=await getChatGPTUser();if(!user)return json({error:'Sign in to manage evidence.'},401);
+ if(!sameOrigin(req))return json({error:'Invalid origin'},403);
+ const user=await getCurrentUser();if(!user)return json({error:'Sign in to manage evidence.'},401);if(!canContribute(user))return json({error:user.profileCompleted?'Verify your email before contributing.':'Complete your profile before contributing.'},403);
  const raw=await req.text();if(raw.length>15000)return json({error:'Submission is too large'},413);
  let parsed;try{parsed=mutationSchema.safeParse(JSON.parse(raw));}catch{return json({error:'Invalid submission'},400);}
  if(!parsed.success)return json({error:parsed.error.issues[0]?.message||'Check the evidence fields.'},400);
@@ -188,7 +188,7 @@ export async function POST(req:Request){try{
   if(d.action==='update_evidence'){
    const current=await fetchRecord(db,d.evidenceId,user.userId,true);
    if(!current||current.raw.deleted)return json({error:'Evidence not found.'},404);
-   if(current.raw.submittedBy!==user.userId&&!admin(user.userId))return json({error:'You cannot edit this evidence.'},403);
+   if(current.raw.submittedBy!==user.userId&&!admin(user))return json({error:'You cannot edit this evidence.'},403);
    if(current.raw.characterId!==evidence.characterId)return json({error:'A feat cannot be moved to another character. Create a new feat instead.'},400);
    if(current.raw.versionId&&current.raw.versionId!==evidence.versionId)return json({error:'A version-scoped feat cannot be moved to another version. Create a new feat instead.'},400);
   }
@@ -207,7 +207,7 @@ export async function POST(req:Request){try{
  if(d.action==='delete_evidence'){
   const current=await fetchRecord(db,d.evidenceId,user.userId,true);
   if(!current||current.raw.deleted)return json({error:'Evidence not found.'},404);
-  if(current.raw.submittedBy!==user.userId&&!admin(user.userId))return json({error:'You cannot remove this evidence.'},403);
+  if(current.raw.submittedBy!==user.userId&&!admin(user))return json({error:'You cannot remove this evidence.'},403);
   await db.prepare('UPDATE evidence_records SET deleted=1,deleted_at=?,updated=? WHERE id=?').bind(now,now,d.evidenceId).run();
   return json({ok:true,id:d.evidenceId});
  }
@@ -231,7 +231,7 @@ export async function POST(req:Request){try{
 
  const linkRow=await db.prepare('SELECT linked_by AS linkedBy FROM argument_evidence_links WHERE battle=? AND argument_user=? AND evidence_id=?').bind(d.battle,argument.user,d.evidenceId).first<any>();
  if(!linkRow)return json({error:'Evidence link not found.'},404);
- if(linkRow.linkedBy!==user.userId&&argument.user!==user.userId&&!admin(user.userId))return json({error:'You cannot remove this evidence link.'},403);
+ if(linkRow.linkedBy!==user.userId&&argument.user!==user.userId&&!admin(user))return json({error:'You cannot remove this evidence link.'},403);
  await db.prepare('DELETE FROM argument_evidence_links WHERE battle=? AND argument_user=? AND evidence_id=?').bind(d.battle,argument.user,d.evidenceId).run();
  return json({ok:true,id:d.evidenceId});
  }catch(e){console.error('Evidence save failed',e);return json({error:'Could not save evidence. Please try again.'},503);}}

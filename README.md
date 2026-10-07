@@ -4,7 +4,7 @@ Anime Clash is a public anime community for evidence-backed character matchups, 
 
 ## Features
 
-- Public browsing with ChatGPT sign-in for owned contributions.
+- Public browsing with email/password, Google, or hosted ChatGPT/platform sign-in for owned contributions.
 - Public fan profiles with favourite anime and characters, battle activity, squads, and club progress.
 - Searchable curated character records with stable version IDs, version-scoped abilities, story/source boundaries, aliases, and database-backed feat libraries.
 - Weekly UTC tournament brackets with advancing entrants and a live leaderboard.
@@ -16,7 +16,7 @@ Anime Clash is a public anime community for evidence-backed character matchups, 
 
 ## Runtime and trust boundaries
 
-Vinext / React runs on Cloudflare Workers. D1 stores profiles, battles, votes, replies, squads, challenges, viewing progress, discussions, reports, notifications, watchlists, and tournament votes. Platform-provided ChatGPT identity is checked server-side for every write. `ANIME_CLASH_ADMIN_ID` identifies the site owner for moderation actions and is configured as a hosted runtime value.
+Vinext / React runs on Cloudflare Workers. D1 stores provider-independent user accounts, auth identities, hashed server-side sessions, profiles, battles, votes, replies, squads, challenges, viewing progress, discussions, reports, notifications, watchlists, and tournament votes. Email/password, Google OIDC, and hosted ChatGPT/platform identities resolve through one central auth layer to stable internal user IDs. Configure moderation with `ANIME_CLASH_ADMIN_USER_ID`; the legacy `ANIME_CLASH_ADMIN_ID` remains a temporary ChatGPT-provider fallback.
 
 Club post bodies are filtered server-side against the signed-in viewer's saved episode. Correct author episode tags remain necessary. Arena, tournament, character, squad, and discovery pages can contain spoilers.
 
@@ -36,13 +36,18 @@ The curated TypeScript catalog is mirrored by append-only D1 seed data in `chara
 
 Profiles, favourite characters, squads, tournament seeds, discovery, and recommendations remain character-level for backward compatibility. Squads are intentionally not version-aware in this migration; that is a future combat-consistency enhancement rather than a destructive saved-data rewrite.
 
+## Authentication
+
+Authentication architecture, security policy, migration behavior, Google/Resend configuration, and deployment variables are documented in [`docs/authentication.md`](docs/authentication.md). Existing community ownership is migrated to stable internal user IDs by append-only migration `0005_auth_accounts.sql`.
+
 ## Development
 
-Use the Sites configure, install, build, and managed preview helpers. Database schema is in `db/schema.ts`; append-only generated migrations are in `drizzle/`. Apply pending migrations to preview D1 before testing persistent behavior. Sites applies production migrations during publication.
+Use the Sites configure, install, build, and managed preview helpers. Database schema is in `db/schema.ts`; append-only migrations are in `drizzle/`. Apply pending migrations to preview D1 before testing persistent behavior. Sites applies production migrations during publication.
 
 ## Validation
 
 - Run `pnpm test:domain` for evidence and character-version domain tests.
+- Run `pnpm test:auth` for auth crypto and legacy ownership-migration tests.
 - Run TypeScript, lint, and the production build before release.
 - Expanded desktop views were inspected in managed browser preview.
 - Character search, weekly bracket calculation, public squad challenge state, and club rules were checked through the rendered interface.
