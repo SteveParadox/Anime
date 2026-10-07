@@ -42,4 +42,4 @@ export const seasonalAnime=[
 export const tournamentSeeds=['tanjiro','deku','denji','yuji','shinra','asta','senku','luffy'];
 export function weekKey(){const d=new Date(),first=new Date(Date.UTC(d.getUTCFullYear(),0,1));return `${d.getUTCFullYear()}-W${String(Math.ceil(((+d-+first)/86400000+first.getUTCDay()+1)/7)).padStart(2,'0')}`;}
 export function tournamentPhase(){const day=new Date().getUTCDay();return day<=2?'quarterfinals':day<=5?'semifinals':'final';}
-export function dailyChallenge(){const day=new Date().toISOString().slice(0,10);const idx=Math.floor(Date.now()/86400000)%3;return {day,boss:['The Iron Colossus','The Phantom Warden','The Storm Titan'][idx],brief:['Break an armored frontline while protecting your support.','Track a mobile opponent and control its escape routes.','Survive ranged pressure and create one decisive opening.'][idx],budget:20,size:5};}
+export function dailyChallenge(){return {day:new Date().toISOString().slice(0,10)};}
