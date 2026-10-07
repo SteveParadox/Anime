@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1790007839772,
+      "tag": "0000_ambitious_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790009471875,
+      "tag": "0001_workable_hemingway",
+      "breakpoints": true
+    }
+  ]
+}
