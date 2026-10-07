@@ -93,7 +93,14 @@ test('daily challenge target is structured Madara and headline uses character id
  assert.match(domain,/key:'ten-tails-madara'/);
  assert.match(domain,/targetCharacterId:'madara'/);
  assert.match(domain,/targetVersionId:'madara-ten-tails-jinchuriki'/);
- assert.match(domain,/template\.title\(targetCharacter\.name\)/);
+ assert.match(domain,/targetCharacter\?\.name\|\|'the target'/);
+ assert.match(domain,/targetCharacter\?\.id\|\|null,targetVersion\?\.id\|\|null/);
+});
+
+test('template architecture permits future targetless challenge types without fake character IDs',()=>{
+ assert.match(domain,/targetCharacterId\?:string/);
+ assert.match(domain,/targetVersionId\?:string/);
+ assert.match(domain,/Boolean\(template\.targetCharacterId\)!==Boolean\(template\.targetVersionId\)/);
 });
 
 test('structured evidence writes require canonical character versions',()=>{
