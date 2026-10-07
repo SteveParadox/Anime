@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateSquadBudget,validateSquadIdentities} from '../lib/squad-challenge-policy.ts';
+import {resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '../lib/squad-challenge-policy.ts';
 
 test('squad identity policy allows one through challenge maximum members',()=>{
  const selections=[
@@ -48,4 +48,14 @@ test('budget policy rejects over-budget squads',()=>{
 test('budget policy rejects malformed server pricing',()=>{
  assert.throws(()=>validateSquadBudget([{cost:0}],100),/invalid challenge cost/);
  assert.throws(()=>validateSquadBudget([{cost:1.5}],100),/invalid challenge cost/);
+});
+
+
+test('challenge lifecycle is determined from server time boundaries',()=>{
+ const start=1_000,end=2_000;
+ assert.equal(resolveSquadChallengeStatus('scheduled',start,end,999),'scheduled');
+ assert.equal(resolveSquadChallengeStatus('scheduled',start,end,1_000),'active');
+ assert.equal(resolveSquadChallengeStatus('active',start,end,1_500),'active');
+ assert.equal(resolveSquadChallengeStatus('active',start,end,2_000),'closed');
+ assert.equal(resolveSquadChallengeStatus('closed',start,end,1_500),'closed');
 });
