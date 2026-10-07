@@ -203,10 +203,10 @@ async function fromSession():Promise<CurrentUser|null>{
 
 async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
  const db=database(),now=Date.now();
- let linked=await db.prepare(`SELECT user_id AS userId FROM auth_identities WHERE provider='chatgpt' AND provider_user_id=? LIMIT 1`).bind(identity.providerUserId).first<any>();
+ let linked=await db.prepare(`SELECT user_id AS userId,provider_email AS providerEmail FROM auth_identities WHERE provider='chatgpt' AND provider_user_id=? LIMIT 1`).bind(identity.providerUserId).first<any>();
  if(linked){
   await reconcileTrustedProviderEmail(db,linked.userId,identity.email);
-  await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='chatgpt' AND provider_user_id=?`).bind(identity.email,identity.providerUserId).run();
+  if(linked.providerEmail!==identity.email)await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='chatgpt' AND provider_user_id=?`).bind(identity.email,identity.providerUserId).run();
   const current=await readCurrentUser(linked.userId,'chatgpt',identity.providerUserId);
   if(current)return current;
  }
@@ -233,11 +233,14 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
 
 export async function getCurrentUser():Promise<CurrentUser|null>{
  const session=await fromSession(),platform=await platformIdentity();
- if(session&&platform&&(session.legacyChatgptUserId===platform.providerUserId||!session.email||normalizeEmail(session.email)===platform.email)){
-  const platformUser=await resolvePlatform(platform);
-  if(platformUser.userId===session.userId)return platformUser;
-  const sessionStillExists=await database().prepare('SELECT 1 FROM users WHERE id=?').bind(session.userId).first();
-  if(!sessionStillExists)return platformUser;
+ if(session&&platform){
+  if(session.legacyChatgptUserId===platform.providerUserId&&session.email&&normalizeEmail(session.email)===platform.email&&session.emailVerified)return session;
+  if(session.legacyChatgptUserId===platform.providerUserId||!session.email||normalizeEmail(session.email)===platform.email){
+   const platformUser=await resolvePlatform(platform);
+   if(platformUser.userId===session.userId)return platformUser;
+   const sessionStillExists=await database().prepare('SELECT 1 FROM users WHERE id=?').bind(session.userId).first();
+   if(!sessionStillExists)return platformUser;
+  }
  }
  if(session)return session;
  if(platform)return resolvePlatform(platform);
