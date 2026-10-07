@@ -288,6 +288,7 @@ export async function POST(request:Request){
   if(error instanceof z.ZodError)return authJson({error:'Invalid squad submission.',issues:error.issues},400);
   const details=errorDetails(error);
   if(details.message.includes('squad_submission_locked'))return authJson({error:'This squad is locked because community voting has started.'},409);
+  if(details.message.includes('squad_challenge_inactive'))return authJson({error:'This challenge is no longer accepting squad changes.'},409);
   if(details.message.includes('UNIQUE constraint failed')&&details.message.includes('squad_submissions'))return authJson({error:'A challenge submission was created concurrently. Reload before editing it.'},409);
   if(details.status>=400&&details.status<500)return authJson({error:details.message},details.status);
   console.error('Squad submission save failed',error);
