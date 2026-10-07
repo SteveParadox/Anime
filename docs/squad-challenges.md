@@ -121,6 +121,7 @@ Mutation endpoints use:
 - parameterized D1 statements
 - ownership checks
 - server-time lifecycle checks
+- database lifecycle triggers as a write-boundary backstop
 - server-authoritative price lookup
 
 Public responses include profile handle, display name, and avatar where appropriate. They do not expose email addresses, Google subjects, hosted-platform IDs, or raw internal authentication identities.
@@ -131,7 +132,7 @@ The first release keeps the daily schedule curated in server code using determin
 
 A dedicated admin challenge editor is intentionally deferred. Normal users cannot create daily challenges.
 
-Roster expansion is append-only: migration `0007_expand_squad_roster.sql` adds the Madara, Gojo, Itachi, Aizen, Saitama, and Megumi character-version/ability seeds plus their squad baseline costs without rewriting `0004` or `0006`.
+Roster expansion is append-only: migration `0007_expand_squad_roster.sql` adds the Madara, Gojo, Itachi, Aizen, Saitama, and Megumi character-version/ability seeds plus their squad baseline costs without rewriting `0004` or `0006`. Migration `0008_correct_roster_abilities.sql` appends two corrected version-ability links for Revived Madara and Season 1 Megumi. Migration `0009_guard_squad_challenge_lifecycle.sql` adds database lifecycle guards so submissions, edits, member mutations, and votes cannot slip through after closure.
 
 ## Validation
 
