@@ -36,7 +36,10 @@ export async function GET(request:Request){
   const emailOwner=await db.prepare('SELECT id FROM users WHERE email_normalized=? LIMIT 1').bind(email).first<any>();
   if(emailOwner){
    resolvedUserId=emailOwner.id;
-   await db.prepare(`INSERT INTO auth_identities (id,user_id,provider,provider_user_id,provider_email,credential_hash,created) VALUES (?,?, 'google',?,?,NULL,?)`).bind(crypto.randomUUID(),resolvedUserId,subject,email,now).run();
+   await db.batch([
+    db.prepare(`INSERT INTO auth_identities (id,user_id,provider,provider_user_id,provider_email,credential_hash,created) VALUES (?,?, 'google',?,?,NULL,?)`).bind(crypto.randomUUID(),resolvedUserId,subject,email,now),
+    db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,resolvedUserId)
+   ]);
   }else{
    resolvedUserId=userId();
    let handle='animefan_'+subject.replace(/[^a-zA-Z0-9]/g,'').toLowerCase().slice(-8);
