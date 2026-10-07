@@ -15,6 +15,7 @@ export type CurrentUser={
  profileCompleted:boolean;
  provider:AuthProvider;
  providerUserId:string;
+ legacyChatgptUserId:string|null;
  displayName:string;
  username:string|null;
  avatarUrl:string|null;
@@ -56,11 +57,11 @@ async function uniqueUsername(db:D1Database,suggested?:string|null){
 
 async function readCurrentUser(userIdValue:string,provider:AuthProvider,providerUserId:string):Promise<CurrentUser|null>{
  const db=database();
- const row=await db.prepare(`SELECT u.id,u.email,u.email_verified AS emailVerified,u.profile_completed AS profileCompleted,u.created,u.updated,p.handle,p.display_name AS displayName,p.avatar_url AS avatarUrl FROM users u LEFT JOIN profiles p ON p.user=u.id WHERE u.id=? LIMIT 1`).bind(userIdValue).first<any>();
+ const row=await db.prepare(`SELECT u.id,u.email,u.email_verified AS emailVerified,u.profile_completed AS profileCompleted,u.created,u.updated,p.handle,p.display_name AS displayName,p.avatar_url AS avatarUrl,(SELECT ai.provider_user_id FROM auth_identities ai WHERE ai.user_id=u.id AND ai.provider='chatgpt' LIMIT 1) AS legacyChatgptUserId FROM users u LEFT JOIN profiles p ON p.user=u.id WHERE u.id=? LIMIT 1`).bind(userIdValue).first<any>();
  if(!row)return null;
  return {
   userId:row.id,id:row.id,email:row.email||null,emailVerified:Boolean(row.emailVerified),profileCompleted:Boolean(row.profileCompleted),
-  provider,providerUserId,displayName:row.displayName||row.handle||row.email||'Anime fan',username:row.handle||null,avatarUrl:row.avatarUrl||null,createdAt:Number(row.created)
+  provider,providerUserId,legacyChatgptUserId:row.legacyChatgptUserId||null,displayName:row.displayName||row.handle||row.email||'Anime fan',username:row.handle||null,avatarUrl:row.avatarUrl||null,createdAt:Number(row.created)
  };
 }
 
@@ -211,7 +212,7 @@ export function canContribute(user:CurrentUser|null|undefined){
 export function isAdminUser(user:CurrentUser|null|undefined){
  if(!user)return false;
  if(env.ANIME_CLASH_ADMIN_USER_ID&&user.userId===env.ANIME_CLASH_ADMIN_USER_ID)return true;
- return Boolean(env.ANIME_CLASH_ADMIN_ID&&user.provider==='chatgpt'&&user.providerUserId===env.ANIME_CLASH_ADMIN_ID);
+ return Boolean(env.ANIME_CLASH_ADMIN_ID&&user.legacyChatgptUserId===env.ANIME_CLASH_ADMIN_ID);
 }
 
 export async function publicAuthState(){
