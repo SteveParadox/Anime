@@ -40,6 +40,8 @@ test('0005 migrates legacy ChatGPT ownership to one internal account',()=>{
    VALUES ('ae1','b1','legacy-user','legacy-user','Episode 1','Legacy evidence',10);
    INSERT INTO notifications (id,user,kind,message,link,read,created)
    VALUES ('n1','legacy-user','reply','Legacy notice','/?battle=b1',0,10);
+   INSERT INTO notifications (id,user,kind,message,link,read,created)
+   VALUES ('n2','legacy-no-profile','reply','Owner without prior profile','/',0,10);
    INSERT INTO reports (id,reporter,subject_type,subject_id,reason,status,created)
    VALUES ('r1','legacy-user','post','p1','Legacy report','open',10);
    INSERT INTO watchlist (user,anime,status,created) VALUES ('legacy-user','dandadan','watching',10);
@@ -73,6 +75,11 @@ test('0005 migrates legacy ChatGPT ownership to one internal account',()=>{
   assert.equal(db.prepare("SELECT user FROM tournament_votes WHERE match='q1'").get().user,id);
 
   const account=db.prepare('SELECT email,email_verified AS emailVerified,profile_completed AS profileCompleted FROM users WHERE id=?').get(id);
+  const noProfileIdentity=db.prepare("SELECT user_id AS userId FROM auth_identities WHERE provider='chatgpt' AND provider_user_id='legacy-no-profile'").get();
+  const generatedProfile=db.prepare('SELECT handle,display_name AS displayName FROM profiles WHERE user=?').get(noProfileIdentity.userId);
+  assert.match(generatedProfile.handle,/^animefan_[a-f0-9]+$/);
+  assert.equal(generatedProfile.displayName,'Anime Fan');
+  assert.equal(db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').get(noProfileIdentity.userId).profileCompleted,0);
   assert.equal(account.email,null);
   assert.equal(account.emailVerified,1);
   assert.equal(account.profileCompleted,1);
