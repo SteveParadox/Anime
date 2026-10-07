@@ -68,10 +68,10 @@ async function fromSession():Promise<CurrentUser|null>{
  const jar=await cookies(),token=jar.get(SESSION_COOKIE)?.value;
  if(!token)return null;
  const tokenHash=await hashOpaqueToken(token),db=database(),now=Date.now();
- const row=await db.prepare(`SELECT s.user_id AS userId,i.provider,i.provider_user_id AS providerUserId FROM auth_sessions s LEFT JOIN auth_identities i ON i.user_id=s.user_id WHERE s.token_hash=? AND s.expires>? ORDER BY CASE i.provider WHEN 'email' THEN 0 WHEN 'google' THEN 1 ELSE 2 END LIMIT 1`).bind(tokenHash,now).first<any>();
+ const row=await db.prepare(`SELECT s.user_id AS userId,s.last_used AS lastUsed,i.provider,i.provider_user_id AS providerUserId FROM auth_sessions s LEFT JOIN auth_identities i ON i.user_id=s.user_id WHERE s.token_hash=? AND s.expires>? ORDER BY CASE i.provider WHEN 'email' THEN 0 WHEN 'google' THEN 1 ELSE 2 END LIMIT 1`).bind(tokenHash,now).first<any>();
  if(!row){jar.delete(SESSION_COOKIE);return null}
  if(!row.provider)return null;
- if(now%10<2)void db.prepare('UPDATE auth_sessions SET last_used=? WHERE token_hash=?').bind(now,tokenHash).run();
+ if(now-Number(row.lastUsed||0)>15*60_000)void db.prepare('UPDATE auth_sessions SET last_used=? WHERE token_hash=?').bind(now,tokenHash).run();
  return readCurrentUser(row.userId,row.provider as AuthProvider,row.providerUserId||'');
 }
 
@@ -138,7 +138,7 @@ export async function destroyAllSessions(userIdValue:string){
 }
 
 export function canContribute(user:CurrentUser|null|undefined){
- return Boolean(user&&(user.provider==='chatgpt'||user.provider==='google'||user.emailVerified));
+ return Boolean(user&&user.profileCompleted&&(user.provider==='chatgpt'||user.provider==='google'||user.emailVerified));
 }
 
 export function isAdminUser(user:CurrentUser|null|undefined){
