@@ -10,6 +10,88 @@ export const comments=sqliteTable('comments',{id:text('id').primaryKey(),battle:
 export const reactions=sqliteTable('reactions',{subjectType:text('subject_type').notNull(),subjectId:text('subject_id').notNull(),user:text('user').notNull(),reaction:text('reaction').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.subjectType,t.subjectId,t.user]})]);
 export const squadChallenges=sqliteTable('squad_challenges',{id:text('id').primaryKey(),challenger:text('challenger').notNull(),challengerSquad:text('challenger_squad').notNull(),opponentSquad:text('opponent_squad').notNull(),rules:text('rules').notNull(),status:text('status').notNull().default('open'),created:integer('created').notNull()},t=>[index('idx_challenges_created').on(t.created)]);
 export const challengeVotes=sqliteTable('challenge_votes',{challenge:text('challenge').notNull(),user:text('user').notNull(),side:text('side').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.challenge,t.user]})]);
+
+export const squadVersionCosts=sqliteTable('squad_version_costs',{
+ versionId:text('version_id').primaryKey(),
+ characterId:text('character_id').notNull(),
+ cost:integer('cost').notNull(),
+ updated:integer('updated').notNull()
+},t=>[index('idx_squad_version_costs_character').on(t.characterId),index('idx_squad_version_costs_cost').on(t.cost)]);
+
+export const dailySquadChallenges=sqliteTable('daily_squad_challenges',{
+ id:text('id').primaryKey(),
+ type:text('type').notNull(),
+ title:text('title').notNull(),
+ description:text('description').notNull(),
+ targetCharacterId:text('target_character_id'),
+ targetVersionId:text('target_version_id'),
+ budget:integer('budget').notNull(),
+ minMembers:integer('min_members').notNull().default(1),
+ maxMembers:integer('max_members').notNull(),
+ rulesJson:text('rules_json').notNull().default('{}'),
+ startsAt:integer('starts_at').notNull(),
+ endsAt:integer('ends_at').notNull(),
+ status:text('status').notNull().default('scheduled'),
+ created:integer('created').notNull()
+},t=>[
+ index('idx_daily_squad_challenges_window').on(t.startsAt,t.endsAt),
+ index('idx_daily_squad_challenges_status_window').on(t.status,t.startsAt,t.endsAt)
+]);
+
+export const dailySquadChallengeCosts=sqliteTable('daily_squad_challenge_costs',{
+ challengeId:text('challenge_id').notNull(),
+ characterId:text('character_id').notNull(),
+ versionId:text('version_id').notNull(),
+ cost:integer('cost').notNull()
+},t=>[
+ primaryKey({columns:[t.challengeId,t.versionId]}),
+ index('idx_daily_squad_challenge_costs_challenge').on(t.challengeId),
+ index('idx_daily_squad_challenge_costs_character').on(t.challengeId,t.characterId)
+]);
+
+export const squadSubmissions=sqliteTable('squad_submissions',{
+ id:text('id').primaryKey(),
+ challengeId:text('challenge_id').notNull(),
+ owner:text('owner').notNull(),
+ name:text('name').notNull(),
+ strategy:text('strategy').notNull(),
+ totalCost:integer('total_cost').notNull(),
+ lockedAt:integer('locked_at'),
+ removed:integer('removed').notNull().default(0),
+ created:integer('created').notNull(),
+ updated:integer('updated').notNull()
+},t=>[
+ uniqueIndex('idx_squad_submissions_challenge_owner').on(t.challengeId,t.owner),
+ index('idx_squad_submissions_challenge_created').on(t.challengeId,t.created),
+ index('idx_squad_submissions_owner_created').on(t.owner,t.created)
+]);
+
+export const squadSubmissionMembers=sqliteTable('squad_submission_members',{
+ submissionId:text('submission_id').notNull(),
+ position:integer('position').notNull(),
+ characterId:text('character_id').notNull(),
+ versionId:text('version_id').notNull(),
+ characterNameSnapshot:text('character_name_snapshot').notNull(),
+ versionNameSnapshot:text('version_name_snapshot').notNull(),
+ costSnapshot:integer('cost_snapshot').notNull()
+},t=>[
+ primaryKey({columns:[t.submissionId,t.position]}),
+ uniqueIndex('idx_squad_submission_members_version').on(t.submissionId,t.versionId),
+ index('idx_squad_submission_members_submission').on(t.submissionId),
+ index('idx_squad_submission_members_character').on(t.characterId)
+]);
+
+export const squadSubmissionVotes=sqliteTable('squad_submission_votes',{
+ submissionId:text('submission_id').notNull(),
+ user:text('user').notNull(),
+ verdict:text('verdict').notNull(),
+ created:integer('created').notNull(),
+ updated:integer('updated').notNull()
+},t=>[
+ primaryKey({columns:[t.submissionId,t.user]}),
+ index('idx_squad_submission_votes_submission').on(t.submissionId),
+ index('idx_squad_submission_votes_user').on(t.user)
+]);
 export const notifications=sqliteTable('notifications',{id:text('id').primaryKey(),user:text('user').notNull(),kind:text('kind').notNull(),message:text('message').notNull(),link:text('link').notNull(),read:integer('read').notNull().default(0),created:integer('created').notNull()},t=>[index('idx_notifications_user_created').on(t.user,t.created)]);
 export const reports=sqliteTable('reports',{id:text('id').primaryKey(),reporter:text('reporter').notNull(),subjectType:text('subject_type').notNull(),subjectId:text('subject_id').notNull(),reason:text('reason').notNull(),status:text('status').notNull().default('open'),created:integer('created').notNull()},t=>[index('idx_reports_status_created').on(t.status,t.created)]);
 export const watchlist=sqliteTable('watchlist',{user:text('user').notNull(),anime:text('anime').notNull(),status:text('status').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.user,t.anime]})]);
