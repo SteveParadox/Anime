@@ -10,7 +10,8 @@ const migrations=[
  'drizzle/0003_structured_evidence.sql',
  'drizzle/0004_character_versions.sql',
  'drizzle/0005_auth_accounts.sql',
- 'drizzle/0006_daily_squad_challenges.sql'
+ 'drizzle/0006_daily_squad_challenges.sql',
+ 'drizzle/0007_expand_squad_roster.sql'
 ];
 
 function apply(db,file){
@@ -125,5 +126,28 @@ test('cost and name snapshots survive later price changes',()=>{
   const old=db.prepare("SELECT version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id='sub'").get();
   assert.deepEqual(old,{versionName:'Six Paths Naruto',cost:70});
   assert.equal(db.prepare("SELECT cost FROM daily_squad_challenge_costs WHERE challenge_id='daily-2026-10-07' AND version_id='naruto-six-paths'").get().cost,76);
+ }finally{db.close()}
+});
+
+
+test('0007 expands the roster without mutating an existing historical squad submission',()=>{
+ const db=new DatabaseSync(':memory:');
+ try{
+  for(const file of migrations.slice(0,7))apply(db,file);
+  seedAccount(db,'usr_history','history@example.com','history_fan');
+  const start=Date.UTC(2026,9,7),end=start+86_400_000;
+  db.prepare("INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ('history-day','defeat_target','Defeat Goku','Historical','goku','goku-mastered-ultra-instinct',100,1,5,'{}',?,?,'closed',?)").run(start,end,start);
+  db.exec("INSERT INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES ('history-day','naruto','naruto-six-paths',72)");
+  db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('history-sub','history-day','usr_history','History Squad','Historical snapshots must not change.',72,1,0,1,1)");
+  db.exec("INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot) VALUES ('history-sub',0,'naruto','naruto-six-paths','Naruto Uzumaki','Six Paths Naruto',72)");
+
+  apply(db,migrations[7]);
+
+  const snapshot=db.prepare("SELECT character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id='history-sub'").get();
+  assert.deepEqual(snapshot,{characterName:'Naruto Uzumaki',versionName:'Six Paths Naruto',cost:72});
+  assert.equal(db.prepare("SELECT cost FROM daily_squad_challenge_costs WHERE challenge_id='history-day' AND version_id='naruto-six-paths'").get().cost,72);
+  assert.equal(db.prepare("SELECT cost FROM squad_version_costs WHERE version_id='gojo-shibuya'").get().cost,38);
+  assert.equal(db.prepare("SELECT character_id AS characterId FROM character_versions WHERE id='madara-ten-tails-jinchuriki'").get().characterId,'madara');
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='gojo-shibuya' AND ability_id='gojo-unlimited-void'").get().n,1);
  }finally{db.close()}
 });
