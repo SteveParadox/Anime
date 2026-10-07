@@ -88,7 +88,8 @@ test('version and link IDs are unique',()=>{
 test('append-only migration history mirrors the curated version catalog',()=>{
  const migrationHistory=[
   readFileSync('drizzle/0004_character_versions.sql','utf8'),
-  readFileSync('drizzle/0007_expand_squad_roster.sql','utf8')
+  readFileSync('drizzle/0007_expand_squad_roster.sql','utf8'),
+  readFileSync('drizzle/0008_correct_roster_abilities.sql','utf8')
  ].join('\n');
  for(const version of characterVersions)assert.ok(migrationHistory.includes(`('${version.id}','${version.characterId}'`),version.id);
  for(const link of versionAbilities)assert.ok(migrationHistory.includes(`'${link.versionId}','${link.abilityId}'`),`${link.versionId} -> ${link.abilityId}`);
@@ -124,6 +125,7 @@ test('expanded roster abilities stay scoped to the intended combat versions',()=
  assert.ok(megumi.includes('megumi-ten-shadows'));
  assert.ok(megumi.includes('megumi-chimera-shadow-garden'));
 
- assert.equal(abilitiesForVersion('megumi-season-1').some(x=>x.ability.id==='megumi-chimera-shadow-garden'),false);
+ assert.equal(abilitiesForVersion('megumi-season-1').some(x=>x.ability.id==='megumi-chimera-shadow-garden'),true);
+ assert.equal(abilitiesForVersion('madara-revived').some(x=>x.ability.id==='madara-limbo'),true);
  assert.equal(abilitiesForVersion('madara-edo-tensei').some(x=>x.ability.id==='madara-limbo'),false);
 });
