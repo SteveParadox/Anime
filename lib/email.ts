@@ -7,7 +7,8 @@ function configured(){
 }
 
 async function send(to:string,subject:string,html:string):Promise<MailResult>{
- if(configured()){
+ if(!configured())return {sent:false,configured:false};
+ try{
   const response=await fetch('https://api.resend.com/emails',{
    method:'POST',
    headers:{Authorization:`Bearer ${env.RESEND_API_KEY}`,'Content-Type':'application/json'},
@@ -15,8 +16,10 @@ async function send(to:string,subject:string,html:string):Promise<MailResult>{
   });
   if(!response.ok){console.error('Authentication email delivery failed',{status:response.status});return {sent:false,configured:true}}
   return {sent:true,configured:true};
+ }catch(e){
+  console.error('Authentication email delivery failed',{name:(e as Error).name});
+  return {sent:false,configured:true};
  }
- return {sent:false,configured:false};
 }
 
 function devLink(kind:string,url:string){
