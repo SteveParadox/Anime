@@ -78,3 +78,9 @@ test('account reconciliation preserves squad ownership without creating self vot
  assert.match(auth,/UPDATE squad_submission_votes SET user=\? WHERE user=\?/);
  assert.match(auth,/DELETE FROM squad_submission_votes WHERE user=\? AND EXISTS \(SELECT 1 FROM squad_submissions/);
 });
+
+
+test('top ranking requires the minimum vote count',()=>{
+ assert.match(submissions,/sort==='top'&&row\.totalVotes>=5/);
+ assert.match(submissions,/wilsonLowerBound\(a\.yesVotes,a\.totalVotes\)/);
+});
