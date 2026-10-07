@@ -67,12 +67,14 @@ async function readCurrentUser(userIdValue:string,provider:AuthProvider,provider
 
 async function mergeTrustedDuplicateIntoLegacy(db:D1Database,sourceUserId:string,targetUserId:string,email:string){
  if(sourceUserId===targetUserId)return targetUserId;
- const [sourceAccount,targetProfile,sourceProfile]=await Promise.all([
-  db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(sourceUserId).first<any>(),
+ const [sourceAccount,targetAccount,targetProfile,sourceProfile]=await Promise.all([
+  db.prepare('SELECT profile_completed AS profileCompleted,email_verified AS emailVerified FROM users WHERE id=?').bind(sourceUserId).first<any>(),
+  db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(targetUserId).first<any>(),
   db.prepare('SELECT user,avatar_url AS avatarUrl FROM profiles WHERE user=?').bind(targetUserId).first<any>(),
   db.prepare('SELECT user,avatar_url AS avatarUrl FROM profiles WHERE user=?').bind(sourceUserId).first<any>()
  ]);
- if(!sourceAccount)throw new Error('Duplicate account source is missing.');
+ if(!sourceAccount||!targetAccount)throw new Error('Duplicate account source or target is missing.');
+ const sourceTrusted=Boolean(sourceAccount.emailVerified);
 
  const statements:D1PreparedStatement[]=[
   // Remove composite-key collisions before transferring source ownership.
@@ -104,25 +106,56 @@ async function mergeTrustedDuplicateIntoLegacy(db:D1Database,sourceUserId:string
   db.prepare('UPDATE argument_evidence_links SET argument_user=? WHERE argument_user=?').bind(targetUserId,sourceUserId),
   db.prepare('UPDATE argument_evidence_links SET linked_by=? WHERE linked_by=?').bind(targetUserId,sourceUserId),
 
-  db.prepare('UPDATE auth_identities SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
-  db.prepare('UPDATE auth_sessions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
   db.prepare('DELETE FROM email_verification_tokens WHERE user_id=?').bind(sourceUserId),
-  db.prepare('UPDATE password_reset_tokens SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
 
   // Release the normalized email before assigning it to the legacy account.
   db.prepare('UPDATE users SET email=NULL,email_normalized=NULL,updated=? WHERE id=?').bind(Date.now(),sourceUserId),
-  db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,profile_completed=CASE WHEN profile_completed=1 OR ?=1 THEN 1 ELSE 0 END,updated=? WHERE id=?').bind(email,email,sourceAccount.profileCompleted?1:0,Date.now(),targetUserId)
+  db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,profile_completed=CASE WHEN profile_completed=1 OR ?=1 THEN 1 ELSE 0 END,updated=? WHERE id=?').bind(email,email,sourceTrusted&&sourceAccount.profileCompleted?1:0,Date.now(),targetUserId)
  ];
 
+ if(sourceTrusted){
+  statements.push(
+   db.prepare('UPDATE auth_identities SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+   db.prepare('UPDATE auth_sessions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+   db.prepare('UPDATE password_reset_tokens SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId)
+  );
+ }else{
+  statements.push(
+   db.prepare('DELETE FROM auth_sessions WHERE user_id=?').bind(sourceUserId),
+   db.prepare('DELETE FROM password_reset_tokens WHERE user_id=?').bind(sourceUserId),
+   db.prepare('DELETE FROM auth_identities WHERE user_id=?').bind(sourceUserId)
+  );
+ }
+
  if(targetProfile&&sourceProfile){
-  if(!targetProfile.avatarUrl&&sourceProfile.avatarUrl)statements.push(db.prepare('UPDATE profiles SET avatar_url=?,updated=? WHERE user=?').bind(sourceProfile.avatarUrl,Date.now(),targetUserId));
-  statements.push(db.prepare('DELETE FROM profiles WHERE user=?').bind(sourceUserId));
+  if(sourceTrusted&&sourceAccount.profileCompleted&&!targetAccount.profileCompleted){
+   statements.push(
+    db.prepare('DELETE FROM profiles WHERE user=?').bind(targetUserId),
+    db.prepare('UPDATE profiles SET user=?,updated=? WHERE user=?').bind(targetUserId,Date.now(),sourceUserId)
+   );
+  }else{
+   if(sourceTrusted&&!targetProfile.avatarUrl&&sourceProfile.avatarUrl)statements.push(db.prepare('UPDATE profiles SET avatar_url=?,updated=? WHERE user=?').bind(sourceProfile.avatarUrl,Date.now(),targetUserId));
+   statements.push(db.prepare('DELETE FROM profiles WHERE user=?').bind(sourceUserId));
+  }
  }else if(!targetProfile&&sourceProfile){
-  statements.push(db.prepare('UPDATE profiles SET user=?,updated=? WHERE user=?').bind(targetUserId,Date.now(),sourceUserId));
+  if(sourceTrusted)statements.push(db.prepare('UPDATE profiles SET user=?,updated=? WHERE user=?').bind(targetUserId,Date.now(),sourceUserId));
+  else statements.push(db.prepare('DELETE FROM profiles WHERE user=?').bind(sourceUserId));
  }
  statements.push(db.prepare('DELETE FROM users WHERE id=?').bind(sourceUserId));
  await db.batch(statements);
  return targetUserId;
+}
+
+export async function revokeUnverifiedEmailCredentialAccess(db:D1Database,userIdValue:string){
+ const account=await db.prepare('SELECT email_verified AS emailVerified FROM users WHERE id=?').bind(userIdValue).first<{emailVerified:number}>();
+ if(!account||Boolean(account.emailVerified))return false;
+ await db.batch([
+  db.prepare("DELETE FROM auth_identities WHERE user_id=? AND provider='email'").bind(userIdValue),
+  db.prepare('DELETE FROM auth_sessions WHERE user_id=?').bind(userIdValue),
+  db.prepare('DELETE FROM password_reset_tokens WHERE user_id=?').bind(userIdValue),
+  db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=? AND used=0').bind(userIdValue)
+ ]);
+ return true;
 }
 
 async function fromSession():Promise<CurrentUser|null>{
@@ -146,13 +179,19 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
    if(owner&&owner.id!==linked.userId)await mergeTrustedDuplicateIntoLegacy(db,owner.id,linked.userId,identity.email);
    else if(!owner)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(identity.email,identity.email,now,linked.userId).run();
   }
+  const refreshed=await db.prepare('SELECT email_normalized AS emailNormalized,email_verified AS emailVerified FROM users WHERE id=?').bind(linked.userId).first<any>();
+  if(refreshed?.emailNormalized===identity.email&&!Boolean(refreshed.emailVerified))await db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,linked.userId).run();
   await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='chatgpt' AND provider_user_id=?`).bind(identity.email,identity.providerUserId).run();
   const current=await readCurrentUser(linked.userId,'chatgpt',identity.providerUserId);
   if(current)return current;
  }
- const emailOwner=await db.prepare('SELECT id FROM users WHERE email_normalized=?').bind(identity.email).first<any>();
+ const emailOwner=await db.prepare('SELECT id,email_verified AS emailVerified FROM users WHERE email_normalized=?').bind(identity.email).first<any>();
  if(emailOwner){
-  await db.prepare(`INSERT OR IGNORE INTO auth_identities (id,user_id,provider,provider_user_id,provider_email,credential_hash,created) VALUES (?,?, 'chatgpt',?,?,NULL,?)`).bind(crypto.randomUUID(),emailOwner.id,identity.providerUserId,identity.email,now).run();
+  if(!Boolean(emailOwner.emailVerified))await revokeUnverifiedEmailCredentialAccess(db,emailOwner.id);
+  await db.batch([
+   db.prepare(`INSERT OR IGNORE INTO auth_identities (id,user_id,provider,provider_user_id,provider_email,credential_hash,created) VALUES (?,?, 'chatgpt',?,?,NULL,?)`).bind(crypto.randomUUID(),emailOwner.id,identity.providerUserId,identity.email,now),
+   db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,emailOwner.id)
+  ]);
   const current=await readCurrentUser(emailOwner.id,'chatgpt',identity.providerUserId);
   if(current)return current;
  }
