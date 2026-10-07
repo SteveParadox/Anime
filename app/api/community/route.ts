@@ -77,7 +77,7 @@ export async function GET(req:Request){try{
    db.prepare(`SELECT c.id,c.argument_user AS argumentUser,c.body,c.created,COALESCE(p.handle,'anime_fan') AS handle FROM comments c LEFT JOIN profiles p ON p.user=c.user WHERE c.battle=? ORDER BY c.created ASC LIMIT 500`).bind(battle).all<any>(),
    db.prepare(`SELECT ae.id,ae.argument_user AS argumentUser,ae.reference,ae.context,ae.created,COALESCE(p.handle,'anime_fan') AS handle FROM argument_evidence ae LEFT JOIN profiles p ON p.user=ae.contributor WHERE ae.battle=? ORDER BY ae.created ASC LIMIT 300`).bind(battle).all<any>()
   ]);
-  for(const a of debate){const argumentUser=a.argumentUser;a.comments=comments.results.filter((c:any)=>c.argumentUser===argumentUser).map(({argumentUser:_,...c}:any)=>c);a.addedEvidence=evidenceRows.results.filter((e:any)=>e.argumentUser===argumentUser).map(({argumentUser:_,...e}:any)=>e);a.myReaction=a.myReaction||null;delete a.argumentUser;}
+  for(const a of debate){const argumentUser=a.argumentUser;a.comments=comments.results.filter((c:any)=>c.argumentUser===argumentUser).map((c:any)=>({id:c.id,body:c.body,created:c.created,handle:c.handle}));a.addedEvidence=evidenceRows.results.filter((e:any)=>e.argumentUser===argumentUser).map((e:any)=>({id:e.id,reference:e.reference,context:e.context,created:e.created,handle:e.handle}));a.myReaction=a.myReaction||null;delete a.argumentUser;}
  }
  const myVotes=user?(await db.prepare('SELECT battle,side,difficulty,reason,evidence FROM votes WHERE user=?').bind(user.userId).all<any>()).results:[];
  const battles=[...bs.results.map((b:any)=>normalizeBattle({...JSON.parse(b.payload),id:b.id,created:b.created})),...starterBattles];
