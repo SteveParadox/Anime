@@ -52,6 +52,7 @@ test('return paths reject cross-origin and reserved auth redirects',()=>{
  assert.equal(safeRelativeReturnPath('/?view=profile'),'/?view=profile');
  assert.equal(safeRelativeReturnPath('https://evil.example/'),'/');
  assert.equal(safeRelativeReturnPath('//evil.example/'),'/');
+ assert.equal(safeRelativeReturnPath('/\\evil.example/'),'/');
  assert.equal(safeRelativeReturnPath('/signin-with-chatgpt?return_to=/'),'/');
  assert.equal(safeRelativeReturnPath('/api/auth/google/callback?code=x'),'/');
 });
