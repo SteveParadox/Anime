@@ -61,6 +61,29 @@ export type SquadMemberSnapshot={
  cost:number;
 };
 
+type SquadChallengeDbRow={
+ id:string;
+ type:string;
+ title:string;
+ description:string;
+ targetCharacterId:string|null;
+ targetVersionId:string|null;
+ budget:number;
+ minMembers:number;
+ maxMembers:number;
+ rulesJson:string;
+ startsAt:number;
+ endsAt:number;
+ status:string;
+ created:number;
+};
+
+type SquadVersionCostDbRow={
+ versionId:string;
+ characterId:string;
+ cost:number;
+};
+
 type DailyTemplate={
  key:string;
  type:SquadChallengeType;
@@ -148,7 +171,7 @@ export function publicTarget(characterId:string|null,versionId:string|null){
  return {characterId:character.id,characterName:character.name,versionId:version.id,versionName:version.name,series:character.series};
 }
 
-function rowToChallenge(row:any):SquadChallengeRecord{
+function rowToChallenge(row:SquadChallengeDbRow):SquadChallengeRecord{
  return {
   id:String(row.id),
   type:row.type as SquadChallengeType,
@@ -168,7 +191,7 @@ function rowToChallenge(row:any):SquadChallengeRecord{
 }
 
 export async function findChallenge(db:D1Database,id:string){
- const row=await db.prepare(`SELECT id,type,title,description,target_character_id AS targetCharacterId,target_version_id AS targetVersionId,budget,min_members AS minMembers,max_members AS maxMembers,rules_json AS rulesJson,starts_at AS startsAt,ends_at AS endsAt,status,created FROM daily_squad_challenges WHERE id=? LIMIT 1`).bind(id).first<any>();
+ const row=await db.prepare(`SELECT id,type,title,description,target_character_id AS targetCharacterId,target_version_id AS targetVersionId,budget,min_members AS minMembers,max_members AS maxMembers,rules_json AS rulesJson,starts_at AS startsAt,ends_at AS endsAt,status,created FROM daily_squad_challenges WHERE id=? LIMIT 1`).bind(id).first<SquadChallengeDbRow>();
  return row?rowToChallenge(row):null;
 }
 
@@ -180,7 +203,7 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
  const template=templateForDay(day),targetCharacter=fighters.find(f=>f.id===template.targetCharacterId),targetVersion=versionById(template.targetVersionId);
  if(!targetCharacter||!targetVersion||targetVersion.characterId!==targetCharacter.id)throw new Error('Daily squad challenge target is not present in the canonical character-version catalog.');
 
- const costs=(await db.prepare('SELECT version_id AS versionId,character_id AS characterId,cost FROM squad_version_costs ORDER BY cost ASC,version_id ASC').all<any>()).results
+ const costs=(await db.prepare('SELECT version_id AS versionId,character_id AS characterId,cost FROM squad_version_costs ORDER BY cost ASC,version_id ASC').all<SquadVersionCostDbRow>()).results
   .filter(row=>row.characterId!==template.targetCharacterId&&versionById(row.versionId)?.characterId===row.characterId&&fighters.some(f=>f.id===row.characterId));
  if(!costs.length)throw new Error('Squad version pricing has not been initialized.');
 
@@ -197,7 +220,7 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
 }
 
 export async function challengeFighters(db:D1Database,challengeId:string):Promise<SquadChallengeFighter[]>{
- const rows=(await db.prepare('SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? ORDER BY cost ASC,version_id ASC').bind(challengeId).all<any>()).results;
+ const rows=(await db.prepare('SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? ORDER BY cost ASC,version_id ASC').bind(challengeId).all<SquadVersionCostDbRow>()).results;
  return rows.flatMap(row=>{
   const character=fighters.find(f=>f.id===row.characterId),version=versionById(row.versionId);
   if(!character||!version||version.characterId!==character.id)return [];
