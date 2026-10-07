@@ -102,3 +102,28 @@ test('expanded challenge roster exposes stable combat versions and search aliase
  assert.match(characterVersionSearchText('aizen').toLowerCase(),/hogyoku|hōgyoku/);
  assert.match(characterVersionSearchText('megumi').toLowerCase(),/shibuya/);
 });
+
+
+test('expanded roster abilities stay scoped to the intended combat versions',()=>{
+ const madara=abilitiesForVersion('madara-ten-tails-jinchuriki').map(x=>x.ability.id);
+ const gojo=abilitiesForVersion('gojo-shibuya').map(x=>x.ability.id);
+ const itachi=abilitiesForVersion('itachi-akatsuki').map(x=>x.ability.id);
+ const aizen=abilitiesForVersion('aizen-hogyoku').map(x=>x.ability.id);
+ const saitama=abilitiesForVersion('saitama-hero-association').map(x=>x.ability.id);
+ const megumi=abilitiesForVersion('megumi-shibuya').map(x=>x.ability.id);
+
+ assert.ok(madara.includes('madara-limbo'));
+ assert.ok(madara.includes('madara-ten-tails'));
+ assert.ok(gojo.includes('gojo-limitless'));
+ assert.ok(gojo.includes('gojo-unlimited-void'));
+ assert.ok(itachi.includes('itachi-genjutsu'));
+ assert.ok(itachi.includes('itachi-susanoo'));
+ assert.ok(aizen.includes('aizen-kyoka-suigetsu'));
+ assert.ok(aizen.includes('aizen-hogyoku-ability'));
+ assert.ok(saitama.includes('saitama-physical'));
+ assert.ok(megumi.includes('megumi-ten-shadows'));
+ assert.ok(megumi.includes('megumi-chimera-shadow-garden'));
+
+ assert.equal(abilitiesForVersion('megumi-season-1').some(x=>x.ability.id==='megumi-chimera-shadow-garden'),false);
+ assert.equal(abilitiesForVersion('madara-edo-tensei').some(x=>x.ability.id==='madara-limbo'),false);
+});
