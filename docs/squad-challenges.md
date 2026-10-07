@@ -78,7 +78,7 @@ Daily challenge votes are separate from saved-squad battle votes.
 - live percentages are hidden from non-owners until they vote
 - closed challenge results are public
 
-Top sorting uses the Wilson lower bound once an entry has at least five votes. Entries below that minimum are not promoted over established entries merely because one person voted YES.
+Top sorting uses a transparent net-YES score (YES votes minus NO votes) once an entry has at least five votes. The aggregate ordering runs in SQL, so an older high-performing entry is not lost merely because the feed first loaded newer rows. Entries below the minimum are not awarded a visible Top rank.
 
 ## Character versions and abilities
 
