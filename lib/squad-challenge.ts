@@ -1,5 +1,6 @@
 import {fighters} from '@/lib/catalog';
 import {abilitiesForVersion,versionById} from '@/lib/characters';
+import {validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
 
 export const SQUAD_CHALLENGE_TYPES=['defeat_target','survive','defend','capture','open_build'] as const;
 export const SQUAD_CHALLENGE_STATUSES=['scheduled','active','closed'] as const;
@@ -241,10 +242,8 @@ export async function challengeFighters(db:D1Database,challengeId:string):Promis
 }
 
 export async function resolveSubmissionMembers(db:D1Database,challenge:SquadChallengeRecord,selections:SquadMemberSelection[]){
- if(selections.length<challenge.minMembers||selections.length>challenge.maxMembers)throw Object.assign(new Error(`Choose between ${challenge.minMembers} and ${challenge.maxMembers} fighters.`),{status:400});
- const characterIds=selections.map(x=>x.characterId),versionIds=selections.map(x=>x.versionId);
- if(new Set(characterIds).size!==characterIds.length)throw Object.assign(new Error('Each character may appear only once in a challenge squad.'),{status:400});
- if(new Set(versionIds).size!==versionIds.length)throw Object.assign(new Error('Duplicate character versions are not allowed.'),{status:400});
+ validateSquadIdentities(selections,challenge.minMembers,challenge.maxMembers);
+ const versionIds=selections.map(x=>x.versionId);
 
  for(const selection of selections){
   const character=fighters.find(f=>f.id===selection.characterId),version=versionById(selection.versionId);
@@ -261,8 +260,7 @@ export async function resolveSubmissionMembers(db:D1Database,challenge:SquadChal
   if(!price||price.characterId!==selection.characterId)throw Object.assign(new Error('A selected version does not belong to the submitted character.'),{status:400});
   return {position,characterId:character.id,characterName:character.name,versionId:version.id,versionName:version.name,cost:price.cost};
  });
- const totalCost=snapshots.reduce((sum,item)=>sum+item.cost,0);
- if(totalCost>challenge.budget)throw Object.assign(new Error(`Squad costs ${totalCost} points but this challenge budget is ${challenge.budget}.`),{status:400});
+ const totalCost=validateSquadBudget(snapshots,challenge.budget);
  return {snapshots,totalCost};
 }
 
