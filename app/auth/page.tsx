@@ -6,7 +6,7 @@ function safeReturn(value:string|null){return value&&value.startsWith('/')&&!val
 export default function AuthPage(){
  const [mode,setMode]=useState<'login'|'register'>('login'),[returnTo,setReturnTo]=useState('/'),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[show,setShow]=useState(false);
  const [form,setForm]=useState({email:'',password:'',username:'',displayName:''});
- useEffect(()=>{const q=new URLSearchParams(location.search);setReturnTo(safeReturn(q.get('return_to')));const oauth=q.get('error');if(oauth)setError(oauth==='google_cancelled'?'Google sign-in was cancelled.':'Google sign-in could not be completed. Please try again.');},[]);
+ useEffect(()=>{const q=new URLSearchParams(location.search);setReturnTo(safeReturn(q.get('return_to')));if(q.get('mode')==='register')setMode('register');const oauth=q.get('error');if(oauth)setError(oauth==='google_cancelled'?'Google sign-in was cancelled.':'Google sign-in could not be completed. Please try again.');},[]);
  const submit=async(e:React.FormEvent)=>{e.preventDefault();setBusy(true);setError('');setNotice('');try{
   const endpoint=mode==='login'?'/api/auth/login':'/api/auth/register',payload=mode==='login'?{email:form.email,password:form.password}:form;
   const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d:any=await r.json();
