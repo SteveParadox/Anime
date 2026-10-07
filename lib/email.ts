@@ -20,7 +20,7 @@ async function send(to:string,subject:string,html:string):Promise<MailResult>{
 }
 
 function devLink(kind:string,url:string){
- if(env.AUTH_DEV_EMAIL_LOG==='true'&&env.ENVIRONMENT!=='production')console.info(`[auth-dev-email] ${kind}: ${url}`);
+ if(env.AUTH_DEV_EMAIL_LOG==='true'&&env.ENVIRONMENT==='development')console.info(`[auth-dev-email] ${kind}: ${url}`);
 }
 
 export async function sendVerificationEmail(to:string,url:string,expiresMinutes:number){
