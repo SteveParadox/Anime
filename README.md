@@ -9,7 +9,8 @@ Anime Clash is a public anime community for evidence-backed character matchups, 
 - Searchable curated character records with stable version IDs, version-scoped abilities, story/source boundaries, aliases, and database-backed feat libraries.
 - Weekly UTC tournament brackets with advancing entrants and a live leaderboard.
 - Version-locked Battle Arena matchups with immutable display snapshots, plus arguments, replies, reactions, reports, legacy source references, and reusable version-scoped Anime/Manga evidence.
-- Five-character, 20-point squad building and squad-versus-squad community votes.
+- Five-character, 20-point reusable saved squads and squad-versus-squad community votes.
+- Version-aware Daily Squad Challenges with 100-point server-authoritative budgets, exact-version pricing, historical snapshots, shareable entries, and YES/NO community verdicts. The curated challenge roster includes Madara, Gojo, Itachi, Aizen, Saitama, and Megumi alongside the existing catalog.
 - Episode-filtered clubs with edit/delete, reporting, rules, spoiler-tag corrections, and an owner moderation queue.
 - Notifications for replies, squad challenges, tournament rounds, and newly unlocked club discussions.
 - Taste matching, seasonal recommendations, and personal watchlist states.
@@ -32,13 +33,15 @@ Character → CharacterVersion → Ability / Feat → Evidence
 
 Battle payloads store stable `fighterAVersionId` / `fighterBVersionId` values plus immutable character/version display snapshots so historical debates remain readable after catalog wording changes. Existing string-version battles are normalized as legacy records and are not rewritten.
 
-The curated TypeScript catalog is mirrored by append-only D1 seed data in `character_versions`, `abilities`, and `version_abilities`. New evidence uses `version_id` and optional `ability_id`; pre-version evidence remains readable with a null version.
+The curated TypeScript catalog is mirrored by append-only D1 seed data in `character_versions`, `abilities`, and `version_abilities`, including the squad roster expansion in `0007_expand_squad_roster.sql`. New evidence uses `version_id` and optional `ability_id`; pre-version evidence remains readable with a null version.
 
-Profiles, favourite characters, squads, tournament seeds, discovery, and recommendations remain character-level for backward compatibility. Squads are intentionally not version-aware in this migration; that is a future combat-consistency enhancement rather than a destructive saved-data rewrite.
+Profiles, favourite characters, reusable saved squads, tournament seeds, discovery, and recommendations remain character-level for backward compatibility. Daily Squad Challenge submissions are version-aware snapshots stored separately, so exact combat versions and historical prices are enforced without destructively rewriting legacy saved squads.
 
 ## Authentication
 
 Authentication architecture, security policy, migration behavior, Google/Resend configuration, and deployment variables are documented in [`docs/authentication.md`](docs/authentication.md). Existing community ownership is migrated to stable internal user IDs by append-only migration `0005_auth_accounts.sql`.
+
+Daily Squad Challenge architecture, pricing, snapshots, lifecycle, voting, moderation, and legacy-squad compatibility are documented in [`docs/squad-challenges.md`](docs/squad-challenges.md).
 
 ## Development
 
@@ -48,6 +51,7 @@ Use the Sites configure, install, build, and managed preview helpers. Database s
 
 - Run `pnpm test:domain` for evidence and character-version domain tests.
 - Run `pnpm test:auth` for auth crypto and legacy ownership-migration tests.
+- Run `pnpm test:squads` for daily squad policy, security contracts, UI/share contracts, migration compatibility, snapshots, and vote-lock persistence.
 - Run TypeScript, lint, and the production build before release.
 - Expanded desktop views were inspected in managed browser preview.
 - Character search, weekly bracket calculation, public squad challenge state, and club rules were checked through the rendered interface.

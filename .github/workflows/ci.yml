@@ -36,6 +36,8 @@ jobs:
         run: cd repo && pnpm test:auth
       - name: Domain regression tests
         run: cd repo && pnpm test:domain
+      - name: Squad challenge tests
+        run: cd repo && pnpm test:squads
       - name: TypeScript
         run: cd repo && pnpm exec tsc --noEmit
       - name: Lint

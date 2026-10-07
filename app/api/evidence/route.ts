@@ -90,7 +90,7 @@ async function battleById(db:D1Database,id:string){
 function canonicalValues(evidence:z.infer<typeof evidenceInput>){
  const character=fighters.find(f=>f.id===evidence.characterId);
  const version=versionById(evidence.versionId);
- if(!character||!version||version.characterId!==character.id)return null;
+ if(!character||!version||!version.canonical||version.characterId!==character.id)return null;
  let ability=null;
  if(evidence.abilityId){
   ability=abilityById(evidence.abilityId);
