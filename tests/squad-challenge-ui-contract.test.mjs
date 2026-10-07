@@ -61,3 +61,9 @@ test('owners can delete only through the explicit unlocked-entry control',()=>{
  assert.match(ui,/confirm\('Delete this challenge entry\?/);
  assert.match(ui,/editingId&&active&&!viewer\?\.submissionLocked/);
 });
+
+
+test('targetless future challenges use neutral community verdict wording',()=>{
+ assert.match(ui,/Does this squad satisfy the challenge\?/);
+ assert.match(ui,/submission\.challenge\.target\?/);
+});
