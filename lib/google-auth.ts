@@ -28,8 +28,14 @@ export function googleConfig(){
  const clientId=String(env.GOOGLE_CLIENT_ID||''),clientSecret=String(env.GOOGLE_CLIENT_SECRET||''),redirectUri=String(env.GOOGLE_REDIRECT_URI||'').trim();
  let redirectValid=false;
  try{
-  const redirect=new URL(redirectUri),base=env.APP_BASE_URL?new URL(String(env.APP_BASE_URL)):null;
-  redirectValid=['http:','https:'].includes(redirect.protocol)&&(!env.ENVIRONMENT||env.ENVIRONMENT!=='production'||redirect.protocol==='https:')&&(!base||redirect.origin===base.origin);
+  const redirect=new URL(redirectUri),baseValue=String(env.APP_BASE_URL||'').trim(),base=baseValue?new URL(baseValue):null,secureRuntime=env.ENVIRONMENT!=='development';
+  redirectValid=
+   ['http:','https:'].includes(redirect.protocol)&&
+   !redirect.username&&!redirect.password&&!redirect.search&&!redirect.hash&&
+   redirect.pathname==='/api/auth/google/callback'&&
+   (!secureRuntime||redirect.protocol==='https:')&&
+   (!secureRuntime||Boolean(base))&&
+   (!base||redirect.origin===base.origin);
  }catch{redirectValid=false}
  return {clientId,clientSecret,redirectUri,configured:Boolean(clientId&&clientSecret&&redirectUri&&redirectValid)};
 }
