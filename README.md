@@ -10,7 +10,7 @@ Anime Clash is a public anime community for evidence-backed character matchups, 
 - Weekly UTC tournament brackets with advancing entrants and a live leaderboard.
 - Version-locked Battle Arena matchups with immutable display snapshots, plus arguments, replies, reactions, reports, legacy source references, and reusable version-scoped Anime/Manga evidence.
 - Five-character, 20-point reusable saved squads and squad-versus-squad community votes.
-- Version-aware Daily Squad Challenges with 100-point server-authoritative budgets, exact-version pricing, historical snapshots, shareable entries, and YES/NO community verdicts.
+- Version-aware Daily Squad Challenges with 100-point server-authoritative budgets, exact-version pricing, historical snapshots, shareable entries, and YES/NO community verdicts. The curated challenge roster includes Madara, Gojo, Itachi, Aizen, Saitama, and Megumi alongside the existing catalog.
 - Episode-filtered clubs with edit/delete, reporting, rules, spoiler-tag corrections, and an owner moderation queue.
 - Notifications for replies, squad challenges, tournament rounds, and newly unlocked club discussions.
 - Taste matching, seasonal recommendations, and personal watchlist states.
@@ -33,7 +33,7 @@ Character → CharacterVersion → Ability / Feat → Evidence
 
 Battle payloads store stable `fighterAVersionId` / `fighterBVersionId` values plus immutable character/version display snapshots so historical debates remain readable after catalog wording changes. Existing string-version battles are normalized as legacy records and are not rewritten.
 
-The curated TypeScript catalog is mirrored by append-only D1 seed data in `character_versions`, `abilities`, and `version_abilities`. New evidence uses `version_id` and optional `ability_id`; pre-version evidence remains readable with a null version.
+The curated TypeScript catalog is mirrored by append-only D1 seed data in `character_versions`, `abilities`, and `version_abilities`, including the squad roster expansion in `0007_expand_squad_roster.sql`. New evidence uses `version_id` and optional `ability_id`; pre-version evidence remains readable with a null version.
 
 Profiles, favourite characters, reusable saved squads, tournament seeds, discovery, and recommendations remain character-level for backward compatibility. Daily Squad Challenge submissions are version-aware snapshots stored separately, so exact combat versions and historical prices are enforced without destructively rewriting legacy saved squads.
 
