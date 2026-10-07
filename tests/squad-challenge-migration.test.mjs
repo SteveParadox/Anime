@@ -11,7 +11,8 @@ const migrations=[
  'drizzle/0004_character_versions.sql',
  'drizzle/0005_auth_accounts.sql',
  'drizzle/0006_daily_squad_challenges.sql',
- 'drizzle/0007_expand_squad_roster.sql'
+ 'drizzle/0007_expand_squad_roster.sql',
+ 'drizzle/0008_correct_roster_abilities.sql'
 ];
 
 function apply(db,file){
