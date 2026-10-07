@@ -12,7 +12,8 @@ const migrations=[
  'drizzle/0005_auth_accounts.sql',
  'drizzle/0006_daily_squad_challenges.sql',
  'drizzle/0007_expand_squad_roster.sql',
- 'drizzle/0008_correct_roster_abilities.sql'
+ 'drizzle/0008_correct_roster_abilities.sql',
+ 'drizzle/0009_guard_squad_challenge_lifecycle.sql'
 ];
 
 function apply(db,file){
@@ -60,7 +61,7 @@ test('daily squad persistence enforces one submission, unique characters, one vo
   for(const file of migrations)apply(db,file);
   seedAccount(db,'usr_a','a@example.com','fan_a');
   seedAccount(db,'usr_b','b@example.com','fan_b');
-  const start=Date.UTC(2026,9,7),end=start+86_400_000;
+  const now=Date.now(),start=now-60_000,end=now+60_000;
   db.prepare("INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ('daily-2026-10-07','defeat_target','Defeat Six Paths Naruto','Test challenge','naruto','naruto-six-paths',100,1,5,'{}',?,?,'active',?)").run(start,end,start);
   const costs=[
    ['daily-2026-10-07','ichigo','ichigo-shikai',28],
@@ -116,7 +117,7 @@ test('cost and name snapshots survive later price changes',()=>{
  try{
   for(const file of migrations)apply(db,file);
   seedAccount(db,'usr_a','a@example.com','fan_a');
-  const start=Date.UTC(2026,9,7),end=start+86_400_000;
+  const now=Date.now(),start=now-60_000,end=now+60_000;
   db.prepare("INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ('daily-2026-10-07','defeat_target','Test','Test','goku','goku-mastered-ultra-instinct',100,1,5,'{}',?,?,'active',?)").run(start,end,start);
   db.exec("INSERT INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES ('daily-2026-10-07','naruto','naruto-six-paths',70)");
   db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('sub','daily-2026-10-07','usr_a','Snapshot Squad','Historical values must remain stable.',70,NULL,0,1,1)");
@@ -136,7 +137,7 @@ test('0007 expands the roster without mutating an existing historical squad subm
  try{
   for(const file of migrations.slice(0,7))apply(db,file);
   seedAccount(db,'usr_history','history@example.com','history_fan');
-  const start=Date.UTC(2026,9,7),end=start+86_400_000;
+  const now=Date.now(),start=now-60_000,end=now+60_000;
   db.prepare("INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ('history-day','defeat_target','Defeat Goku','Historical','goku','goku-mastered-ultra-instinct',100,1,5,'{}',?,?,'closed',?)").run(start,end,start);
   db.exec("INSERT INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES ('history-day','naruto','naruto-six-paths',72)");
   db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('history-sub','history-day','usr_history','History Squad','Historical snapshots must not change.',72,1,0,1,1)");
@@ -169,5 +170,26 @@ test('0008 adds only the corrected roster ability links',()=>{
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM squad_version_costs').get().n,pricesBefore);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='madara-revived' AND ability_id='madara-limbo'").get().n,1);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='megumi-season-1' AND ability_id='megumi-chimera-shadow-garden'").get().n,1);
+ }finally{db.close()}
+});
+
+
+test('0009 rejects submissions, edits, member changes, and votes after challenge closure at the database boundary',()=>{
+ const db=new DatabaseSync(':memory:');
+ try{
+  for(const file of migrations)apply(db,file);
+  seedAccount(db,'usr_guard_a','guard-a@example.com','guard_a');
+  seedAccount(db,'usr_guard_b','guard-b@example.com','guard_b');
+  const now=Date.now(),start=now-120_000,end=now+120_000;
+  db.prepare("INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ('guard-day','defeat_target','Guard test','Guard test','madara','madara-ten-tails-jinchuriki',100,1,5,'{}',?,?,'active',?)").run(start,end,now);
+  db.exec("INSERT INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES ('guard-day','gojo','gojo-shibuya',38)");
+  db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('guard-sub','guard-day','usr_guard_a','Guard Squad','Valid strategy before the challenge closes.',38,NULL,0,1,1)");
+  db.exec("INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot) VALUES ('guard-sub',0,'gojo','gojo-shibuya','Satoru Gojo','Shibuya Incident Gojo',38)");
+  db.prepare("UPDATE daily_squad_challenges SET status='closed' WHERE id='guard-day'").run();
+
+  assert.throws(()=>db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('late-sub','guard-day','usr_guard_b','Late Squad','This submission is intentionally too late.',38,NULL,0,2,2)"),/squad_challenge_inactive/);
+  assert.throws(()=>db.prepare("UPDATE squad_submissions SET name='Late edit' WHERE id='guard-sub'").run(),/squad_challenge_inactive/);
+  assert.throws(()=>db.exec("INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot) VALUES ('guard-sub',1,'itachi','itachi-akatsuki','Itachi Uchiha','Akatsuki Itachi',30)"),/squad_challenge_inactive/);
+  assert.throws(()=>db.exec("INSERT INTO squad_submission_votes (submission_id,user,verdict,created,updated) VALUES ('guard-sub','usr_guard_b','yes',2,2)"),/squad_challenge_inactive/);
  }finally{db.close()}
 });
