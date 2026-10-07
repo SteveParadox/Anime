@@ -3,9 +3,10 @@ import {database} from '@/db/raw';
 import {hashOpaqueToken,pkceChallenge,randomToken,safeRelativeReturnPath} from '@/lib/auth-crypto';
 import {enforceAuthRateLimits} from '@/lib/auth-rate-limit';
 import {googleConfig,setGoogleCookies} from '@/lib/google-auth';
-import {authJson} from '@/lib/auth-request';
+import {authJson,sameOrigin} from '@/lib/auth-request';
 
 export async function GET(request:Request){
+ if(!sameOrigin(request))return authJson({error:'Invalid origin.'},403);
  const config=googleConfig();
  if(!config.configured)return authJson({error:'Google login is not configured.'},503);
  const limit=await enforceAuthRateLimits(request,'google-start',undefined,{ipLimit:30,windowMs:15*60_000});
