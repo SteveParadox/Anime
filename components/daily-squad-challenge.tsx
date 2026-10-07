@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect,useMemo,useState} from 'react';
+import {useCallback,useEffect,useMemo,useState} from 'react';
 import {Check,Copy,Flag,History,Plus,Search,Target,Trophy,X} from 'lucide-react';
 import {Progress} from '@/components/ui/progress';
 import {toast} from 'sonner';
@@ -132,7 +132,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  const overBudget=Boolean(challenge&&totalCost>challenge.budget);
  const active=challenge?.status==='active';
 
- const load=async(id?:string)=>{
+ const load=useCallback(async(id?:string)=>{
   setLoading(true);
   try{
    const suffix=id?`?id=${encodeURIComponent(id)}`:'';
@@ -140,7 +140,8 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    setPayload(next);
    setHistoryId(next.challenge.id);
    setMaxCost(next.challenge.budget);
-   const list=await api<{submissions:Submission[]}>(`/api/squad-submissions?challenge=${encodeURIComponent(next.challenge.id)}&sort=${sort}&limit=30`);
+   const list=await api<{submissions:Submission[]}>(`/api/squad-submissions?challenge=${encodeURIComponent(next.challenge.id)}&sort=top&limit=30`);
+   setSort('top');
    setFeed(list.submissions);
    if(next.viewer.mySubmissionId){
     const mine=await api<{submission:Submission}>(`/api/squad-submissions?id=${encodeURIComponent(next.viewer.mySubmissionId)}`);
@@ -157,9 +158,9 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    }
   }catch(error){toast.error((error as Error).message)}
   finally{setLoading(false)}
- };
+ },[]);
 
- useEffect(()=>{void load();},[]);
+ useEffect(()=>{void load();},[load]);
 
  useEffect(()=>{
   const id=new URLSearchParams(location.search).get('challengeSquad');
@@ -169,12 +170,13 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    .catch(error=>toast.error((error as Error).message));
  },[]);
 
+ const challengeId=challenge?.id||'';
  useEffect(()=>{
-  if(!challenge)return;
-  void api<{submissions:Submission[]}>(`/api/squad-submissions?challenge=${encodeURIComponent(challenge.id)}&sort=${sort}&limit=30`)
+  if(!challengeId)return;
+  void api<{submissions:Submission[]}>(`/api/squad-submissions?challenge=${encodeURIComponent(challengeId)}&sort=${sort}&limit=30`)
    .then(result=>setFeed(result.submissions))
    .catch(error=>toast.error((error as Error).message));
- },[sort,challenge?.id]);
+ },[sort,challengeId]);
 
  const seriesOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.series))].sort():[],[challenge]);
  const roleOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.role))].sort():[],[challenge]);
