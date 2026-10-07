@@ -15,7 +15,11 @@
     "test:evidence": "node --experimental-strip-types --test tests/evidence.test.mjs",
     "test:characters": "node --experimental-strip-types --test tests/characters.test.mjs",
     "test:domain": "pnpm test:evidence && pnpm test:characters && pnpm test:migration",
-    "test:migration": "node --test tests/character-domain-migration.test.mjs"
+    "test:migration": "node --test tests/character-domain-migration.test.mjs",
+    "test:auth:security": "node --experimental-strip-types --test tests/auth-security.test.mjs",
+    "test:auth:migration": "node --test tests/auth-migration.test.mjs",
+    "test:auth": "pnpm test:auth:security && pnpm test:auth:migration",
+    "test:all": "pnpm test:domain && pnpm test:auth"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
