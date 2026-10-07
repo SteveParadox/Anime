@@ -174,6 +174,11 @@ export async function getCurrentUser():Promise<CurrentUser|null>{
  return null;
 }
 
+export async function hasHostedPlatformIdentity(){
+ const h=await headers();
+ return Boolean(h.get('oai-authenticated-user-id')&&h.get('oai-authenticated-user-email'));
+}
+
 export async function requireCurrentUser(returnTo='/'):Promise<CurrentUser>{
  const user=await getCurrentUser();
  if(user)return user;
