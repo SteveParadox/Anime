@@ -22,3 +22,12 @@ export function validateSquadBudget(members:PricedSquadMember[],budget:number){
  if(totalCost>budget)throw new SquadPolicyError(`Squad costs ${totalCost} points but this challenge budget is ${budget}.`);
  return totalCost;
 }
+
+
+export type SquadLifecycleStatus='scheduled'|'active'|'closed';
+
+export function resolveSquadChallengeStatus(status:SquadLifecycleStatus,startsAt:number,endsAt:number,now=Date.now()):SquadLifecycleStatus{
+ if(status==='closed'||now>=endsAt)return 'closed';
+ if(now<startsAt)return 'scheduled';
+ return 'active';
+}
