@@ -31,3 +31,12 @@ export function resolveSquadChallengeStatus(status:SquadLifecycleStatus,startsAt
  if(now<startsAt)return 'scheduled';
  return 'active';
 }
+
+
+export function dailyChallengeRotationIndex(day:string,templateCount:number){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!Number.isInteger(templateCount)||templateCount<1)throw new SquadPolicyError('Daily challenge rotation input is invalid.');
+ const timestamp=Date.parse(`${day}T00:00:00.000Z`);
+ if(!Number.isFinite(timestamp))throw new SquadPolicyError('Daily challenge date is invalid.');
+ const epochDay=Math.floor(timestamp/86_400_000);
+ return ((epochDay%templateCount)+templateCount)%templateCount;
+}
