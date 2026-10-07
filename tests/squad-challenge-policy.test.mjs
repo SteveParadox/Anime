@@ -67,4 +67,5 @@ test('daily challenge rotation advances by UTC day and selects Madara on 2026-10
  assert.equal(dailyChallengeRotationIndex('2026-10-09',4),3);
  assert.equal(dailyChallengeRotationIndex('2026-10-10',4),0);
  assert.throws(()=>dailyChallengeRotationIndex('not-a-date',4),/rotation input is invalid/);
+ assert.throws(()=>dailyChallengeRotationIndex('2026-02-31',4),/date is invalid/);
 });
