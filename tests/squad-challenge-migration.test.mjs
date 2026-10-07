@@ -88,6 +88,16 @@ test('daily squad persistence enforces one submission, unique characters, one vo
   insertMember.run('sub-b',0,'goku','goku-saiyan-saga','Goku','Saiyan Saga Goku',30);
   assert.throws(()=>insertMember.run('sub-b',1,'goku','goku-namek-saga','Goku','Namek Saga Goku',45));
 
+  assert.throws(
+   ()=>db.prepare("INSERT INTO squad_submission_votes (submission_id,user,verdict,created,updated) VALUES ('sub-a','usr_a','yes',4,4)").run(),
+   /squad_submission_vote_forbidden/
+  );
+  db.prepare("UPDATE squad_submissions SET removed=1 WHERE id='sub-b'").run();
+  assert.throws(
+   ()=>db.prepare("INSERT INTO squad_submission_votes (submission_id,user,verdict,created,updated) VALUES ('sub-b','usr_a','yes',4,4)").run(),
+   /squad_submission_vote_forbidden/
+  );
+
   db.prepare("INSERT INTO squad_submission_votes (submission_id,user,verdict,created,updated) VALUES ('sub-a','usr_b','yes',5,5)").run();
   db.prepare("UPDATE squad_submissions SET locked_at=5 WHERE id='sub-a'").run();
   assert.throws(()=>db.prepare("UPDATE squad_submissions SET name='Changed after vote' WHERE id='sub-a'").run(),/squad_submission_locked/);
