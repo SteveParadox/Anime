@@ -113,3 +113,16 @@ test('profile favorite-character writes reject IDs outside the canonical fighter
  const community=readFileSync('app/api/community/route.ts','utf8');
  assert.match(community,/favoriteCharacters\.some\(characterId=>!fighters\.some\(f=>f\.id===characterId\)\)/);
 });
+
+
+test('submission reads treat vote existence as authoritative lock state',()=>{
+ assert.match(submissions,/editable:owned&&challengeState==='active'&&!row\.lockedAt&&row\.totalVotes===0/);
+ const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
+ assert.match(challengeApi,/submissionLocked:Boolean\(mySubmission&&\(mySubmission\.lockedAt\|\|Number\(mySubmission\.votes\)>0\)\)/);
+});
+
+test('concurrent first submissions fail as conflict rather than generic server errors',()=>{
+ assert.match(submissions,/UNIQUE constraint failed/);
+ assert.match(submissions,/A challenge submission was created concurrently\. Reload before editing it\./);
+ assert.match(submissions,/,409\)/);
+});
