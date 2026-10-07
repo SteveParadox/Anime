@@ -6,9 +6,17 @@ const page=readFileSync('app/page.tsx','utf8');
 const ui=readFileSync('components/daily-squad-challenge.tsx','utf8');
 
 test('direct challenge squad links mount the squad view',()=>{
- assert.match(page,/q\.get\('challengeSquad'\)\)setViewState\('squads'\)/);
+ assert.match(page,/challengeSquad=q\.get\('challengeSquad'\)/);
+ assert.match(page,/if\(challengeSquad\)setViewState\('squads'\)/);
+ assert.match(page,/if\(sharedProfile&&!challengeSquad\)/);
  assert.match(ui,/new URLSearchParams\(location\.search\)\.get\('challengeSquad'\)/);
  assert.match(ui,/await load\(result\.submission\.challengeId\)/);
+});
+
+test('share URLs are canonical and do not inherit unrelated route parameters',()=>{
+ assert.match(ui,/new URL\('\/',location\.origin\)/);
+ assert.match(ui,/url\.searchParams\.set\('view','squads'\)/);
+ assert.match(ui,/url\.searchParams\.set\('challengeSquad',submissionId\)/);
 });
 
 test('shared squad cards include challenge, target version, members, strategy, and vote block',()=>{
