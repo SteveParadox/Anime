@@ -232,6 +232,21 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
   finally{setBusy(false)}
  };
 
+ const deleteEntry=async()=>{
+  if(!editingId||!challenge||viewer?.submissionLocked)return;
+  setBusy(true);
+  try{
+   await api('/api/squad-submissions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',submissionId:editingId})});
+   toast.success('Challenge squad deleted.');
+   setSelected([]);
+   setName('');
+   setStrategy('');
+   setEditingId(null);
+   await load(challenge.id);
+  }catch(error){toast.error((error as Error).message)}
+  finally{setBusy(false)}
+ };
+
  const vote=async(submission:Submission,verdict:'yes'|'no')=>{
   if(!authenticated){location.href='/auth?return_to='+encodeURIComponent('/?view=squads');return}
   setBusy(true);
@@ -344,6 +359,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     <div className="submission-preview"><small>SUBMISSION PREVIEW</small>{selected.map(item=><span key={item.versionId}>{item.characterName}<b>{item.cost}</b></span>)}<span className="submission-total">TOTAL<b>{totalCost} / {challenge.budget}</b></span>{strategy.trim()&&<p>{strategy.trim()}</p>}</div>
     {viewer?.submissionRemoved?<p className="locked-entry">This challenge entry was removed by moderation and cannot be resubmitted.</p>:viewer?.submissionLocked&&<p className="locked-entry">This entry is locked because community voting has started.</p>}
     <button className="primary full" disabled={busy||!submitReady} onClick={submit}>{editingId?'Update challenge squad':'Submit squad'}</button>
+    {editingId&&active&&!viewer?.submissionLocked&&<button className="secondary full" disabled={busy} onClick={deleteEntry}>Delete challenge entry</button>}
     {!authenticated&&<small>Sign in to submit. Browsing remains public.</small>}
    </aside>
   </div>:<div className="closed-challenge-note panel">This challenge is closed. Historical squads and community results remain readable.</div>}
