@@ -245,7 +245,7 @@ export async function destroyAllSessions(userIdValue:string){
 }
 
 export function canContribute(user:CurrentUser|null|undefined){
- return Boolean(user&&user.profileCompleted&&(user.provider==='chatgpt'||user.provider==='google'||user.emailVerified));
+ return Boolean(user&&user.profileCompleted&&user.emailVerified);
 }
 
 export function isAdminUser(user:CurrentUser|null|undefined){
@@ -257,5 +257,5 @@ export function isAdminUser(user:CurrentUser|null|undefined){
 export async function publicAuthState(){
  const user=await getCurrentUser();
  if(!user)return {authenticated:false,user:null};
- return {authenticated:true,user:{id:user.userId,email:user.email,emailVerified:user.emailVerified,username:user.username,displayName:user.displayName,avatarUrl:user.avatarUrl,profileCompleted:user.profileCompleted,requiresEmailVerification:user.provider==='email'&&!user.emailVerified}};
+ return {authenticated:true,user:{id:user.userId,email:user.email,emailVerified:user.emailVerified,username:user.username,displayName:user.displayName,avatarUrl:user.avatarUrl,profileCompleted:user.profileCompleted,requiresEmailVerification:!user.emailVerified}};
 }
