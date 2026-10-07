@@ -125,6 +125,11 @@ SELECT lower(hex(randomblob(16))),user_id,'chatgpt',legacy_user_id,NULL,NULL,179
 --> statement-breakpoint
 UPDATE profiles SET user=(SELECT user_id FROM _auth_legacy_user_map WHERE legacy_user_id=profiles.user) WHERE user IN (SELECT legacy_user_id FROM _auth_legacy_user_map);
 --> statement-breakpoint
+INSERT INTO profiles (user,handle,display_name,avatar_url,bio,favorite_anime,favorite_characters,created,updated)
+SELECT u.id,'animefan_' || substr(replace(u.id,'usr_',''),1,15),'Anime Fan',NULL,'','[]','[]',u.created,u.updated
+FROM users u LEFT JOIN profiles p ON p.user=u.id
+WHERE p.user IS NULL;
+--> statement-breakpoint
 UPDATE battles SET owner=(SELECT user_id FROM _auth_legacy_user_map WHERE legacy_user_id=battles.owner) WHERE owner IN (SELECT legacy_user_id FROM _auth_legacy_user_map);
 --> statement-breakpoint
 UPDATE votes SET user=(SELECT user_id FROM _auth_legacy_user_map WHERE legacy_user_id=votes.user) WHERE user IN (SELECT legacy_user_id FROM _auth_legacy_user_map);
