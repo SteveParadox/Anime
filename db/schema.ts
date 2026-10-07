@@ -77,6 +77,7 @@ export const squadSubmissionMembers=sqliteTable('squad_submission_members',{
 },t=>[
  primaryKey({columns:[t.submissionId,t.position]}),
  uniqueIndex('idx_squad_submission_members_version').on(t.submissionId,t.versionId),
+ uniqueIndex('idx_squad_submission_members_character_once').on(t.submissionId,t.characterId),
  index('idx_squad_submission_members_submission').on(t.submissionId),
  index('idx_squad_submission_members_character').on(t.characterId)
 ]);
