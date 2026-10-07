@@ -61,6 +61,7 @@ export async function GET(request:Request){
   const collision=await db.prepare('SELECT id FROM users WHERE email_normalized=? AND id<>?').bind(email,resolvedUserId).first();
   if(!collision)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(email,email,now,resolvedUserId).run();
  }else if(existing?.emailNormalized===email&&!Boolean(existing.emailVerified)){
+  await revokeUnverifiedEmailCredentialAccess(db,resolvedUserId);
   await db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,resolvedUserId).run();
  }
  if(picture)await db.prepare(`UPDATE profiles SET avatar_url=CASE WHEN avatar_url IS NULL OR avatar_url='' THEN ? ELSE avatar_url END,updated=? WHERE user=?`).bind(picture,now,resolvedUserId).run();
