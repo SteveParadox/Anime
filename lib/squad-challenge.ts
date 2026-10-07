@@ -261,9 +261,3 @@ export async function resolveSubmissionMembers(db:D1Database,challenge:SquadChal
  const totalCost=validateSquadBudget(snapshots,challenge.budget);
  return {snapshots,totalCost};
 }
-
-export function wilsonLowerBound(yes:number,total:number,z=1.96){
- if(total<=0)return 0;
- const p=yes/total,z2=z*z;
- return (p+z2/(2*total)-z*Math.sqrt((p*(1-p)+z2/(4*total))/total))/(1+z2/total);
-}
