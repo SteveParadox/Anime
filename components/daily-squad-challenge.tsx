@@ -77,7 +77,7 @@ type Submission={
 type ChallengeResponse={
  challenge:ChallengeView;
  history:HistoryItem[];
- viewer:{authenticated:boolean;mySubmissionId:string|null;submissionLocked:boolean};
+ viewer:{authenticated:boolean;mySubmissionId:string|null;submissionLocked:boolean;submissionRemoved:boolean};
 };
 
 function fighterKey(fighter:SquadChallengeFighter){return `${fighter.characterId}:${fighter.versionId}`}
@@ -342,7 +342,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     <label>Squad name<input value={name} maxLength={60} onChange={event=>setName(event.target.value)} placeholder="The Counter Squad" disabled={Boolean(viewer?.submissionLocked)}/><small>{name.trim().length}/60</small></label>
     <label>Explain your strategy<textarea value={strategy} minLength={10} maxLength={1500} onChange={event=>setStrategy(event.target.value)} placeholder="Explain how the exact selected versions work together…" disabled={Boolean(viewer?.submissionLocked)}/><small>{strategy.length}/1500</small></label>
     <div className="submission-preview"><small>SUBMISSION PREVIEW</small>{selected.map(item=><span key={item.versionId}>{item.characterName}<b>{item.cost}</b></span>)}<span className="submission-total">TOTAL<b>{totalCost} / {challenge.budget}</b></span>{strategy.trim()&&<p>{strategy.trim()}</p>}</div>
-    {viewer?.submissionLocked&&<p className="locked-entry">This entry is locked because community voting has started.</p>}
+    {viewer?.submissionRemoved?<p className="locked-entry">This challenge entry was removed by moderation and cannot be resubmitted.</p>:viewer?.submissionLocked&&<p className="locked-entry">This entry is locked because community voting has started.</p>}
     <button className="primary full" disabled={busy||!submitReady} onClick={submit}>{editingId?'Update challenge squad':'Submit squad'}</button>
     {!authenticated&&<small>Sign in to submit. Browsing remains public.</small>}
    </aside>
