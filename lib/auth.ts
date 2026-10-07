@@ -43,7 +43,7 @@ function localHost(host:string|null){
 
 export async function hostedPlatformHeadersTrusted(){
  const h=await headers();
- return env.AUTH_TRUST_HOSTED_IDENTITY_HEADERS==='true'||env.ENVIRONMENT==='development'||localHost(h.get('host'));
+ return env.AUTH_TRUST_HOSTED_IDENTITY_HEADERS==='true'||(env.ENVIRONMENT==='development'&&localHost(h.get('host')));
 }
 
 async function platformIdentity():Promise<PlatformIdentity|null>{
