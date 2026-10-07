@@ -88,10 +88,10 @@ type SquadVersionCostDbRow={
 type DailyTemplate={
  key:string;
  type:SquadChallengeType;
- title:(targetCharacterName:string)=>string;
+ title:string|((targetCharacterName:string)=>string);
  description:string;
- targetCharacterId:string;
- targetVersionId:string;
+ targetCharacterId?:string;
+ targetVersionId?:string;
  budget:number;
  minMembers:number;
  maxMembers:number;
@@ -217,17 +217,21 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
  const existing=await findChallenge(db,id);
  if(existing)return existing;
 
- const template=templateForDay(day),targetCharacter=fighters.find(f=>f.id===template.targetCharacterId),targetVersion=versionById(template.targetVersionId);
- if(!targetCharacter||!targetVersion||targetVersion.characterId!==targetCharacter.id)throw new Error('Daily squad challenge target is not present in the canonical character-version catalog.');
+ const template=templateForDay(day);
+ if(Boolean(template.targetCharacterId)!==Boolean(template.targetVersionId))throw new Error('Squad challenge targets must specify both character and version IDs.');
+ const targetCharacter=template.targetCharacterId?fighters.find(f=>f.id===template.targetCharacterId):undefined;
+ const targetVersion=template.targetVersionId?versionById(template.targetVersionId):undefined;
+ if(template.targetCharacterId&&(!targetCharacter||!targetVersion||!targetVersion.canonical||targetVersion.characterId!==targetCharacter.id))throw new Error('Daily squad challenge target is not present in the canonical character-version catalog.');
 
  const costs=(await db.prepare('SELECT version_id AS versionId,character_id AS characterId,cost FROM squad_version_costs ORDER BY cost ASC,version_id ASC').all<SquadVersionCostDbRow>()).results
-  .filter(row=>row.characterId!==template.targetCharacterId&&versionById(row.versionId)?.characterId===row.characterId&&fighters.some(f=>f.id===row.characterId));
+  .filter(row=>(!targetCharacter||row.characterId!==targetCharacter.id)&&Boolean(versionById(row.versionId)?.canonical)&&versionById(row.versionId)?.characterId===row.characterId&&fighters.some(f=>f.id===row.characterId));
  if(!costs.length)throw new Error('Squad version pricing has not been initialized.');
 
+ const title=typeof template.title==='function'?template.title(targetCharacter?.name||'the target'):template.title;
  const {startsAt,endsAt}=utcDayBounds(day),created=now;
  const statements:D1PreparedStatement[]=[
   db.prepare(`INSERT OR IGNORE INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-   .bind(id,template.type,template.title(targetCharacter.name),template.description,template.targetCharacterId,template.targetVersionId,template.budget,template.minMembers,template.maxMembers,JSON.stringify(template.rules),startsAt,endsAt,'active',created)
+   .bind(id,template.type,title,template.description,targetCharacter?.id||null,targetVersion?.id||null,template.budget,template.minMembers,template.maxMembers,JSON.stringify(template.rules),startsAt,endsAt,'active',created)
  ];
  for(const row of costs){
   statements.push(db.prepare('INSERT OR IGNORE INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES (?,?,?,?)').bind(id,row.characterId,row.versionId,Number(row.cost)));
