@@ -41,6 +41,7 @@ export async function POST(request:Request){
   if(error instanceof z.ZodError)return authJson({error:'Invalid vote.',issues:error.issues},400);
   const status=errorStatus(error),message=error instanceof Error?error.message:String(error);
   if(message.includes('squad_submission_vote_forbidden'))return authJson({error:'This squad no longer accepts your vote.'},409);
+  if(message.includes('squad_challenge_inactive'))return authJson({error:'Voting for this challenge is closed.'},409);
   if(error instanceof Error&&status>=400&&status<500)return authJson({error:error.message},status);
   console.error('Squad challenge vote failed',error);
   return authJson({error:'Could not save vote.'},503);
