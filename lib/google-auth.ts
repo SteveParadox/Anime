@@ -29,7 +29,7 @@ export function googleConfig(){
 }
 
 export async function setGoogleCookies(state:string,verifier:string,nonce:string){
- const jar=await cookies(),secure=env.ENVIRONMENT==='production',expires=new Date(Date.now()+10*60_000);
+ const jar=await cookies(),secure=env.ENVIRONMENT!=='development',expires=new Date(Date.now()+10*60_000);
  const options={httpOnly:true,secure,sameSite:'lax' as const,path:'/',expires};
  jar.set(GOOGLE_STATE_COOKIE,state,options);jar.set(GOOGLE_VERIFIER_COOKIE,verifier,options);jar.set(GOOGLE_NONCE_COOKIE,nonce,options);
 }
