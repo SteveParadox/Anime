@@ -36,7 +36,18 @@ function decodeHeaderName(value:string|null,encoding:string|null){
  try{return decodeURIComponent(value)}catch{return null}
 }
 
+function localHost(host:string|null){
+ const value=(host||'').split(':')[0].replace(/^\[|\]$/g,'').toLowerCase();
+ return value==='localhost'||value==='127.0.0.1'||value==='::1';
+}
+
+export async function hostedPlatformHeadersTrusted(){
+ const h=await headers();
+ return env.AUTH_TRUST_HOSTED_IDENTITY_HEADERS==='true'||env.ENVIRONMENT==='development'||localHost(h.get('host'));
+}
+
 async function platformIdentity():Promise<PlatformIdentity|null>{
+ if(!await hostedPlatformHeadersTrusted())return null;
  const h=await headers();
  const providerUserId=h.get('oai-authenticated-user-id'),email=h.get('oai-authenticated-user-email');
  if(!providerUserId||!email)return null;
@@ -215,6 +226,7 @@ export async function getCurrentUser():Promise<CurrentUser|null>{
 }
 
 export async function hasHostedPlatformIdentity(){
+ if(!await hostedPlatformHeadersTrusted())return false;
  const h=await headers();
  return Boolean(h.get('oai-authenticated-user-id')&&h.get('oai-authenticated-user-email'));
 }
