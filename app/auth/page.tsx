@@ -12,7 +12,7 @@ export default function AuthPage(){
   const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d:any=await r.json();
   if(!r.ok)throw Error(d.error||'Authentication failed.');
   if(mode==='register'){
-   setNotice(d.verificationEmailSent?'Account created. Check your email for the verification link.':d.emailDeliveryConfigured===false?'Account created. Email delivery is not configured yet; use the configured development mail link or deployment email provider.':'Account created. Check your email for verification.');
+   setNotice(d.verificationEmailSent?'Account created. Check your email for the verification link.':'Account created. Verification email delivery was not confirmed; you can resend it after sign-in.');
    setTimeout(()=>{location.href=returnTo},900);
   }else location.href=returnTo;
  }catch(e){setError((e as Error).message)}finally{setBusy(false)}};
