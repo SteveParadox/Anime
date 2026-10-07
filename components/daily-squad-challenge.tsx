@@ -389,9 +389,9 @@ function SubmissionCard({submission,authenticated,busy,vote,share,report}:{submi
 }
 
 function VoteBlock({submission,authenticated,busy,vote}:{submission:Submission;authenticated:boolean;busy:boolean;vote:(submission:Submission,verdict:'yes'|'no')=>Promise<void>}){
- const target=submission.challenge.target?.characterName||'the challenge target';
+ const verdictPrompt=submission.challenge.target?`Can this squad defeat ${submission.challenge.target.characterName}?`:'Does this squad satisfy the challenge?';
  return <div className="community-squad-vote">
-  <strong>Can this squad defeat {target}?</strong>
+  <strong>{verdictPrompt}</strong>
   {!submission.owned&&submission.challenge.status==='active'&&<div className="vote-buttons"><button disabled={busy} className={submission.myVote==='yes'?'selected':''} onClick={()=>void vote(submission,'yes')}>YES</button><button disabled={busy} className={submission.myVote==='no'?'selected':''} onClick={()=>void vote(submission,'no')}>NO</button></div>}
   {submission.owned&&submission.challenge.status==='active'&&<small>You cannot vote on your own entry.</small>}
   {submission.votes.hidden?<p className="hidden-results">{submission.votes.total} vote{submission.votes.total===1?'':'s'} · results unlock after you vote.</p>:<div className="vote-results"><span>YES <b>{submission.votes.yesPercent}%</b></span><Progress value={submission.votes.yesPercent}/><span>NO <b>{submission.votes.noPercent}%</b></span><small>{submission.votes.total} total vote{submission.votes.total===1?'':'s'}</small></div>}
