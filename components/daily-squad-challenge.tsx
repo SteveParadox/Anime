@@ -101,6 +101,12 @@ async function api<T>(url:string,init?:RequestInit):Promise<T>{
  return data;
 }
 
+export function DailySquadChallengeTeaser({open}:{open:()=>void}){
+ const [challenge,setChallenge]=useState<ChallengeView|null>(null);
+ useEffect(()=>{void api<ChallengeResponse>('/api/squad-challenges').then(result=>setChallenge(result.challenge)).catch(()=>{})},[]);
+ return <section className="challenge-card"><div className="eyebrow"><Trophy size={16}/> DAILY SQUAD CHALLENGE</div><div className="challenge-mark"><Target size={42}/></div><h2>{challenge?.title||'Build under a strict budget'}</h2><p>{challenge?.target?.versionName||'Exact character versions. Server-authoritative costs.'}</p><div className="challenge-stats"><div><strong>{challenge?.budget||100}</strong><small>POINT BUDGET</small></div><div><strong>{challenge?.maxMembers||5}</strong><small>FIGHTERS MAX</small></div></div><button className="primary full" onClick={open}>Build your squad</button></section>;
+}
+
 export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  const [payload,setPayload]=useState<ChallengeResponse|null>(null);
  const [historyId,setHistoryId]=useState('');
