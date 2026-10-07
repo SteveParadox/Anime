@@ -186,11 +186,11 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
 
  const {startsAt,endsAt}=utcDayBounds(day),created=now;
  const statements:D1PreparedStatement[]=[
-  db.prepare(`INSERT INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+  db.prepare(`INSERT OR IGNORE INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
    .bind(id,template.type,template.title(targetVersion.name),template.description,template.targetCharacterId,template.targetVersionId,template.budget,template.minMembers,template.maxMembers,JSON.stringify(template.rules),startsAt,endsAt,'active',created)
  ];
  for(const row of costs){
-  statements.push(db.prepare('INSERT INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES (?,?,?,?)').bind(id,row.characterId,row.versionId,Number(row.cost)));
+  statements.push(db.prepare('INSERT OR IGNORE INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES (?,?,?,?)').bind(id,row.characterId,row.versionId,Number(row.cost)));
  }
  await db.batch(statements);
  return (await findChallenge(db,id))!;
