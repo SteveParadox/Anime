@@ -64,6 +64,66 @@ async function readCurrentUser(userIdValue:string,provider:AuthProvider,provider
  };
 }
 
+async function mergeTrustedDuplicateIntoLegacy(db:D1Database,sourceUserId:string,targetUserId:string,email:string){
+ if(sourceUserId===targetUserId)return targetUserId;
+ const [sourceAccount,targetProfile,sourceProfile]=await Promise.all([
+  db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(sourceUserId).first<any>(),
+  db.prepare('SELECT user,avatar_url AS avatarUrl FROM profiles WHERE user=?').bind(targetUserId).first<any>(),
+  db.prepare('SELECT user,avatar_url AS avatarUrl FROM profiles WHERE user=?').bind(sourceUserId).first<any>()
+ ]);
+ if(!sourceAccount)throw new Error('Duplicate account source is missing.');
+
+ const statements:D1PreparedStatement[]=[
+  // Remove composite-key collisions before transferring source ownership.
+  db.prepare('DELETE FROM votes WHERE user=? AND EXISTS (SELECT 1 FROM votes t WHERE t.user=? AND t.battle=votes.battle)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM progress WHERE user=? AND EXISTS (SELECT 1 FROM progress t WHERE t.user=? AND t.club=progress.club)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM reactions WHERE user=? AND EXISTS (SELECT 1 FROM reactions t WHERE t.user=? AND t.subject_type=reactions.subject_type AND t.subject_id=reactions.subject_id)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM challenge_votes WHERE user=? AND EXISTS (SELECT 1 FROM challenge_votes t WHERE t.user=? AND t.challenge=challenge_votes.challenge)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM watchlist WHERE user=? AND EXISTS (SELECT 1 FROM watchlist t WHERE t.user=? AND t.anime=watchlist.anime)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM tournament_votes WHERE user=? AND EXISTS (SELECT 1 FROM tournament_votes t WHERE t.user=? AND t.week=tournament_votes.week AND t.match=tournament_votes.match)').bind(sourceUserId,targetUserId),
+  db.prepare('DELETE FROM argument_evidence_links WHERE argument_user=? AND EXISTS (SELECT 1 FROM argument_evidence_links t WHERE t.argument_user=? AND t.battle=argument_evidence_links.battle AND t.evidence_id=argument_evidence_links.evidence_id)').bind(sourceUserId,targetUserId),
+
+  db.prepare('UPDATE battles SET owner=? WHERE owner=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE votes SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE argument_evidence SET argument_user=? WHERE argument_user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE argument_evidence SET contributor=? WHERE contributor=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE progress SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE posts SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE squads SET owner=? WHERE owner=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE comments SET argument_user=? WHERE argument_user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE comments SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE reactions SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE squad_challenges SET challenger=? WHERE challenger=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE challenge_votes SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE notifications SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE reports SET reporter=? WHERE reporter=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE watchlist SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE tournament_votes SET user=? WHERE user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE evidence_records SET submitted_by=? WHERE submitted_by=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE argument_evidence_links SET argument_user=? WHERE argument_user=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE argument_evidence_links SET linked_by=? WHERE linked_by=?').bind(targetUserId,sourceUserId),
+
+  db.prepare('UPDATE auth_identities SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE auth_sessions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=?').bind(sourceUserId),
+  db.prepare('UPDATE password_reset_tokens SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+
+  // Release the normalized email before assigning it to the legacy account.
+  db.prepare('UPDATE users SET email=NULL,email_normalized=NULL,updated=? WHERE id=?').bind(Date.now(),sourceUserId),
+  db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,profile_completed=CASE WHEN profile_completed=1 OR ?=1 THEN 1 ELSE 0 END,updated=? WHERE id=?').bind(email,email,sourceAccount.profileCompleted?1:0,Date.now(),targetUserId)
+ ];
+
+ if(targetProfile&&sourceProfile){
+  if(!targetProfile.avatarUrl&&sourceProfile.avatarUrl)statements.push(db.prepare('UPDATE profiles SET avatar_url=?,updated=? WHERE user=?').bind(sourceProfile.avatarUrl,Date.now(),targetUserId));
+  statements.push(db.prepare('DELETE FROM profiles WHERE user=?').bind(sourceUserId));
+ }else if(!targetProfile&&sourceProfile){
+  statements.push(db.prepare('UPDATE profiles SET user=?,updated=? WHERE user=?').bind(targetUserId,Date.now(),sourceUserId));
+ }
+ statements.push(db.prepare('DELETE FROM users WHERE id=?').bind(sourceUserId));
+ await db.batch(statements);
+ return targetUserId;
+}
+
 async function fromSession():Promise<CurrentUser|null>{
  const jar=await cookies(),token=jar.get(SESSION_COOKIE)?.value;
  if(!token)return null;
@@ -82,7 +142,8 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
   const account=await db.prepare('SELECT email_normalized AS emailNormalized FROM users WHERE id=?').bind(linked.userId).first<any>();
   if(account&&!account.emailNormalized){
    const owner=await db.prepare('SELECT id FROM users WHERE email_normalized=?').bind(identity.email).first<any>();
-   if(!owner)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(identity.email,identity.email,now,linked.userId).run();
+   if(owner&&owner.id!==linked.userId)await mergeTrustedDuplicateIntoLegacy(db,owner.id,linked.userId,identity.email);
+   else if(!owner)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(identity.email,identity.email,now,linked.userId).run();
   }
   const current=await readCurrentUser(linked.userId,'chatgpt',identity.providerUserId);
   if(current)return current;
