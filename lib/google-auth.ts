@@ -1,9 +1,10 @@
 import {env} from 'cloudflare:workers';
 import {cookies} from 'next/headers';
 
-export const GOOGLE_STATE_COOKIE='anime_google_state';
-export const GOOGLE_VERIFIER_COOKIE='anime_google_verifier';
-export const GOOGLE_NONCE_COOKIE='anime_google_nonce';
+const HOST_COOKIE_PREFIX=env.ENVIRONMENT==='development'?'':'__Host-';
+export const GOOGLE_STATE_COOKIE=HOST_COOKIE_PREFIX+'anime_google_state';
+export const GOOGLE_VERIFIER_COOKIE=HOST_COOKIE_PREFIX+'anime_google_verifier';
+export const GOOGLE_NONCE_COOKIE=HOST_COOKIE_PREFIX+'anime_google_nonce';
 
 type GoogleJwk=JsonWebKey&{kid?:string};
 
