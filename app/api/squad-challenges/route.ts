@@ -1,7 +1,21 @@
 import {database} from '@/db/raw';
 import {getCurrentUser} from '@/lib/auth';
 import {authJson} from '@/lib/auth-request';
-import {challengeFighters,effectiveChallengeStatus,ensureDailyChallenge,findChallenge,publicTarget} from '@/lib/squad-challenge';
+import {challengeFighters,effectiveChallengeStatus,ensureDailyChallenge,findChallenge,publicTarget,type SquadChallengeStatus} from '@/lib/squad-challenge';
+
+type ChallengeHistoryDbRow={
+ id:string;
+ title:string;
+ targetCharacterId:string|null;
+ targetVersionId:string|null;
+ budget:number;
+ maxMembers:number;
+ startsAt:number;
+ endsAt:number;
+ status:SquadChallengeStatus;
+};
+
+type MySubmissionDbRow={id:string;lockedAt:number|null};
 
 function publicChallenge(challenge:Awaited<ReturnType<typeof findChallenge>>,now:number){
  if(!challenge)return null;
@@ -32,38 +46,20 @@ export async function GET(request:Request){
 
   const [fighters,historyRows,mySubmission]=await Promise.all([
    challengeFighters(db,challenge.id),
-   db.prepare(`SELECT id,type,title,description,target_character_id AS targetCharacterId,target_version_id AS targetVersionId,budget,min_members AS minMembers,max_members AS maxMembers,rules_json AS rulesJson,starts_at AS startsAt,ends_at AS endsAt,status,created FROM daily_squad_challenges ORDER BY starts_at DESC LIMIT 30`).all<any>(),
-   user?db.prepare('SELECT id,locked_at AS lockedAt FROM squad_submissions WHERE challenge_id=? AND owner=? AND removed=0 LIMIT 1').bind(challenge.id,user.userId).first<any>():null
+   db.prepare(`SELECT id,type,title,description,target_character_id AS targetCharacterId,target_version_id AS targetVersionId,budget,min_members AS minMembers,max_members AS maxMembers,rules_json AS rulesJson,starts_at AS startsAt,ends_at AS endsAt,status,created FROM daily_squad_challenges ORDER BY starts_at DESC LIMIT 30`).all<ChallengeHistoryDbRow>(),
+   user?db.prepare('SELECT id,locked_at AS lockedAt FROM squad_submissions WHERE challenge_id=? AND owner=? AND removed=0 LIMIT 1').bind(challenge.id,user.userId).first<MySubmissionDbRow>():null
   ]);
 
-  const history=historyRows.results.map(row=>{
-   const item={
-    id:String(row.id),
-    type:row.type,
-    title:String(row.title),
-    description:String(row.description||''),
-    targetCharacterId:row.targetCharacterId||null,
-    targetVersionId:row.targetVersionId||null,
-    budget:Number(row.budget),
-    minMembers:Number(row.minMembers||1),
-    maxMembers:Number(row.maxMembers),
-    rules:{},
-    startsAt:Number(row.startsAt),
-    endsAt:Number(row.endsAt),
-    status:row.status,
-    created:Number(row.created)
-   } as any;
-   return {
-    id:item.id,
-    title:item.title,
-    target:publicTarget(item.targetCharacterId,item.targetVersionId),
-    budget:item.budget,
-    maxMembers:item.maxMembers,
-    startsAt:item.startsAt,
-    endsAt:item.endsAt,
-    status:effectiveChallengeStatus(item,now)
-   };
-  });
+  const history=historyRows.results.map(row=>({
+   id:row.id,
+   title:row.title,
+   target:publicTarget(row.targetCharacterId,row.targetVersionId),
+   budget:Number(row.budget),
+   maxMembers:Number(row.maxMembers),
+   startsAt:Number(row.startsAt),
+   endsAt:Number(row.endsAt),
+   status:effectiveChallengeStatus({status:row.status,startsAt:Number(row.startsAt),endsAt:Number(row.endsAt)},now)
+  }));
 
   return authJson({
    challenge:{...publicChallenge(challenge,now),fighters},
