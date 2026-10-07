@@ -61,3 +61,17 @@ test('public submission responses do not expose account email or provider subjec
  assert.doesNotMatch(publicBlock,/providerUserId/);
  assert.match(publicBlock,/owner:\{username:row\.handle,displayName:row\.displayName,avatarUrl:row\.avatarUrl\}/);
 });
+
+
+test('moderation removal locks an entry so the owner cannot restore it',()=>{
+ const community=readFileSync('app/api/community/route.ts','utf8');
+ assert.match(community,/subject_type==='squad_submission'/);
+ assert.match(community,/removed=1,locked_at=COALESCE\(locked_at,\?\),updated=\?/);
+});
+
+test('account reconciliation preserves squad ownership without creating self votes',()=>{
+ const auth=readFileSync('lib/auth.ts','utf8');
+ assert.match(auth,/UPDATE squad_submissions SET owner=\? WHERE owner=\?/);
+ assert.match(auth,/UPDATE squad_submission_votes SET user=\? WHERE user=\?/);
+ assert.match(auth,/DELETE FROM squad_submission_votes WHERE user=\? AND EXISTS \(SELECT 1 FROM squad_submissions/);
+});
