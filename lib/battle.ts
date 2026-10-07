@@ -99,7 +99,7 @@ export function normalizeBattle(value:unknown):Battle{
  const oldSpeed=text(raw.speed);
  const legacyVictory=text(raw.victory);
  const legacyTransformations=text(raw.transformations);
- const mappedType:BattleType=legacyVictory==='Incapacitation'||legacyVictory==='Ring out'||legacyVictory==='Surrender'?'knockout':'knockout';
+ const mappedType:BattleType='knockout';
  return {
   id:text(raw.id),
   fighterAId:text(raw.fighterAId),
