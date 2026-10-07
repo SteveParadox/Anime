@@ -1,7 +1,7 @@
 import {database} from '@/db/raw';
 import {canContribute,getCurrentUser} from '@/lib/auth';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
-import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMembers,wilsonLowerBound,type SquadChallengeStatus} from '@/lib/squad-challenge';
+import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMembers,type SquadChallengeStatus} from '@/lib/squad-challenge';
 import {z} from 'zod';
 
 const idText=z.string().trim().min(1).max(180);
@@ -215,27 +215,21 @@ export async function GET(request:Request){
   if(mine&&!viewer)return authJson({error:'Sign in to view your challenge entries.'},401);
 
   const params:BindValue[]=[viewerId||''];
-  let where=' WHERE s.removed=0',maxRows=100;
+  let where=' WHERE s.removed=0',maxRows=limit,orderBy='s.created DESC';
   if(id){where+=' AND s.id=?';params.push(id);maxRows=1;}
-  else if(challengeId){where+=' AND s.challenge_id=?';params.push(challengeId);}
+  else if(challengeId){
+   where+=' AND s.challenge_id=?';
+   params.push(challengeId);
+   if(sort==='most_voted')orderBy='COUNT(v.user) DESC,s.created DESC';
+   else if(sort==='top')orderBy=`CASE WHEN COUNT(v.user)>=5 THEN (COALESCE(SUM(CASE WHEN v.verdict='yes' THEN 1 ELSE 0 END),0)-COALESCE(SUM(CASE WHEN v.verdict='no' THEN 1 ELSE 0 END),0)) ELSE -1000000000 END DESC,COUNT(v.user) DESC,s.created DESC`;
+  }
   else if(mine){where+=' AND s.owner=?';params.push(viewerId);}
   else if(ownerHandle){where+=' AND p.handle=?';params.push(ownerHandle);}
   else return authJson({error:'Provide a challenge, submission, or profile filter.'},400);
 
-  const sql=`${selectSubmission}${where} GROUP BY s.id ORDER BY s.created DESC LIMIT ${maxRows}`;
-  const raw=(await db.prepare(sql).bind(...params).all<SubmissionAggregateDbRow>()).results.map(normalizeRow);
-  if(id&&!raw.length)return authJson({error:'Squad submission not found.'},404);
-
-  let rows=raw;
-  if(!id&&challengeId){
-   rows=[...rows].sort((a,b)=>{
-    if(sort==='newest')return b.created-a.created;
-    if(sort==='most_voted')return b.totalVotes-a.totalVotes||b.created-a.created;
-    const aScore=a.totalVotes>=5?wilsonLowerBound(a.yesVotes,a.totalVotes):0;
-    const bScore=b.totalVotes>=5?wilsonLowerBound(b.yesVotes,b.totalVotes):0;
-    return bScore-aScore||b.totalVotes-a.totalVotes||b.created-a.created;
-   }).slice(0,limit);
-  }else if(!id)rows=rows.slice(0,limit);
+  const sql=`${selectSubmission}${where} GROUP BY s.id ORDER BY ${orderBy} LIMIT ${maxRows}`;
+  const rows=(await db.prepare(sql).bind(...params).all<SubmissionAggregateDbRow>()).results.map(normalizeRow);
+  if(id&&!rows.length)return authJson({error:'Squad submission not found.'},404);
 
   const grouped=await membersFor(db,rows.map(row=>row.id));
   let qualifiedRank=0;
