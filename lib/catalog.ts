@@ -1,3 +1,4 @@
+import type {Battle} from '@/lib/battle';
 export type Character = {id:string;name:string;series:string;role:string;cost:number;color:string;ability:string;forms:string[];endpoint:string;sourceLabel:string;sourceUrl:string;tags:string[]};
 export const fighters:Character[] = [
  {id:'goku',name:'Goku',series:'Dragon Ball',role:'Striker',cost:7,color:'#e99542',ability:'Ki control, martial arts, rapid adaptation',forms:['Base','Super Saiyan','Super Saiyan God','Ultra Instinct'],endpoint:'Dragon Ball Super anime, episode 131',sourceLabel:'Dragon Ball Official',sourceUrl:'https://en.dragon-ball-official.com/',tags:['martial arts','energy','shonen']},
@@ -24,10 +25,10 @@ export const clubs = [
  {id:'demon',name:'Demon Slayer',season:'Season 1',episodes:26,color:'#53b8aa',letters:'鬼',description:'Take the journey one episode at a time.',rules:['Use the exact episode tag.','Keep future breathing forms out of earlier threads.','Credit art and translations.']},
  {id:'aot',name:'Attack on Titan',season:'Season 1',episodes:25,color:'#c8a778',letters:'進',description:'Every detail matters. Keep the next reveal a surprise.',rules:['No hints disguised as theories.','Tag the last episode needed for context.','Report accidental future reveals.']}
 ];
-export const starterBattles = [
- {id:'goku-ichigo',a:'Goku',b:'Ichigo Kurosaki',versionA:'End of Dragon Ball Z',versionB:'End of original Bleach anime',transformations:'Forms shown by the selected endpoints',speed:'Equalized',victory:'Incapacitation',notes:'Neutral empty arena. No preparation. Abilities interact across universes.',created:0},
- {id:'naruto-luffy',a:'Naruto Uzumaki',b:'Monkey D. Luffy',versionA:'End of original Naruto series',versionB:'End of East Blue',transformations:'Only abilities shown at these endpoints',speed:'Equalized',victory:'Ring out',notes:'Circular 100 m arena. No outside assistance.',created:0},
- {id:'tanjiro-levi',a:'Tanjiro Kamado',b:'Levi Ackerman',versionA:'Season 1',versionB:'Season 1',transformations:'Standard equipment only',speed:'Natural',victory:'Incapacitation',notes:'Abandoned city. Starting distance: 30 m.',created:0}
+export const starterBattles:Battle[] = [
+ {id:'goku-ichigo',fighterAId:'goku',fighterBId:'ichigo',a:'Goku',b:'Ichigo Kurosaki',versionA:'End of Dragon Ball Z',versionB:'End of original Bleach anime',battleType:'knockout',location:'neutral_arena',speed:'equalized',knowledge:'none',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral empty arena. No preparation. Forms shown by the selected endpoints. Abilities interact across universes.',created:0},
+ {id:'naruto-luffy',fighterAId:'naruto',fighterBId:'luffy',a:'Naruto Uzumaki',b:'Monkey D. Luffy',versionA:'End of original Naruto series',versionB:'End of East Blue',battleType:'knockout',location:'neutral_arena',speed:'equalized',knowledge:'none',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Victory condition: ring out. Circular 100 m arena. No outside assistance. Only abilities shown at these endpoints.',created:0},
+ {id:'tanjiro-levi',fighterAId:'tanjiro',fighterBId:'levi',a:'Tanjiro Kamado',b:'Levi Ackerman',versionA:'Season 1',versionB:'Season 1',battleType:'knockout',location:'custom',customLocation:'Abandoned city',speed:'normal',knowledge:'none',prepTime:'none',transformationsAllowed:false,standardEquipment:true,notes:'Starting distance: 30 m. Standard equipment only.',created:0}
 ];
 export const seasonalAnime=[
  {id:'dandadan',title:'Dandadan',genres:['supernatural','comedy','new-gen'],why:'Fast supernatural action with character-driven comedy.'},
