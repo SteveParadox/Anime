@@ -170,6 +170,26 @@ export async function revokeUnverifiedEmailCredentialAccess(db:D1Database,userId
  return true;
 }
 
+
+export async function reconcileTrustedProviderEmail(db:D1Database,userIdValue:string,rawEmail:string){
+ const email=normalizeEmail(rawEmail),account=await db.prepare(`SELECT u.email_normalized AS emailNormalized,u.email_verified AS emailVerified,EXISTS(SELECT 1 FROM auth_identities ai WHERE ai.user_id=u.id AND ai.provider='email') AS hasEmailIdentity FROM users u WHERE u.id=?`).bind(userIdValue).first<any>();
+ if(!account)throw new Error('Trusted provider account is missing.');
+ if(account.emailNormalized===email){
+  if(!Boolean(account.emailVerified)){
+   if(Boolean(account.hasEmailIdentity))await revokeUnverifiedEmailCredentialAccess(db,userIdValue);
+   await db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(Date.now(),userIdValue).run();
+  }
+  return userIdValue;
+ }
+ // A separately configured password identity is an independent recovery method.
+ // Do not silently rewrite its account email merely because an external provider changed email.
+ if(Boolean(account.hasEmailIdentity))return userIdValue;
+ const owner=await db.prepare('SELECT id FROM users WHERE email_normalized=? AND id<>? LIMIT 1').bind(email,userIdValue).first<any>();
+ if(owner)await mergeTrustedDuplicateIntoLegacy(db,owner.id,userIdValue,email);
+ else await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(email,email,Date.now(),userIdValue).run();
+ return userIdValue;
+}
+
 async function fromSession():Promise<CurrentUser|null>{
  const jar=await cookies(),token=jar.get(SESSION_COOKIE)?.value;
  if(!token)return null;
@@ -185,14 +205,7 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
  const db=database(),now=Date.now();
  let linked=await db.prepare(`SELECT user_id AS userId FROM auth_identities WHERE provider='chatgpt' AND provider_user_id=? LIMIT 1`).bind(identity.providerUserId).first<any>();
  if(linked){
-  const account=await db.prepare('SELECT email_normalized AS emailNormalized FROM users WHERE id=?').bind(linked.userId).first<any>();
-  if(account&&!account.emailNormalized){
-   const owner=await db.prepare('SELECT id FROM users WHERE email_normalized=?').bind(identity.email).first<any>();
-   if(owner&&owner.id!==linked.userId)await mergeTrustedDuplicateIntoLegacy(db,owner.id,linked.userId,identity.email);
-   else if(!owner)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(identity.email,identity.email,now,linked.userId).run();
-  }
-  const refreshed=await db.prepare('SELECT email_normalized AS emailNormalized,email_verified AS emailVerified FROM users WHERE id=?').bind(linked.userId).first<any>();
-  if(refreshed?.emailNormalized===identity.email&&!Boolean(refreshed.emailVerified))await db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,linked.userId).run();
+  await reconcileTrustedProviderEmail(db,linked.userId,identity.email);
   await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='chatgpt' AND provider_user_id=?`).bind(identity.email,identity.providerUserId).run();
   const current=await readCurrentUser(linked.userId,'chatgpt',identity.providerUserId);
   if(current)return current;
@@ -219,9 +232,14 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
 }
 
 export async function getCurrentUser():Promise<CurrentUser|null>{
- const session=await fromSession();
+ const session=await fromSession(),platform=await platformIdentity();
+ if(session&&platform&&(session.legacyChatgptUserId===platform.providerUserId||!session.email||normalizeEmail(session.email)===platform.email)){
+  const platformUser=await resolvePlatform(platform);
+  if(platformUser.userId===session.userId)return platformUser;
+  const sessionStillExists=await database().prepare('SELECT 1 FROM users WHERE id=?').bind(session.userId).first();
+  if(!sessionStillExists)return platformUser;
+ }
  if(session)return session;
- const platform=await platformIdentity();
  if(platform)return resolvePlatform(platform);
  return null;
 }
