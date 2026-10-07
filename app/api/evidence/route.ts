@@ -59,7 +59,7 @@ async function potentialDuplicates(db:D1Database,evidence:z.infer<typeof evidenc
 function canonicalValues(evidence:z.infer<typeof evidenceInput>){
  const character=fighters.find(f=>f.id===evidence.characterId);
  if(!character)return null;
- return {character,series:character.series,episode:evidence.sourceType==='anime'?evidence.episode:null,timestamp:evidence.sourceType==='anime'?normalizeTimestamp(evidence.timestamp):null,chapter:evidence.sourceType==='manga'?evidence.chapter:null,page:evidence.sourceType==='manga'?(evidence.page||null):null};
+ return {character,series:character.series,episode:evidence.sourceType==='anime'?evidence.episode:null,timestamp:evidence.sourceType==='anime'?normalizeEvidenceTimestamp(evidence.timestamp):null,chapter:evidence.sourceType==='manga'?evidence.chapter:null,page:evidence.sourceType==='manga'?(evidence.page||null):null};
 }
 
 export async function GET(req:Request){try{
