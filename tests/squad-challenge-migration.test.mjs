@@ -82,7 +82,7 @@ test('daily squad persistence enforces one submission, unique characters, one vo
 
   assert.equal(db.prepare("SELECT SUM(cost_snapshot) AS total FROM squad_submission_members WHERE submission_id='sub-a'").get().total,90);
   assert.throws(()=>db.exec("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('sub-a-2','daily-2026-10-07','usr_a','Duplicate Entry','This should violate the one entry rule.',30,NULL,0,2,2)"));
-  assert.throws(()=>insertMember.run('sub-a',5,'goku','goku-saiyan-saga','Goku','Saiyan Saga Goku',30));
+  assert.throws(()=>insertMember.run('sub-a',5,'ichigo','ichigo-bankai','Ichigo Kurosaki','Bankai Ichigo',52));
 
   db.prepare("INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES ('sub-b','daily-2026-10-07','usr_b','Goku Test','This entry exists to test duplicate versions of one character.',30,NULL,0,1,1)").run();
   insertMember.run('sub-b',0,'goku','goku-saiyan-saga','Goku','Saiyan Saga Goku',30);
