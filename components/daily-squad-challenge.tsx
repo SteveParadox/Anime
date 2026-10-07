@@ -258,7 +258,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  };
 
  const share=async(submissionId:string)=>{
-  const url=new URL(location.href);
+  const url=new URL('/',location.origin);
   url.searchParams.set('view','squads');
   url.searchParams.set('challengeSquad',submissionId);
   try{await navigator.clipboard.writeText(url.toString());toast.success('Challenge squad link copied.')}
