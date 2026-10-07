@@ -1,4 +1,5 @@
 import type {StructuredArgumentEvidence} from './evidence';
+import {versionById} from './characters';
 export const BATTLE_TYPES=['death_battle','knockout','first_blood','capture','survival'] as const;
 export const BATTLE_LOCATIONS=['neutral_arena','earth','soul_society','custom'] as const;
 export const SPEED_RULES=['normal','equalized'] as const;
@@ -17,8 +18,8 @@ export type VoteSide='a'|'b'|'draw';
 export type BattleCreateInput={
  fighterAId:string;
  fighterBId:string;
- versionA:string;
- versionB:string;
+ fighterAVersionId:string;
+ fighterBVersionId:string;
  battleType:BattleType;
  location:BattleLocation;
  customLocation?:string;
@@ -34,8 +35,15 @@ export type Battle=BattleCreateInput&{
  id:string;
  a:string;
  b:string;
+ versionA:string;
+ versionB:string;
+ fighterANameSnapshot?:string;
+ fighterBNameSnapshot?:string;
+ fighterAVersionNameSnapshot?:string;
+ fighterBVersionNameSnapshot?:string;
  created:number;
  isLegacy?:boolean;
+ isLegacyVersion?:boolean;
  legacyVictory?:string;
  legacyTransformations?:string;
 };
@@ -102,15 +110,29 @@ export function normalizeBattle(value:unknown):Battle{
  const oldSpeed=text(raw.speed);
  const legacyVictory=text(raw.victory);
  const legacyTransformations=text(raw.transformations);
+ const fighterAVersionId=text(raw.fighterAVersionId);
+ const fighterBVersionId=text(raw.fighterBVersionId);
+ const versionARecord=fighterAVersionId?versionById(fighterAVersionId):undefined;
+ const versionBRecord=fighterBVersionId?versionById(fighterBVersionId):undefined;
+ const fighterANameSnapshot=text(raw.fighterANameSnapshot)||text(raw.a);
+ const fighterBNameSnapshot=text(raw.fighterBNameSnapshot)||text(raw.b);
+ const fighterAVersionNameSnapshot=text(raw.fighterAVersionNameSnapshot)||text(raw.versionA);
+ const fighterBVersionNameSnapshot=text(raw.fighterBVersionNameSnapshot)||text(raw.versionB);
  const mappedType:BattleType='knockout';
  return {
   id:text(raw.id),
   fighterAId:text(raw.fighterAId),
   fighterBId:text(raw.fighterBId),
-  a:text(raw.a),
-  b:text(raw.b),
-  versionA:text(raw.versionA),
-  versionB:text(raw.versionB),
+  fighterAVersionId,
+  fighterBVersionId,
+  a:fighterANameSnapshot,
+  b:fighterBNameSnapshot,
+  versionA:fighterAVersionNameSnapshot||versionARecord?.name||text(raw.versionA),
+  versionB:fighterBVersionNameSnapshot||versionBRecord?.name||text(raw.versionB),
+  fighterANameSnapshot:fighterANameSnapshot||undefined,
+  fighterBNameSnapshot:fighterBNameSnapshot||undefined,
+  fighterAVersionNameSnapshot:fighterAVersionNameSnapshot||versionARecord?.name||undefined,
+  fighterBVersionNameSnapshot:fighterBVersionNameSnapshot||versionBRecord?.name||undefined,
   battleType:oneOf(BATTLE_TYPES,raw.battleType)?raw.battleType:mappedType,
   location:oneOf(BATTLE_LOCATIONS,raw.location)?raw.location:'neutral_arena',
   customLocation:text(raw.customLocation)||undefined,
@@ -122,6 +144,7 @@ export function normalizeBattle(value:unknown):Battle{
   notes:text(raw.notes),
   created:typeof raw.created==='number'?raw.created:Number(raw.created)||0,
   isLegacy,
+  isLegacyVersion:!fighterAVersionId||!fighterBVersionId,
   legacyVictory:isLegacy&&legacyVictory?legacyVictory:undefined,
   legacyTransformations:isLegacy&&legacyTransformations?legacyTransformations:undefined
  };

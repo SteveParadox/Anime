@@ -29,6 +29,13 @@
       "when": 1791368700000,
       "tag": "0003_structured_evidence",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791375000000,
+      "tag": "0004_character_versions",
+      "breakpoints": true
     }
   ]
 }

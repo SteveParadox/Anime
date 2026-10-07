@@ -1,6 +1,7 @@
 import {database} from '@/db/raw';
 import {clubs,fighters,starterBattles,dailyChallenge,seasonalAnime,tournamentSeeds,weekKey,tournamentPhase} from '@/lib/catalog';
 import {BATTLE_TYPES,BATTLE_LOCATIONS,SPEED_RULES,KNOWLEDGE_RULES,PREP_TIMES,VOTE_DIFFICULTIES,normalizeBattle} from '@/lib/battle';
+import {abilityById,validateBattleVersionSelection,versionById} from '@/lib/characters';
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {env} from 'cloudflare:workers';
 import {z} from 'zod';
@@ -8,7 +9,7 @@ import {z} from 'zod';
 const short=z.string().trim().min(1).max(120), idText=z.string().trim().min(1).max(180), bodyText=z.string().trim().min(3).max(2000);
 const schema=z.discriminatedUnion('action',[
  z.object({action:z.literal('profile'),handle:z.string().trim().regex(/^[a-z0-9_]{3,24}$/),displayName:short,bio:z.string().trim().max(400),favoriteAnime:z.array(short).max(8),favoriteCharacters:z.array(idText).max(8)}),
- z.object({action:z.literal('battle'),fighterAId:idText,fighterBId:idText,versionA:short,versionB:short,battleType:z.enum(BATTLE_TYPES),location:z.enum(BATTLE_LOCATIONS),customLocation:z.string().trim().max(120).optional().default(''),speed:z.enum(SPEED_RULES),knowledge:z.enum(KNOWLEDGE_RULES),prepTime:z.enum(PREP_TIMES),transformationsAllowed:z.boolean(),standardEquipment:z.boolean(),notes:z.string().trim().max(1000)}),
+ z.object({action:z.literal('battle'),fighterAId:idText,fighterBId:idText,fighterAVersionId:idText,fighterBVersionId:idText,battleType:z.enum(BATTLE_TYPES),location:z.enum(BATTLE_LOCATIONS),customLocation:z.string().trim().max(120).optional().default(''),speed:z.enum(SPEED_RULES),knowledge:z.enum(KNOWLEDGE_RULES),prepTime:z.enum(PREP_TIMES),transformationsAllowed:z.boolean(),standardEquipment:z.boolean(),notes:z.string().trim().max(1000)}),
  z.object({action:z.literal('vote'),battle:idText,side:z.enum(['a','b','draw']),difficulty:z.enum(VOTE_DIFFICULTIES),reason:z.string().trim().min(10).max(1500),evidence:z.string().trim().max(300).optional().default(''),structuredEvidenceIds:z.array(idText).max(8).optional()}),
  z.object({action:z.literal('progress'),club:idText,episode:z.number().int().min(0)}),
  z.object({action:z.literal('post'),club:idText,episode:z.number().int().min(0),body:z.string().trim().min(5).max(2000)}),
@@ -76,14 +77,14 @@ export async function GET(req:Request){try{
   const [comments,evidenceRows,structuredRows]=await Promise.all([
    db.prepare(`SELECT c.id,c.argument_user AS argumentUser,c.body,c.created,COALESCE(p.handle,'anime_fan') AS handle FROM comments c LEFT JOIN profiles p ON p.user=c.user WHERE c.battle=? ORDER BY c.created ASC LIMIT 500`).bind(battle).all<any>(),
    db.prepare(`SELECT ae.id,ae.argument_user AS argumentUser,ae.reference,ae.context,ae.created,COALESCE(p.handle,'anime_fan') AS handle FROM argument_evidence ae LEFT JOIN profiles p ON p.user=ae.contributor WHERE ae.battle=? ORDER BY ae.created ASC LIMIT 300`).bind(battle).all<any>(),
-   db.prepare(`SELECT l.argument_user AS argumentUser,l.evidence_id AS evidenceId,l.linked_by AS linkedBy,l.created AS linkCreated,COALESCE(lp.handle,'anime_fan') AS linkedByHandle,er.id,er.character_id AS characterId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.submitted_by AS submittedBy,er.created,er.updated,COALESCE(er.deleted,1) AS deleted,COALESCE(ep.handle,'anime_fan') AS submittedByHandle FROM argument_evidence_links l LEFT JOIN evidence_records er ON er.id=l.evidence_id LEFT JOIN profiles lp ON lp.user=l.linked_by LEFT JOIN profiles ep ON ep.user=er.submitted_by WHERE l.battle=? ORDER BY l.created ASC LIMIT 300`).bind(battle).all<any>()
+   db.prepare(`SELECT l.argument_user AS argumentUser,l.evidence_id AS evidenceId,l.linked_by AS linkedBy,l.created AS linkCreated,COALESCE(lp.handle,'anime_fan') AS linkedByHandle,er.id,er.character_id AS characterId,er.version_id AS versionId,er.ability_id AS abilityId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.submitted_by AS submittedBy,er.created,er.updated,COALESCE(er.deleted,1) AS deleted,COALESCE(ep.handle,'anime_fan') AS submittedByHandle FROM argument_evidence_links l LEFT JOIN evidence_records er ON er.id=l.evidence_id LEFT JOIN profiles lp ON lp.user=l.linked_by LEFT JOIN profiles ep ON ep.user=er.submitted_by WHERE l.battle=? ORDER BY l.created ASC LIMIT 300`).bind(battle).all<any>()
   ]);
   for(const a of debate){
    const argumentUser=a.argumentUser;
    a.owned=Boolean(user&&user.userId===argumentUser);
    a.comments=comments.results.filter((c:any)=>c.argumentUser===argumentUser).map((c:any)=>({id:c.id,body:c.body,created:c.created,handle:c.handle}));
    a.addedEvidence=evidenceRows.results.filter((e:any)=>e.argumentUser===argumentUser).map((e:any)=>({id:e.id,reference:e.reference,context:e.context,created:e.created,handle:e.handle}));
-   a.structuredEvidence=structuredRows.results.filter((e:any)=>e.argumentUser===argumentUser).map((e:any)=>{const deleted=Boolean(e.deleted)||!e.id;return {kind:'structured',id:e.evidenceId,evidenceId:e.evidenceId,linkedByHandle:e.linkedByHandle,linkCreated:Number(e.linkCreated),linkOwned:Boolean(user&&e.linkedBy===user.userId),canUnlink:Boolean(user&&(e.linkedBy===user.userId||argumentUser===user.userId||admin(user.userId))),deleted,record:deleted?null:{id:e.id,characterId:e.characterId,characterName:fighters.find(f=>f.id===e.characterId)?.name||e.characterId,sourceType:e.sourceType,series:e.series,category:e.category,title:e.title,description:e.description,episode:e.episode==null?null:Number(e.episode),timestamp:e.timestamp||null,chapter:e.chapter==null?null:Number(e.chapter),page:e.page==null?null:Number(e.page),submittedByHandle:e.submittedByHandle,created:Number(e.created),updated:Number(e.updated),owned:Boolean(user&&e.submittedBy===user.userId)}};});
+   a.structuredEvidence=structuredRows.results.filter((e:any)=>e.argumentUser===argumentUser).map((e:any)=>{const deleted=Boolean(e.deleted)||!e.id;return {kind:'structured',id:e.evidenceId,evidenceId:e.evidenceId,linkedByHandle:e.linkedByHandle,linkCreated:Number(e.linkCreated),linkOwned:Boolean(user&&e.linkedBy===user.userId),canUnlink:Boolean(user&&(e.linkedBy===user.userId||argumentUser===user.userId||admin(user.userId))),deleted,record:deleted?null:{id:e.id,characterId:e.characterId,characterName:fighters.find(f=>f.id===e.characterId)?.name||e.characterId,versionId:e.versionId||null,versionName:e.versionId?versionById(e.versionId)?.name||null:null,abilityId:e.abilityId||null,abilityName:e.abilityId?abilityById(e.abilityId)?.name||null:null,sourceType:e.sourceType,series:e.series,category:e.category,title:e.title,description:e.description,episode:e.episode==null?null:Number(e.episode),timestamp:e.timestamp||null,chapter:e.chapter==null?null:Number(e.chapter),page:e.page==null?null:Number(e.page),submittedByHandle:e.submittedByHandle,created:Number(e.created),updated:Number(e.updated),owned:Boolean(user&&e.submittedBy===user.userId)}};});
    a.myReaction=a.myReaction||null;delete a.argumentUser;
   }
  }
@@ -99,9 +100,10 @@ export async function POST(req:Request){try{
   const fighterA=fighters.find(f=>f.id===d.fighterAId),fighterB=fighters.find(f=>f.id===d.fighterBId);
   if(!fighterA||!fighterB)return json({error:'Choose fighters from the character catalog.'},400);
   if(fighterA.id===fighterB.id)return json({error:'Choose two different fighters.'},400);
-  if(!fighterA.forms.includes(d.versionA)||!fighterB.forms.includes(d.versionB))return json({error:'Choose a valid version for each fighter.'},400);
+  const versionA=versionById(d.fighterAVersionId),versionB=versionById(d.fighterBVersionId);
+  if(!versionA||!versionB||!validateBattleVersionSelection(fighterA.id,versionA.id,fighterB.id,versionB.id))return json({error:'Choose a valid canonical version belonging to each fighter.'},400);
   if(d.location==='custom'&&!d.customLocation.trim())return json({error:'Describe the custom battle location.'},400);
-  const payload={fighterAId:fighterA.id,fighterBId:fighterB.id,a:fighterA.name,b:fighterB.name,versionA:d.versionA,versionB:d.versionB,battleType:d.battleType,location:d.location,customLocation:d.location==='custom'?d.customLocation.trim():'',speed:d.speed,knowledge:d.knowledge,prepTime:d.prepTime,transformationsAllowed:d.transformationsAllowed,standardEquipment:d.standardEquipment,notes:d.notes};
+  const payload={fighterAId:fighterA.id,fighterBId:fighterB.id,fighterAVersionId:versionA.id,fighterBVersionId:versionB.id,fighterANameSnapshot:fighterA.name,fighterBNameSnapshot:fighterB.name,fighterAVersionNameSnapshot:versionA.name,fighterBVersionNameSnapshot:versionB.name,battleType:d.battleType,location:d.location,customLocation:d.location==='custom'?d.customLocation.trim():'',speed:d.speed,knowledge:d.knowledge,prepTime:d.prepTime,transformationsAllowed:d.transformationsAllowed,standardEquipment:d.standardEquipment,notes:d.notes};
   await db.prepare('INSERT INTO battles (id,owner,payload,created) VALUES (?,?,?,?)').bind(id,user.userId,JSON.stringify(payload),now).run();
  }
  if(d.action==='vote'){
@@ -111,10 +113,13 @@ export async function POST(req:Request){try{
   if(d.evidence.trim().length<3&&(!structuredIds||!structuredIds.length))return json({error:'Add a source reference or choose at least one feat from the library.'},400);
   if(structuredIds?.length){
    const placeholders=structuredIds.map(()=>'?').join(',');
-   const rows=(await db.prepare(`SELECT id,character_id AS characterId FROM evidence_records WHERE deleted=0 AND id IN (${placeholders})`).bind(...structuredIds).all<any>()).results;
+   const rows=(await db.prepare(`SELECT id,character_id AS characterId,version_id AS versionId FROM evidence_records WHERE deleted=0 AND id IN (${placeholders})`).bind(...structuredIds).all<any>()).results;
    if(rows.length!==structuredIds.length)return json({error:'One or more selected feats are unavailable.'},400);
-   const allowed=[String((battleRecord as any).fighterAId||''),String((battleRecord as any).fighterBId||'')].filter(Boolean);
-   if(!allowed.length||rows.some((row:any)=>!allowed.includes(row.characterId)))return json({error:'Choose feats for the fighters in this battle.'},400);
+   const allowedCharacters=[String((battleRecord as any).fighterAId||''),String((battleRecord as any).fighterBId||'')].filter(Boolean);
+   const allowedVersions=[String((battleRecord as any).fighterAVersionId||''),String((battleRecord as any).fighterBVersionId||'')].filter(Boolean);
+   if(!allowedCharacters.length||rows.some((row:any)=>!allowedCharacters.includes(row.characterId)))return json({error:'Choose feats for the fighters in this battle.'},400);
+   if(allowedVersions.length===2&&rows.some((row:any)=>!row.versionId||!allowedVersions.includes(row.versionId)))return json({error:'Choose feats for the exact versions selected in this battle.'},400);
+   if(allowedVersions.length!==2&&rows.some((row:any)=>row.versionId))return json({error:'Battles without two trustworthy stable version IDs cannot accept new version-scoped feats. Use manual evidence.'},400);
   }
   await db.prepare('INSERT INTO votes (battle,user,side,difficulty,reason,evidence,created) VALUES (?,?,?,?,?,?,?) ON CONFLICT(battle,user) DO UPDATE SET side=excluded.side,difficulty=excluded.difficulty,reason=excluded.reason,evidence=excluded.evidence,created=excluded.created').bind(d.battle,user.userId,d.side,d.difficulty,d.reason,d.evidence,now).run();
   if(structuredIds){

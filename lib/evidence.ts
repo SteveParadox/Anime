@@ -45,6 +45,10 @@ export type EvidenceRecord={
  characterName:string;
  sourceType:EvidenceSourceType;
  series:string;
+ versionId:string|null;
+ versionName:string|null;
+ abilityId:string|null;
+ abilityName:string|null;
  category:FeatCategory;
  title:string;
  description:string;
