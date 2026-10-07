@@ -2,12 +2,11 @@ import {cookies} from 'next/headers';
 import {database} from '@/db/raw';
 import {createSession} from '@/lib/auth';
 import {hashOpaqueToken,normalizeEmail,safeRelativeReturnPath,userId} from '@/lib/auth-crypto';
-import {clearGoogleCookies,decodeJwtPayload,GOOGLE_NONCE_COOKIE,GOOGLE_STATE_COOKIE,GOOGLE_VERIFIER_COOKIE,googleConfig} from '@/lib/google-auth';
+import {clearGoogleCookies,GOOGLE_NONCE_COOKIE,GOOGLE_STATE_COOKIE,GOOGLE_VERIFIER_COOKIE,googleConfig,verifyGoogleIdToken} from '@/lib/google-auth';
 
 function fail(request:Request,code:string){
  const base=new URL('/auth',new URL(request.url).origin);base.searchParams.set('error',code);return Response.redirect(base,302);
 }
-function boolClaim(value:unknown){return value===true||value==='true'||value===1||value==='1'}
 function safeText(value:unknown,max=200){return typeof value==='string'?value.slice(0,max):''}
 
 export async function GET(request:Request){
@@ -27,16 +26,10 @@ export async function GET(request:Request){
  if(!tokenResponse.ok){await clearGoogleCookies();return fail(request,'google_exchange')}
  const tokenData=await tokenResponse.json() as any,idToken=String(tokenData.id_token||'');
  if(!idToken){await clearGoogleCookies();return fail(request,'google_identity')}
- let verified:any;
- try{
-  const verifyResponse=await fetch('https://oauth2.googleapis.com/tokeninfo?id_token='+encodeURIComponent(idToken));
-  if(!verifyResponse.ok){await clearGoogleCookies();return fail(request,'google_identity')}
-  verified=await verifyResponse.json();
- }catch{await clearGoogleCookies();return fail(request,'google_identity')}
- const payload=decodeJwtPayload(idToken)||{};
- const issuer=String(verified.iss||payload.iss||''),audience=String(verified.aud||payload.aud||''),subject=String(verified.sub||payload.sub||''),email=normalizeEmail(String(verified.email||payload.email||'')),emailVerified=boolClaim(verified.email_verified??payload.email_verified),tokenNonce=String(verified.nonce||payload.nonce||''),exp=Number(verified.exp||payload.exp||0);
- if(!subject||!email||!emailVerified||audience!==config.clientId||!['accounts.google.com','https://accounts.google.com'].includes(issuer)||exp*1000<=now||tokenNonce!==nonce){await clearGoogleCookies();return fail(request,'google_identity')}
- const displayName=safeText(verified.name||payload.name,120)||email.split('@')[0]||'Anime fan',picture=safeText(verified.picture||payload.picture,1000)||null;
+ const verified=await verifyGoogleIdToken(idToken,config.clientId,nonce);
+ if(!verified){await clearGoogleCookies();return fail(request,'google_identity')}
+ const subject=verified.sub,email=normalizeEmail(verified.email);
+ const displayName=safeText(verified.name,120)||email.split('@')[0]||'Anime fan',picture=safeText(verified.picture,1000)||null;
  let identity=await db.prepare(`SELECT user_id AS userId FROM auth_identities WHERE provider='google' AND provider_user_id=? LIMIT 1`).bind(subject).first<any>(),resolvedUserId:string;
  if(identity)resolvedUserId=identity.userId;
  else{
