@@ -1,6 +1,6 @@
 import {cookies} from 'next/headers';
 import {database} from '@/db/raw';
-import {createSession,revokeUnverifiedEmailCredentialAccess} from '@/lib/auth';
+import {createSession,reconcileTrustedProviderEmail,revokeUnverifiedEmailCredentialAccess} from '@/lib/auth';
 import {hashOpaqueToken,normalizeEmail,safeRelativeReturnPath,userId} from '@/lib/auth-crypto';
 import {clearGoogleCookies,GOOGLE_NONCE_COOKIE,GOOGLE_STATE_COOKIE,GOOGLE_VERIFIER_COOKIE,googleConfig,verifyGoogleIdToken} from '@/lib/google-auth';
 
@@ -57,14 +57,7 @@ export async function GET(request:Request){
   }
  }
  await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='google' AND provider_user_id=?`).bind(email,subject).run();
- const existing=await db.prepare('SELECT email_normalized AS emailNormalized,email_verified AS emailVerified FROM users WHERE id=?').bind(resolvedUserId).first<any>();
- if(existing&&!existing.emailNormalized){
-  const collision=await db.prepare('SELECT id FROM users WHERE email_normalized=? AND id<>?').bind(email,resolvedUserId).first();
-  if(!collision)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(email,email,now,resolvedUserId).run();
- }else if(existing?.emailNormalized===email&&!Boolean(existing.emailVerified)){
-  await revokeUnverifiedEmailCredentialAccess(db,resolvedUserId);
-  await db.prepare('UPDATE users SET email_verified=1,updated=? WHERE id=?').bind(now,resolvedUserId).run();
- }
+ await reconcileTrustedProviderEmail(db,resolvedUserId,email);
  if(picture)await db.prepare(`UPDATE profiles SET avatar_url=CASE WHEN avatar_url IS NULL OR avatar_url='' THEN ? ELSE avatar_url END,updated=? WHERE user=?`).bind(picture,now,resolvedUserId).run();
  await createSession(resolvedUserId);await clearGoogleCookies();
  const account=await db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(resolvedUserId).first<any>(),returnTo=safeRelativeReturnPath(oauth.returnTo||'/');
