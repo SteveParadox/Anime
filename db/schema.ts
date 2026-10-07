@@ -27,12 +27,14 @@ export const evidenceRecords=sqliteTable('evidence_records',{
  timestamp:text('timestamp'),
  chapter:integer('chapter'),
  page:integer('page'),
+ versionId:text('version_id'),
+ abilityId:text('ability_id'),
  submittedBy:text('submitted_by').notNull(),
  created:integer('created').notNull(),
  updated:integer('updated').notNull(),
  deleted:integer('deleted').notNull().default(0),
  deletedAt:integer('deleted_at')
-},t=>[index('idx_evidence_records_character').on(t.characterId),index('idx_evidence_records_character_category').on(t.characterId,t.category),index('idx_evidence_records_source_type').on(t.sourceType),index('idx_evidence_records_created').on(t.created),index('idx_evidence_records_active_character_created').on(t.characterId,t.deleted,t.created)]);
+},t=>[index('idx_evidence_records_character').on(t.characterId),index('idx_evidence_records_character_category').on(t.characterId,t.category),index('idx_evidence_records_source_type').on(t.sourceType),index('idx_evidence_records_version').on(t.versionId),index('idx_evidence_records_version_category').on(t.versionId,t.category),index('idx_evidence_records_ability').on(t.abilityId),index('idx_evidence_records_created').on(t.created),index('idx_evidence_records_active_character_created').on(t.characterId,t.deleted,t.created)]);
 
 export const argumentEvidenceLinks=sqliteTable('argument_evidence_links',{
  battle:text('battle').notNull(),
@@ -41,3 +43,36 @@ export const argumentEvidenceLinks=sqliteTable('argument_evidence_links',{
  linkedBy:text('linked_by').notNull(),
  created:integer('created').notNull()
 },t=>[primaryKey({columns:[t.battle,t.argumentUser,t.evidenceId]}),index('idx_argument_evidence_links_battle_user').on(t.battle,t.argumentUser),index('idx_argument_evidence_links_evidence').on(t.evidenceId),index('idx_argument_evidence_links_created').on(t.created)]);
+
+export const characterVersions=sqliteTable('character_versions',{
+ id:text('id').primaryKey(),
+ characterId:text('character_id').notNull(),
+ name:text('name').notNull(),
+ shortName:text('short_name'),
+ aliases:text('aliases').notNull().default('[]'),
+ description:text('description').notNull(),
+ era:text('era'),
+ arc:text('arc'),
+ sortOrder:integer('sort_order').notNull(),
+ canonical:integer('canonical').notNull().default(1),
+ sourceEndpoint:text('source_endpoint'),
+ parentVersionId:text('parent_version_id'),
+ created:integer('created').notNull()
+},t=>[index('idx_character_versions_character').on(t.characterId),index('idx_character_versions_character_order').on(t.characterId,t.sortOrder),index('idx_character_versions_parent').on(t.parentVersionId)]);
+
+export const abilities=sqliteTable('abilities',{
+ id:text('id').primaryKey(),
+ characterId:text('character_id').notNull(),
+ name:text('name').notNull(),
+ description:text('description').notNull(),
+ category:text('category').notNull(),
+ created:integer('created').notNull()
+},t=>[index('idx_abilities_character').on(t.characterId)]);
+
+export const versionAbilities=sqliteTable('version_abilities',{
+ versionId:text('version_id').notNull(),
+ abilityId:text('ability_id').notNull(),
+ status:text('status').notNull().default('available'),
+ notes:text('notes').notNull().default('')
+},t=>[primaryKey({columns:[t.versionId,t.abilityId]}),index('idx_version_abilities_version').on(t.versionId),index('idx_version_abilities_ability').on(t.abilityId)]);
+
