@@ -6,6 +6,7 @@ const domain=readFileSync('lib/squad-challenge.ts','utf8');
 const submissions=readFileSync('app/api/squad-submissions/route.ts','utf8');
 const votes=readFileSync('app/api/squad-submissions/vote/route.ts','utf8');
 const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
+const policy=readFileSync('lib/squad-challenge-policy.ts','utf8');
 
 test('submission contract never accepts client-authoritative fighter cost',()=>{
  const submitSchema=submissions.slice(submissions.indexOf("action:z.literal('submit')"),submissions.indexOf("action:z.literal('delete')"));
@@ -13,14 +14,16 @@ test('submission contract never accepts client-authoritative fighter cost',()=>{
  assert.doesNotMatch(submitSchema,/cost\s*:/);
  assert.match(submissions,/resolveSubmissionMembers\(db,challenge,input\.members\)/);
  assert.match(domain,/FROM daily_squad_challenge_costs WHERE challenge_id=\?/);
- assert.match(domain,/Squad costs \$\{totalCost\} points but this challenge budget is \$\{challenge\.budget\}/);
+ assert.match(domain,/validateSquadBudget\(snapshots,challenge\.budget\)/);
+ assert.match(policy,/Squad costs \$\{totalCost\} points but this challenge budget is \$\{budget\}/);
 });
 
 test('version integrity and duplicate-character policy are server enforced',()=>{
  assert.match(domain,/version\.characterId!==character\.id/);
  assert.match(domain,/!version\.canonical/);
- assert.match(domain,/new Set\(characterIds\)\.size!==characterIds\.length/);
- assert.match(domain,/Each character may appear only once in a challenge squad/);
+ assert.match(domain,/validateSquadIdentities\(selections,challenge\.minMembers,challenge\.maxMembers\)/);
+ assert.match(policy,/new Set\(characterIds\)\.size!==characterIds\.length/);
+ assert.match(policy,/Each character may appear only once in a challenge squad/);
  assert.match(domain,/price\.characterId!==selection\.characterId/);
 });
 
