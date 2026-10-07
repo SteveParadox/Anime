@@ -190,7 +190,7 @@ function publicSubmission(row:SubmissionRow,members:SubmissionMemberView[],viewe
   totalCost:row.totalCost,
   members,
   locked:Boolean(row.lockedAt||row.totalVotes>0),
-  editable:owned&&challengeState==='active'&&row.totalVotes===0,
+  editable:owned&&challengeState==='active'&&!row.lockedAt&&row.totalVotes===0,
   created:row.created,
   updated:row.updated,
   myVote:row.myVote,
@@ -288,6 +288,7 @@ export async function POST(request:Request){
   if(error instanceof z.ZodError)return authJson({error:'Invalid squad submission.',issues:error.issues},400);
   const details=errorDetails(error);
   if(details.message.includes('squad_submission_locked'))return authJson({error:'This squad is locked because community voting has started.'},409);
+  if(details.message.includes('UNIQUE constraint failed')&&details.message.includes('squad_submissions'))return authJson({error:'A challenge submission was created concurrently. Reload before editing it.'},409);
   if(details.status>=400&&details.status<500)return authJson({error:details.message},details.status);
   console.error('Squad submission save failed',error);
   return authJson({error:'Could not save squad submission.'},503);
