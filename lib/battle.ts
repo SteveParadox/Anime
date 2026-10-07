@@ -41,9 +41,6 @@ export type Battle=BattleCreateInput&{
 
 export type ArgumentEvidence={
  id:string;
- battle:string;
- argumentUser:string;
- contributor:string;
  handle:string;
  reference:string;
  context:string;
@@ -52,7 +49,6 @@ export type ArgumentEvidence={
 
 export type BattleArgument={
  argumentId:number;
- user:string;
  side:VoteSide;
  difficulty:VoteDifficulty|null;
  reason:string;
