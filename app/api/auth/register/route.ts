@@ -32,6 +32,6 @@ export async function POST(request:Request){
   const token=await createVerificationToken(id),url=`${appBaseUrl(request)}/verify-email?token=${encodeURIComponent(token.raw)}`;
   const delivery=await sendVerificationEmail(email,url,VERIFY_TTL_MINUTES);
   await createSession(id);
-  return authJson({ok:true,user:{id,email,emailVerified:false,username,displayName:parsed.data.displayName.trim()},verificationEmailSent:delivery.sent,emailDeliveryConfigured:delivery.configured},201);
+  return authJson({ok:true,user:{id,email,emailVerified:false,username,displayName:parsed.data.displayName.trim()},verificationEmailSent:delivery.sent},201);
  }catch(e:any){console.error('Registration failed',{name:e?.name});return authJson({error:e?.status===413?'Request body is too large.':'Could not create the account.'},e?.status||500)}
 }
