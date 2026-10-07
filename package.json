@@ -20,7 +20,7 @@
     "test:auth:migration": "node --test tests/auth-migration.test.mjs",
     "test:auth": "pnpm test:auth:security && pnpm test:auth:migration",
     "test:all": "pnpm test:domain && pnpm test:auth && pnpm test:squads",
-    "test:squads": "node --test tests/squad-challenge-migration.test.mjs tests/squad-challenge-security.test.mjs"
+    "test:squads": "node --experimental-strip-types --test tests/squad-challenge-policy.test.mjs tests/squad-challenge-security.test.mjs && node --test tests/squad-challenge-migration.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
