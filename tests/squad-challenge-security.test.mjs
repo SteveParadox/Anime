@@ -126,3 +126,10 @@ test('concurrent first submissions fail as conflict rather than generic server e
  assert.match(submissions,/A challenge submission was created concurrently\. Reload before editing it\./);
  assert.match(submissions,/,409\)/);
 });
+
+
+test('archived challenge reads do not create or depend on the current daily challenge',()=>{
+ const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
+ assert.match(challengeApi,/requestedId\?await findChallenge\(db,requestedId\):await ensureDailyChallenge\(db,now\)/);
+ assert.doesNotMatch(challengeApi,/const today=await ensureDailyChallenge/);
+});
