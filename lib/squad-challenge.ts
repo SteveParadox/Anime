@@ -252,7 +252,7 @@ export async function resolveSubmissionMembers(db:D1Database,challenge:SquadChal
  }
 
  const placeholders=versionIds.map(()=>'?').join(',');
- const rows=(await db.prepare(`SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? AND version_id IN (${placeholders})`).bind(challenge.id,...versionIds).all<any>()).results;
+ const rows=(await db.prepare(`SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? AND version_id IN (${placeholders})`).bind(challenge.id,...versionIds).all<SquadVersionCostDbRow>()).results;
  const priceByVersion=new Map(rows.map(row=>[String(row.versionId),{characterId:String(row.characterId),cost:Number(row.cost)}]));
  if(priceByVersion.size!==selections.length)throw Object.assign(new Error('One or more fighters are not available in this challenge.'),{status:400});
 
