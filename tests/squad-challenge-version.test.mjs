@@ -44,6 +44,7 @@ test('expanded roster keeps the product example pricing and exact version owners
  assert.equal(prices.get('tanjiro-season-1'),10);
  assert.equal(prices.get('megumi-season-1'),8);
  assert.equal(38+30+12+10+8,98);
+ assert.equal(prices.get('goku-mastered-ultra-instinct'),100);
  assert.equal(prices.get('saitama-hero-association'),95);
  assert.equal(prices.get('aizen-hogyoku'),75);
  assert.equal(versionBelongsToCharacter('madara-ten-tails-jinchuriki','madara'),true);
