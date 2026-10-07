@@ -93,6 +93,30 @@ CREATE INDEX `idx_squad_submission_votes_submission` ON `squad_submission_votes`
 --> statement-breakpoint
 CREATE INDEX `idx_squad_submission_votes_user` ON `squad_submission_votes` (`user`);
 --> statement-breakpoint
+CREATE TRIGGER `squad_submission_vote_guard_insert`
+BEFORE INSERT ON `squad_submission_votes`
+WHEN NOT EXISTS (
+ SELECT 1 FROM `squad_submissions` s
+ WHERE s.`id`=NEW.`submission_id`
+   AND s.`removed`=0
+   AND s.`owner`<>NEW.`user`
+)
+BEGIN
+ SELECT RAISE(ABORT,'squad_submission_vote_forbidden');
+END;
+--> statement-breakpoint
+CREATE TRIGGER `squad_submission_vote_guard_update`
+BEFORE UPDATE ON `squad_submission_votes`
+WHEN NOT EXISTS (
+ SELECT 1 FROM `squad_submissions` s
+ WHERE s.`id`=NEW.`submission_id`
+   AND s.`removed`=0
+   AND s.`owner`<>NEW.`user`
+)
+BEGIN
+ SELECT RAISE(ABORT,'squad_submission_vote_forbidden');
+END;
+--> statement-breakpoint
 CREATE TRIGGER `squad_submission_vote_lock_update`
 BEFORE UPDATE OF `name`,`strategy`,`total_cost` ON `squad_submissions`
 WHEN EXISTS (SELECT 1 FROM `squad_submission_votes` WHERE `submission_id`=OLD.`id`)
