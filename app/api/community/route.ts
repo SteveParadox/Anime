@@ -89,7 +89,7 @@ export async function GET(req:Request){try{
  }
  const myVotes=user?(await db.prepare('SELECT battle,side,difficulty,reason,evidence FROM votes WHERE user=?').bind(user.userId).all<any>()).results:[];
  const battles=[...bs.results.map((b:any)=>normalizeBattle({...JSON.parse(b.payload),id:b.id,created:b.created})),...starterBattles];
- return json({battles,votes:vs.results,results:aggregateBattleResults(vs.results),myVotes,progress:ps.results,squads:ss.results.map((s:any)=>({...s,members:arr(s.members)})),debate,user:!!user,auth:user?{emailVerified:user.emailVerified,profileCompleted:user.profileCompleted,provider:user.provider}:null,profile:currentProfile,isAdmin:admin(user),unread:notes?.n||0,challenge:dailyChallenge()});
+ return json({battles,votes:vs.results,results:aggregateBattleResults(vs.results),myVotes,progress:ps.results,squads:ss.results.map((s:any)=>({...s,members:arr(s.members)})),debate,user:!!user,auth:user?{emailVerified:user.emailVerified,profileCompleted:user.profileCompleted,requiresEmailVerification:user.provider==='email'&&!user.emailVerified}:null,profile:currentProfile,isAdmin:admin(user),unread:notes?.n||0,challenge:dailyChallenge()});
  }catch(e){console.error('Community load failed',e);return json({error:'Could not load the community. Please try again.'},503);}}
 
 export async function POST(req:Request){try{
