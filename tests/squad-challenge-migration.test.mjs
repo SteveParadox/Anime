@@ -152,3 +152,22 @@ test('0007 expands the roster without mutating an existing historical squad subm
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='gojo-shibuya' AND ability_id='gojo-unlimited-void'").get().n,1);
  }finally{db.close()}
 });
+
+
+test('0008 adds only the corrected roster ability links',()=>{
+ const db=new DatabaseSync(':memory:');
+ try{
+  for(const file of migrations.slice(0,8))apply(db,file);
+  const versionsBefore=db.prepare('SELECT COUNT(*) AS n FROM character_versions').get().n;
+  const pricesBefore=db.prepare('SELECT COUNT(*) AS n FROM squad_version_costs').get().n;
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='madara-revived' AND ability_id='madara-limbo'").get().n,0);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='megumi-season-1' AND ability_id='megumi-chimera-shadow-garden'").get().n,0);
+
+  apply(db,migrations[8]);
+
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM character_versions').get().n,versionsBefore);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM squad_version_costs').get().n,pricesBefore);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='madara-revived' AND ability_id='madara-limbo'").get().n,1);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM version_abilities WHERE version_id='megumi-season-1' AND ability_id='megumi-chimera-shadow-garden'").get().n,1);
+ }finally{db.close()}
+});
