@@ -8,7 +8,7 @@ CREATE TABLE `users` (
  `updated` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `idx_users_email_normalized` ON `users` (`email_normalized`) WHERE `email_normalized` IS NOT NULL;
+CREATE UNIQUE INDEX `idx_users_email_normalized` ON `users` (`email_normalized`);
 --> statement-breakpoint
 CREATE TABLE `auth_identities` (
  `id` text PRIMARY KEY NOT NULL,
