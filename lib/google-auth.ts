@@ -16,6 +16,7 @@ type GoogleClaims={
  nonce?:string;
  exp:number;
  iat?:number;
+ nbf?:number;
  name?:string;
  picture?:string;
  azp?:string;
@@ -75,10 +76,11 @@ export async function verifyGoogleIdToken(token:string,expectedAudience:string,e
   if(!headerText||!payloadText||!signature)return null;
   const header=JSON.parse(headerText) as {alg?:string;kid?:string;typ?:string};
   if(header.alg!=='RS256'||!header.kid)return null;
-  const keys=await googleJwks(),jwk=keys.find(k=>k.kid===header.kid&&k.kty==='RSA');
+  const matchesKey=(k:GoogleJwk)=>k.kid===header.kid&&k.kty==='RSA'&&(!k.use||k.use==='sig')&&(!k.alg||k.alg==='RS256');
+  const keys=await googleJwks(),jwk=keys.find(matchesKey);
   if(!jwk){
    jwksCache=null;
-   const refreshed=await googleJwks(),retry=refreshed.find(k=>k.kid===header.kid&&k.kty==='RSA');
+   const refreshed=await googleJwks(),retry=refreshed.find(matchesKey);
    if(!retry)return null;
    return verifyWithKey(retry,parts,payloadText,signature,expectedAudience,expectedNonce);
   }
@@ -94,12 +96,13 @@ async function verifyWithKey(jwk:GoogleJwk,parts:string[],payloadText:string,sig
  const claims=JSON.parse(payloadText) as GoogleClaims,now=Math.floor(Date.now()/1000);
  const audiences=Array.isArray(claims.aud)?claims.aud:[claims.aud];
  if(!audiences.includes(expectedAudience))return null;
- if(audiences.length>1&&claims.azp!==expectedAudience)return null;
+ if(claims.azp&&claims.azp!==expectedAudience)return null;
  if(!['accounts.google.com','https://accounts.google.com'].includes(claims.iss))return null;
  if(!claims.sub||typeof claims.sub!=='string'||claims.sub.length>255)return null;
  if(!claims.email||typeof claims.email!=='string'||!verifiedEmail(claims.email_verified))return null;
  if(!claims.nonce||claims.nonce!==expectedNonce)return null;
  if(!Number.isFinite(claims.exp)||claims.exp<=now)return null;
- if(claims.iat&&claims.iat>now+120)return null;
+ if(claims.iat!==undefined&&(!Number.isFinite(claims.iat)||claims.iat>now+120))return null;
+ if(claims.nbf!==undefined&&(!Number.isFinite(claims.nbf)||claims.nbf>now+120))return null;
  return claims;
 }
