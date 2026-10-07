@@ -259,7 +259,8 @@ export async function POST(request:Request){
    if(submission.owner!==user.userId)return authJson({error:'You cannot delete another user’s squad.'},403);
    if(effectiveChallengeStatus({status:submission.status,startsAt:Number(submission.startsAt),endsAt:Number(submission.endsAt)},now)!=='active')return authJson({error:'This challenge is closed.'},409);
    if(Number(submission.votes)>0)return authJson({error:'A squad cannot be deleted after community voting begins.'},409);
-   await db.prepare('UPDATE squad_submissions SET removed=1,updated=? WHERE id=? AND owner=?').bind(now,input.submissionId,user.userId).run();
+   const removed=await db.prepare('UPDATE squad_submissions SET removed=1,updated=? WHERE id=? AND owner=? AND removed=0 AND NOT EXISTS (SELECT 1 FROM squad_submission_votes v WHERE v.submission_id=squad_submissions.id)').bind(now,input.submissionId,user.userId).run();
+   if(!removed.meta.changes)return authJson({error:'Community voting has started; this squad can no longer be deleted.'},409);
    return authJson({ok:true,id:input.submissionId});
   }
 
