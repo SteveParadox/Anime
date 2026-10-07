@@ -133,3 +133,13 @@ test('archived challenge reads do not create or depend on the current daily chal
  assert.match(challengeApi,/requestedId\?await findChallenge\(db,requestedId\):await ensureDailyChallenge\(db,now\)/);
  assert.doesNotMatch(challengeApi,/const today=await ensureDailyChallenge/);
 });
+
+
+test('squad submission reports require a real public foreign-owned subject and deduplicate open reports',()=>{
+ const community=readFileSync('app/api/community/route.ts','utf8');
+ assert.match(community,/subjectType==='squad_submission'/);
+ assert.match(community,/SELECT owner,removed FROM squad_submissions WHERE id=\? LIMIT 1/);
+ assert.match(community,/You cannot report your own squad submission/);
+ assert.match(community,/You already reported this squad submission/);
+ assert.match(community,/status="open"/);
+});
