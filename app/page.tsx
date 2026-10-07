@@ -53,7 +53,7 @@ export default function Home(){
  function openBattle(b:Battle){setData(d=>({...d,debate:[]}));setActive(b);const mine=data.myVotes.find(v=>v.battle===b.id);setSide(mine?.side||'a');setDifficulty(mine?.difficulty||(mine?.side==='draw'?'inconclusive':''));setReason(mine?.reason||'');setEvidence(mine?.evidence||'');void loadMain(b.id)}
  function toggleFighter(id:string){const selected=members.map(i=>fighter(i)!),points=selected.reduce((s,f)=>s+f.cost,0),f=fighter(id)!;if(members.includes(id))setMembers(members.filter(m=>m!==id));else if(members.length===5||points+f.cost>20)toast.error('Choose five fighters within 20 points.');else setMembers([...members,id])}
  function signIn(){location.href='/auth?return_to='+encodeURIComponent(returnPath)}
- async function signOut(){await fetch('/api/auth/logout',{method:'POST'});location.href='/'}
+ async function signOut(){const r=await fetch('/api/auth/logout',{method:'POST'}),d:any=await r.json().catch(()=>({}));location.href=r.ok&&typeof d.redirectTo==='string'&&d.redirectTo.startsWith('/')&&!d.redirectTo.startsWith('//')?d.redirectTo:'/'}
  async function report(subjectType:string,subjectId:string){const reason=prompt('What should the moderators review?');if(reason&&reason.trim().length>=5)await save({action:'report',subjectType,subjectId,reason},'Report sent to moderators.')}
  const currentClub=clubs.find(c=>c.id===clubId)!,clubData=view==='clubs'?extra:null,selected=members.map(id=>fighter(id)!),points=selected.reduce((s,f)=>s+f.cost,0),voted=new Set(data.myVotes.map(v=>v.battle));
  const searchResults=useMemo(()=>fighters.filter(f=>`${f.name} ${f.series} ${f.ability} ${characterVersionSearchText(f.id)} ${f.tags.join(' ')}`.toLowerCase().includes(charQuery.toLowerCase())),[charQuery]);
