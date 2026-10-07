@@ -10,6 +10,7 @@ import {
  validUsername,
  verifyPassword
 } from '../lib/auth-crypto.ts';
+import {readJson,sameOrigin} from '../lib/auth-request.ts';
 
 test('email and username normalization are deterministic',()=>{
  assert.equal(normalizeEmail('  Fan@Example.COM  '),'fan@example.com');
@@ -55,4 +56,21 @@ test('return paths reject cross-origin and reserved auth redirects',()=>{
  assert.equal(safeRelativeReturnPath('/\\evil.example/'),'/');
  assert.equal(safeRelativeReturnPath('/signin-with-chatgpt?return_to=/'),'/');
  assert.equal(safeRelativeReturnPath('/api/auth/google/callback?code=x'),'/');
+});
+
+
+test('mutation origin checks reject cross-origin and sibling-site requests',()=>{
+ const exact=new Request('https://anime.example/api/auth/logout',{method:'POST',headers:{origin:'https://anime.example','sec-fetch-site':'same-origin'}});
+ const cross=new Request('https://anime.example/api/auth/logout',{method:'POST',headers:{origin:'https://evil.example','sec-fetch-site':'cross-site'}});
+ const sibling=new Request('https://anime.example/api/auth/logout',{method:'POST',headers:{'sec-fetch-site':'same-site',referer:'https://admin.anime.example/'}});
+ const serverClient=new Request('https://anime.example/api/auth/logout',{method:'POST'});
+ assert.equal(sameOrigin(exact),true);
+ assert.equal(sameOrigin(cross),false);
+ assert.equal(sameOrigin(sibling),false);
+ assert.equal(sameOrigin(serverClient),true);
+});
+
+test('JSON body limit is enforced on bytes, not JavaScript character count',async()=>{
+ const request=new Request('https://anime.example/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:'界'.repeat(20)})});
+ await assert.rejects(()=>readJson(request,30),(error)=>Boolean(error&&typeof error==='object'&&'status' in error&&(error as any).status===413));
 });
