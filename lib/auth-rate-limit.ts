@@ -1,10 +1,16 @@
 import {database} from '@/db/raw';
+import {env} from 'cloudflare:workers';
 import {hashOpaqueToken} from '@/lib/auth-crypto';
 
 export type RateLimitResult={allowed:boolean;retryAfterSeconds:number};
 
 export function requestIp(request:Request){
- return request.headers.get('cf-connecting-ip')||request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
+ const cloudflare=request.headers.get('cf-connecting-ip')?.trim();
+ if(cloudflare)return cloudflare;
+ if(env.AUTH_TRUST_PROXY_IP_HEADERS==='true'){
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||request.headers.get('x-real-ip')?.trim()||'unknown';
+ }
+ return 'unknown';
 }
 
 export async function checkRateLimit(scope:string,rawKey:string,limit:number,windowMs:number,blockMs=windowMs):Promise<RateLimitResult>{
