@@ -1,5 +1,6 @@
 import {database} from '@/db/raw';
 import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
+import {sameOrigin} from '@/lib/auth-request';
 import {fighters,starterBattles} from '@/lib/catalog';
 import {
  EVIDENCE_SOURCE_TYPES,
@@ -174,7 +175,7 @@ export async function GET(req:Request){try{
  }catch(e){console.error('Evidence load failed',e);return json({error:'Could not load evidence. Please try again.'},503);}}
 
 export async function POST(req:Request){try{
- const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)return json({error:'Invalid origin'},403);
+ if(!sameOrigin(req))return json({error:'Invalid origin'},403);
  const user=await getCurrentUser();if(!user)return json({error:'Sign in to manage evidence.'},401);if(!canContribute(user))return json({error:user.profileCompleted?'Verify your email before contributing.':'Complete your profile before contributing.'},403);
  const raw=await req.text();if(raw.length>15000)return json({error:'Submission is too large'},413);
  let parsed;try{parsed=mutationSchema.safeParse(JSON.parse(raw));}catch{return json({error:'Invalid submission'},400);}
