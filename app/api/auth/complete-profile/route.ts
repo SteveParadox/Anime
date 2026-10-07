@@ -3,6 +3,7 @@ import {database} from '@/db/raw';
 import {getCurrentUser} from '@/lib/auth';
 import {normalizeUsername,validUsername} from '@/lib/auth-crypto';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
+import {enforceAuthRateLimits} from '@/lib/auth-rate-limit';
 
 const input=z.object({username:z.string().min(3).max(24),displayName:z.string().trim().min(1).max(120)}).strict();
 
