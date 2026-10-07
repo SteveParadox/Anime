@@ -38,10 +38,9 @@ function publicChallenge(challenge:Awaited<ReturnType<typeof findChallenge>>,now
 export async function GET(request:Request){
  try{
   const db=database(),now=Date.now(),user=await getCurrentUser(),url=new URL(request.url);
-  const today=await ensureDailyChallenge(db,now);
-  const requested=(url.searchParams.get('id')||today.id).trim();
-  if(requested.length>180)return authJson({error:'Invalid challenge.'},400);
-  const challenge=requested===today.id?today:await findChallenge(db,requested);
+  const requestedId=(url.searchParams.get('id')||'').trim();
+  if(requestedId.length>180)return authJson({error:'Invalid challenge.'},400);
+  const challenge=requestedId?await findChallenge(db,requestedId):await ensureDailyChallenge(db,now);
   if(!challenge)return authJson({error:'Challenge not found.'},404);
 
   const [fighters,historyRows,mySubmission]=await Promise.all([
