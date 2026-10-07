@@ -1,7 +1,7 @@
 import {database} from '@/db/raw';
 import {canContribute,getCurrentUser} from '@/lib/auth';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
-import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMembers,wilsonLowerBound} from '@/lib/squad-challenge';
+import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMembers,wilsonLowerBound,type SquadChallengeStatus} from '@/lib/squad-challenge';
 import {z} from 'zod';
 
 const idText=z.string().trim().min(1).max(180);
@@ -35,7 +35,7 @@ type SubmissionRow={
  targetVersionId:string|null;
  budget:number;
  maxMembers:number;
- challengeStatus:string;
+ challengeStatus:SquadChallengeStatus;
  startsAt:number;
  endsAt:number;
  yesVotes:number;
@@ -43,6 +43,55 @@ type SubmissionRow={
  totalVotes:number;
  myVote:'yes'|'no'|null;
 };
+
+type SubmissionAggregateDbRow={
+ id:string;
+ challengeId:string;
+ owner:string;
+ name:string;
+ strategy:string;
+ totalCost:number;
+ lockedAt:number|null;
+ created:number;
+ updated:number;
+ handle:string;
+ displayName:string;
+ avatarUrl:string|null;
+ challengeTitle:string;
+ targetCharacterId:string|null;
+ targetVersionId:string|null;
+ budget:number;
+ maxMembers:number;
+ challengeStatus:string;
+ startsAt:number;
+ endsAt:number;
+ yesVotes:number;
+ noVotes:number;
+ totalVotes:number;
+ myVote:string|null;
+};
+
+type SubmissionMemberView={
+ position:number;
+ characterId:string;
+ characterName:string;
+ versionId:string;
+ versionName:string;
+ cost:number;
+};
+
+type SubmissionMemberDbRow=SubmissionMemberView&{submissionId:string};
+type DeleteSubmissionDbRow={owner:string;challengeId:string;status:SquadChallengeStatus;startsAt:number;endsAt:number;votes:number};
+type ExistingSubmissionDbRow={id:string;lockedAt:number|null;votes:number};
+type BindValue=string|number|null;
+
+function errorDetails(error:unknown){
+ if(error instanceof Error){
+  const status='status' in error?Number((error as Error&{status?:unknown}).status):Number.NaN;
+  return {message:error.message,status};
+ }
+ return {message:String(error),status:Number.NaN};
+}
 
 const selectSubmission=`SELECT
  s.id,
@@ -74,7 +123,7 @@ const selectSubmission=`SELECT
  LEFT JOIN profiles p ON p.user=s.owner
  LEFT JOIN squad_submission_votes v ON v.submission_id=s.id`;
 
-function normalizeRow(row:any):SubmissionRow{
+function normalizeRow(row:SubmissionAggregateDbRow):SubmissionRow{
  return {
   id:String(row.id),
   challengeId:String(row.challengeId),
@@ -93,7 +142,7 @@ function normalizeRow(row:any):SubmissionRow{
   targetVersionId:row.targetVersionId||null,
   budget:Number(row.budget),
   maxMembers:Number(row.maxMembers),
-  challengeStatus:String(row.challengeStatus),
+  challengeStatus:row.challengeStatus as SquadChallengeStatus,
   startsAt:Number(row.startsAt),
   endsAt:Number(row.endsAt),
   yesVotes:Number(row.yesVotes||0),
@@ -104,10 +153,10 @@ function normalizeRow(row:any):SubmissionRow{
 }
 
 async function membersFor(db:D1Database,submissionIds:string[]){
- if(!submissionIds.length)return new Map<string,any[]>();
+ if(!submissionIds.length)return new Map<string,SubmissionMemberView[]>();
  const placeholders=submissionIds.map(()=>'?').join(',');
- const rows=(await db.prepare(`SELECT submission_id AS submissionId,position,character_id AS characterId,version_id AS versionId,character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id IN (${placeholders}) ORDER BY submission_id ASC,position ASC`).bind(...submissionIds).all<any>()).results;
- const grouped=new Map<string,any[]>();
+ const rows=(await db.prepare(`SELECT submission_id AS submissionId,position,character_id AS characterId,version_id AS versionId,character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id IN (${placeholders}) ORDER BY submission_id ASC,position ASC`).bind(...submissionIds).all<SubmissionMemberDbRow>()).results;
+ const grouped=new Map<string,SubmissionMemberView[]>();
  for(const row of rows){
   const list=grouped.get(row.submissionId)||[];
   list.push({position:Number(row.position),characterId:row.characterId,versionId:row.versionId,characterName:row.characterName,versionName:row.versionName,cost:Number(row.cost)});
@@ -116,8 +165,8 @@ async function membersFor(db:D1Database,submissionIds:string[]){
  return grouped;
 }
 
-function publicSubmission(row:SubmissionRow,members:any[],viewerId:string|null,now:number,rank?:number){
- const challengeState=effectiveChallengeStatus({status:row.challengeStatus as any,startsAt:row.startsAt,endsAt:row.endsAt},now);
+function publicSubmission(row:SubmissionRow,members:SubmissionMemberView[],viewerId:string|null,now:number,rank?:number){
+ const challengeState=effectiveChallengeStatus({status:row.challengeStatus,startsAt:row.startsAt,endsAt:row.endsAt},now);
  const owned=Boolean(viewerId&&viewerId===row.owner);
  const canSeeVotes=owned||Boolean(row.myVote)||challengeState==='closed';
  const yesPct=row.totalVotes?Math.round(row.yesVotes/row.totalVotes*100):0;
@@ -165,7 +214,7 @@ export async function GET(request:Request){
   if(!['top','newest','most_voted'].includes(sort))return authJson({error:'Unknown sort order.'},400);
   if(mine&&!viewer)return authJson({error:'Sign in to view your challenge entries.'},401);
 
-  const params:any[]=[viewerId||''];
+  const params:BindValue[]=[viewerId||''];
   let where=' WHERE s.removed=0',maxRows=100;
   if(id){where+=' AND s.id=?';params.push(id);maxRows=1;}
   else if(challengeId){where+=' AND s.challenge_id=?';params.push(challengeId);}
@@ -174,7 +223,7 @@ export async function GET(request:Request){
   else return authJson({error:'Provide a challenge, submission, or profile filter.'},400);
 
   const sql=`${selectSubmission}${where} GROUP BY s.id ORDER BY s.created DESC LIMIT ${maxRows}`;
-  const raw=(await db.prepare(sql).bind(...params).all<any>()).results.map(normalizeRow);
+  const raw=(await db.prepare(sql).bind(...params).all<SubmissionAggregateDbRow>()).results.map(normalizeRow);
   if(id&&!raw.length)return authJson({error:'Squad submission not found.'},404);
 
   let rows=raw;
@@ -205,7 +254,7 @@ export async function POST(request:Request){
   if(!canContribute(user))return authJson({error:'Complete and verify your profile before entering challenges.'},403);
 
   if(input.action==='delete'){
-   const submission=await db.prepare(`SELECT s.owner,s.challenge_id AS challengeId,c.status,c.starts_at AS startsAt,c.ends_at AS endsAt,(SELECT COUNT(*) FROM squad_submission_votes v WHERE v.submission_id=s.id) AS votes FROM squad_submissions s JOIN daily_squad_challenges c ON c.id=s.challenge_id WHERE s.id=? AND s.removed=0 LIMIT 1`).bind(input.submissionId).first<any>();
+   const submission=await db.prepare(`SELECT s.owner,s.challenge_id AS challengeId,c.status,c.starts_at AS startsAt,c.ends_at AS endsAt,(SELECT COUNT(*) FROM squad_submission_votes v WHERE v.submission_id=s.id) AS votes FROM squad_submissions s JOIN daily_squad_challenges c ON c.id=s.challenge_id WHERE s.id=? AND s.removed=0 LIMIT 1`).bind(input.submissionId).first<DeleteSubmissionDbRow>();
    if(!submission)return authJson({error:'Squad submission not found.'},404);
    if(submission.owner!==user.userId)return authJson({error:'You cannot delete another user’s squad.'},403);
    if(effectiveChallengeStatus({status:submission.status,startsAt:Number(submission.startsAt),endsAt:Number(submission.endsAt)},now)!=='active')return authJson({error:'This challenge is closed.'},409);
@@ -218,7 +267,7 @@ export async function POST(request:Request){
   if(!challenge)return authJson({error:'Challenge not found.'},404);
   if(effectiveChallengeStatus(challenge,now)!=='active')return authJson({error:'This challenge is not accepting submissions.'},409);
   const {snapshots,totalCost}=await resolveSubmissionMembers(db,challenge,input.members);
-  const existing=await db.prepare(`SELECT s.id,s.locked_at AS lockedAt,(SELECT COUNT(*) FROM squad_submission_votes v WHERE v.submission_id=s.id) AS votes FROM squad_submissions s WHERE s.challenge_id=? AND s.owner=? LIMIT 1`).bind(challenge.id,user.userId).first<any>();
+  const existing=await db.prepare(`SELECT s.id,s.locked_at AS lockedAt,(SELECT COUNT(*) FROM squad_submission_votes v WHERE v.submission_id=s.id) AS votes FROM squad_submissions s WHERE s.challenge_id=? AND s.owner=? LIMIT 1`).bind(challenge.id,user.userId).first<ExistingSubmissionDbRow>();
   if(existing&&(existing.lockedAt||Number(existing.votes)>0))return authJson({error:'This squad is locked because community voting has started.'},409);
 
   const submissionId=existing?.id||`squad-sub-${crypto.randomUUID()}`;
@@ -236,11 +285,11 @@ export async function POST(request:Request){
   }
   await db.batch(statements);
   return authJson({ok:true,id:submissionId,totalCost,updated:Boolean(existing)});
- }catch(error:any){
+ }catch(error:unknown){
   if(error instanceof z.ZodError)return authJson({error:'Invalid squad submission.',issues:error.issues},400);
-  if(error?.message==='squad_submission_locked'||String(error?.message||'').includes('squad_submission_locked'))return authJson({error:'This squad is locked because community voting has started.'},409);
-  const status=Number(error?.status);
-  if(status>=400&&status<500)return authJson({error:error.message},status);
+  const details=errorDetails(error);
+  if(details.message.includes('squad_submission_locked'))return authJson({error:'This squad is locked because community voting has started.'},409);
+  if(details.status>=400&&details.status<500)return authJson({error:details.message},details.status);
   console.error('Squad submission save failed',error);
   return authJson({error:'Could not save squad submission.'},503);
  }
