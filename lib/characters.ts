@@ -95,7 +95,27 @@ export const characterVersions:CharacterVersion[]=[
  {id:'asta-devil-union',characterId:'asta',name:'Devil Union Asta',shortName:'Devil Union',aliases:['Devil Union'],description:'Asta using Devil Union as represented in the current catalog.',sortOrder:20,canonical:true,sourceEndpoint:'Black Clover anime, episode 170',parentVersionId:'asta-black-form'},
  {id:'senku-science-kingdom',characterId:'senku',name:'Science Kingdom Senku',shortName:'Science Kingdom',aliases:['Science Kingdom equipment'],description:'Senku with the Science Kingdom equipment state represented in the existing catalog.',sortOrder:10,canonical:true,sourceEndpoint:'Dr. Stone anime, Science Future',parentVersionId:null},
  {id:'shinra-adolla-burst',characterId:'shinra',name:'Adolla Burst Shinra',shortName:'Adolla Burst',aliases:['Adolla Burst'],description:'Shinra using the Adolla Burst state represented in the existing catalog.',sortOrder:10,canonical:true,sourceEndpoint:'Fire Force anime',parentVersionId:null},
- {id:'shinra-rapid',characterId:'shinra',name:'Rapid Shinra',shortName:'Rapid',aliases:['Rapid'],description:'Shinra combat profile represented by the existing Rapid catalog state.',sortOrder:20,canonical:true,sourceEndpoint:'Fire Force anime season 3',parentVersionId:'shinra-adolla-burst'}
+ {id:'shinra-rapid',characterId:'shinra',name:'Rapid Shinra',shortName:'Rapid',aliases:['Rapid'],description:'Shinra combat profile represented by the existing Rapid catalog state.',sortOrder:20,canonical:true,sourceEndpoint:'Fire Force anime season 3',parentVersionId:'shinra-adolla-burst'},
+
+ {id:'madara-edo-tensei',characterId:'madara',name:'Edo Tensei Madara',shortName:'Edo Tensei',aliases:['Reanimated Madara','Edo Madara'],description:'Madara in his reanimated Fourth Shinobi World War combat state.',era:'Naruto Shippuden',arc:'Fourth Shinobi World War',sortOrder:10,canonical:true,sourceEndpoint:'Naruto Shippuden · Fourth Shinobi World War',parentVersionId:null},
+ {id:'madara-revived',characterId:'madara',name:'Revived Madara',shortName:'Revived',aliases:['Alive Madara','Revived Uchiha Madara'],description:'Madara after returning to a living body during the Fourth Shinobi World War.',era:'Naruto Shippuden',arc:'Fourth Shinobi World War',sortOrder:20,canonical:true,sourceEndpoint:'Naruto Shippuden · Fourth Shinobi World War',parentVersionId:'madara-edo-tensei'},
+ {id:'madara-ten-tails-jinchuriki',characterId:'madara',name:'Ten-Tails Jinchuriki Madara',shortName:'Ten-Tails Jinchuriki',aliases:['Juubi Madara','Six Paths Madara','Ten Tails Madara'],description:'Madara in his Ten-Tails jinchuriki Six Paths-era combat state.',era:'Naruto Shippuden',arc:'Fourth Shinobi World War',sortOrder:30,canonical:true,sourceEndpoint:'Naruto Shippuden · Fourth Shinobi World War',parentVersionId:'madara-revived'},
+
+ {id:'gojo-hidden-inventory-awakened',characterId:'gojo',name:'Awakened Hidden Inventory Gojo',shortName:'Awakened',aliases:['Awakened Gojo','Teen Gojo'],description:'Gojo after his awakening during the Hidden Inventory period.',era:'Jujutsu Kaisen',arc:'Hidden Inventory',sortOrder:10,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Hidden Inventory',parentVersionId:null},
+ {id:'gojo-shibuya',characterId:'gojo',name:'Shibuya Incident Gojo',shortName:'Shibuya',aliases:['Shibuya Gojo','Adult Gojo'],description:'Gojo at the Shibuya Incident anime endpoint.',era:'Jujutsu Kaisen',arc:'Shibuya Incident',sortOrder:20,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Shibuya Incident',parentVersionId:'gojo-hidden-inventory-awakened'},
+ {id:'gojo-shinjuku',characterId:'gojo',name:'Shinjuku Showdown Gojo',shortName:'Shinjuku',aliases:['Shinjuku Gojo'],description:'Gojo at his Shinjuku Showdown manga combat endpoint.',era:'Jujutsu Kaisen',arc:'Shinjuku Showdown',sortOrder:30,canonical:true,sourceEndpoint:'Jujutsu Kaisen manga · Shinjuku Showdown',parentVersionId:'gojo-shibuya'},
+
+ {id:'itachi-akatsuki',characterId:'itachi',name:'Akatsuki Itachi',shortName:'Akatsuki',aliases:['Living Itachi','Akatsuki-era Itachi'],description:'Itachi during his Akatsuki-era combat profile.',era:'Naruto Shippuden',sortOrder:10,canonical:true,sourceEndpoint:'Naruto Shippuden · Akatsuki era',parentVersionId:null},
+ {id:'itachi-edo-tensei',characterId:'itachi',name:'Edo Tensei Itachi',shortName:'Edo Tensei',aliases:['Reanimated Itachi','Edo Itachi'],description:'Itachi in his reanimated Fourth Shinobi World War combat state.',era:'Naruto Shippuden',arc:'Fourth Shinobi World War',sortOrder:20,canonical:true,sourceEndpoint:'Naruto Shippuden · Fourth Shinobi World War',parentVersionId:'itachi-akatsuki'},
+
+ {id:'aizen-soul-society',characterId:'aizen',name:'Soul Society Aizen',shortName:'Soul Society',aliases:['Captain Aizen'],description:'Aizen at the Soul Society conflict endpoint before later Hogyoku transformations.',era:'Bleach',arc:'Soul Society',sortOrder:10,canonical:true,sourceEndpoint:'Bleach · Soul Society arc',parentVersionId:null},
+ {id:'aizen-hogyoku',characterId:'aizen',name:'Hogyoku Aizen',shortName:'Hogyoku',aliases:['Hōgyoku Aizen','Transcendent Aizen'],description:'Aizen during his Hogyoku-evolved combat state.',era:'Bleach',arc:'Arrancar / Fake Karakura Town',sortOrder:20,canonical:true,sourceEndpoint:'Bleach · Arrancar conflict',parentVersionId:'aizen-soul-society'},
+ {id:'aizen-tybw',characterId:'aizen',name:'Thousand-Year Blood War Aizen',shortName:'TYBW',aliases:['TYBW Aizen','Muken Aizen'],description:'Aizen at the Thousand-Year Blood War anime endpoint.',era:'Bleach: Thousand-Year Blood War',sortOrder:30,canonical:true,sourceEndpoint:'Bleach: Thousand-Year Blood War anime',parentVersionId:'aizen-hogyoku'},
+
+ {id:'saitama-hero-association',characterId:'saitama',name:'Hero Association Saitama',shortName:'Hero Association',aliases:['Caped Baldy','Saitama'],description:'Saitama at the current anime Hero Association combat endpoint.',era:'One-Punch Man',sortOrder:10,canonical:true,sourceEndpoint:'One-Punch Man anime',parentVersionId:null},
+
+ {id:'megumi-season-1',characterId:'megumi',name:'Season 1 Megumi',shortName:'Season 1',aliases:['Season 1'],description:'Megumi at the first-season anime combat endpoint.',era:'Jujutsu Kaisen',sortOrder:10,canonical:true,sourceEndpoint:'Jujutsu Kaisen anime season 1',parentVersionId:null},
+ {id:'megumi-shibuya',characterId:'megumi',name:'Shibuya Incident Megumi',shortName:'Shibuya',aliases:['Shibuya Megumi'],description:'Megumi at the Shibuya Incident anime endpoint.',era:'Jujutsu Kaisen',arc:'Shibuya Incident',sortOrder:20,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Shibuya Incident',parentVersionId:'megumi-season-1'}
 ];
 
 export const abilities:Ability[]=[
@@ -131,7 +151,31 @@ export const abilities:Ability[]=[
  {id:'denji-chainsaws',characterId:'denji',name:'Chainsaw Hybrid Transformation',description:'Hybrid transformation from the existing catalog summary.',category:'transformation'},
  {id:'asta-anti-magic',characterId:'asta',name:'Anti-Magic Swords',description:'Anti-magic sword combat from the existing catalog summary.',category:'weapon'},
  {id:'senku-science',characterId:'senku',name:'Scientific Planning',description:'Scientific planning and invention from the existing catalog summary.',category:'other'},
- {id:'shinra-ignition',characterId:'shinra',name:'Third-generation Ignition',description:'Ignition ability from the existing catalog summary.',category:'energy'}
+ {id:'shinra-ignition',characterId:'shinra',name:'Third-generation Ignition',description:'Ignition ability from the existing catalog summary.',category:'energy'},
+
+ {id:'madara-ocular',characterId:'madara',name:'Sharingan and Rinnegan',description:'Ocular techniques associated with Madara combat profiles.',category:'sensory'},
+ {id:'madara-susanoo',characterId:'madara',name:'Susanoo',description:'Uchiha chakra avatar used for offense and defense.',category:'defensive'},
+ {id:'madara-limbo',characterId:'madara',name:'Limbo',description:'Six Paths-era parallel shadow technique.',category:'hax'},
+ {id:'madara-ten-tails',characterId:'madara',name:'Ten-Tails Jinchuriki',description:'Ten-Tails jinchuriki transformation state.',category:'transformation'},
+
+ {id:'gojo-limitless',characterId:'gojo',name:'Limitless',description:'Spatial cursed technique used for Infinity, Blue, Red, and Hollow Purple applications.',category:'hax'},
+ {id:'gojo-six-eyes',characterId:'gojo',name:'Six Eyes',description:'Exceptional cursed-energy perception and efficiency.',category:'sensory'},
+ {id:'gojo-unlimited-void',characterId:'gojo',name:'Unlimited Void',description:'Gojo domain expansion.',category:'hax'},
+ {id:'gojo-rct',characterId:'gojo',name:'Reverse Cursed Technique',description:'Reverse cursed energy used for recovery and technique support.',category:'technique'},
+
+ {id:'itachi-genjutsu',characterId:'itachi',name:'Sharingan Genjutsu',description:'Sharingan-based illusion techniques including high-level genjutsu.',category:'hax'},
+ {id:'itachi-amaterasu',characterId:'itachi',name:'Amaterasu',description:'Mangekyo Sharingan black-flame technique.',category:'technique'},
+ {id:'itachi-susanoo',characterId:'itachi',name:'Susanoo',description:'Itachi defensive and offensive chakra avatar.',category:'defensive'},
+
+ {id:'aizen-kyoka-suigetsu',characterId:'aizen',name:'Kyoka Suigetsu',description:'Complete hypnosis through Aizen zanpakuto ability.',category:'hax'},
+ {id:'aizen-kido',characterId:'aizen',name:'Kido',description:'High-level Soul Reaper spell techniques.',category:'technique'},
+ {id:'aizen-hogyoku-ability',characterId:'aizen',name:'Hogyoku Evolution',description:'Hogyoku-driven transformation and adaptation state.',category:'transformation'},
+
+ {id:'saitama-physical',characterId:'saitama',name:'Overwhelming Physical Ability',description:'Extreme strength, speed, durability, and close-range combat.',category:'physical'},
+ {id:'saitama-serious-punch',characterId:'saitama',name:'Serious Punch',description:'A named high-output punch from Saitama serious-series attacks.',category:'technique'},
+
+ {id:'megumi-ten-shadows',characterId:'megumi',name:'Ten Shadows Technique',description:'Shikigami-based inherited cursed technique.',category:'summoning'},
+ {id:'megumi-chimera-shadow-garden',characterId:'megumi',name:'Chimera Shadow Garden',description:'Megumi incomplete domain expansion.',category:'hax'}
 ];
 
 export const versionAbilities:VersionAbility[]=[
@@ -170,7 +214,39 @@ export const versionAbilities:VersionAbility[]=[
  {versionId:'denji-chainsaw-hybrid',abilityId:'denji-chainsaws',status:'available'},
  ...['asta-black-form','asta-devil-union'].map(versionId=>({versionId,abilityId:'asta-anti-magic',status:'available' as const})),
  {versionId:'senku-science-kingdom',abilityId:'senku-science',status:'available'},
- ...['shinra-adolla-burst','shinra-rapid'].map(versionId=>({versionId,abilityId:'shinra-ignition',status:'available' as const}))
+ ...['shinra-adolla-burst','shinra-rapid'].map(versionId=>({versionId,abilityId:'shinra-ignition',status:'available' as const})),
+
+ ...['madara-edo-tensei','madara-revived','madara-ten-tails-jinchuriki'].flatMap(versionId=>[
+  {versionId,abilityId:'madara-ocular',status:'available' as const},
+  {versionId,abilityId:'madara-susanoo',status:'available' as const}
+ ]),
+ {versionId:'madara-ten-tails-jinchuriki',abilityId:'madara-limbo',status:'available'},
+ {versionId:'madara-ten-tails-jinchuriki',abilityId:'madara-ten-tails',status:'mastered'},
+
+ ...['gojo-hidden-inventory-awakened','gojo-shibuya','gojo-shinjuku'].flatMap(versionId=>[
+  {versionId,abilityId:'gojo-limitless',status:'mastered' as const},
+  {versionId,abilityId:'gojo-six-eyes',status:'available' as const},
+  {versionId,abilityId:'gojo-rct',status:'available' as const}
+ ]),
+ ...['gojo-shibuya','gojo-shinjuku'].map(versionId=>({versionId,abilityId:'gojo-unlimited-void',status:'mastered' as const})),
+
+ ...['itachi-akatsuki','itachi-edo-tensei'].flatMap(versionId=>[
+  {versionId,abilityId:'itachi-genjutsu',status:'mastered' as const},
+  {versionId,abilityId:'itachi-amaterasu',status:'available' as const},
+  {versionId,abilityId:'itachi-susanoo',status:'available' as const}
+ ]),
+
+ ...['aizen-soul-society','aizen-hogyoku','aizen-tybw'].flatMap(versionId=>[
+  {versionId,abilityId:'aizen-kyoka-suigetsu',status:'mastered' as const},
+  {versionId,abilityId:'aizen-kido',status:'available' as const}
+ ]),
+ ...['aizen-hogyoku','aizen-tybw'].map(versionId=>({versionId,abilityId:'aizen-hogyoku-ability',status:'available' as const})),
+
+ {versionId:'saitama-hero-association',abilityId:'saitama-physical',status:'mastered'},
+ {versionId:'saitama-hero-association',abilityId:'saitama-serious-punch',status:'available'},
+
+ ...['megumi-season-1','megumi-shibuya'].map(versionId=>({versionId,abilityId:'megumi-ten-shadows',status:'available' as const})),
+ {versionId:'megumi-shibuya',abilityId:'megumi-chimera-shadow-garden',status:'limited'}
 ];
 
 export function versionsForCharacter(characterId:string){
