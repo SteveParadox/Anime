@@ -26,27 +26,27 @@ Migration `0005_auth_accounts.sql` converts existing hosted-platform ownership I
 
 ## Authentication flows
 
-Email registration requires email, password, username, and display name. The user, email identity, and profile are created in one D1 batch. A verification token is then generated and delivered through the email service. Email/password users may sign in before verification, but community contribution actions require a completed profile and verified email.
+Email registration requires email, password, username, and display name. The user, email identity, profile, and initial verification-token hash are created in one D1 batch. Email/password users may sign in before verification, but unverified profiles are not publicly discoverable and community contribution actions require a completed, verified account.
 
 Google sign-in uses Authorization Code + PKCE, state, nonce, server-side code exchange, and server-side ID-token verification. Only `openid email profile` scopes are requested. Google access/refresh tokens are not persisted. A verified Google email can link to an existing account with the same normalized email. If that address only has an unverified password registration, its password identity, reset tokens, and sessions are revoked before the trusted provider is linked; this prevents pre-registration of somebody else's email from becoming a persistent account-takeover path. New Google accounts receive a temporary username and must complete the profile before contributing. Google avatar data initializes an empty avatar only and never overwrites a custom one.
 
-Hosted ChatGPT/platform authentication remains supported for backward compatibility. Provider-specific headers are resolved centrally in `lib/auth.ts`; feature routes no longer read those headers directly. Existing platform IDs migrated by `0005` resolve to their previous content.
+Hosted ChatGPT/platform authentication remains supported for backward compatibility. Provider-specific headers are resolved centrally in `lib/auth.ts`; feature routes no longer read those headers directly. In non-development deployments those headers are ignored unless `AUTH_TRUST_HOSTED_IDENTITY_HEADERS=true` is explicitly set. Set that flag only when a trusted upstream strips client-supplied `oai-authenticated-user-*` headers and injects authenticated values. Direct Cloudflare/Vercel deployments should leave it unset. Existing platform IDs migrated by `0005` resolve to their previous content.
 
 ## Passwords and tokens
 
 The current Cloudflare Worker implementation uses Web Crypto PBKDF2-HMAC-SHA-256 with a per-password random 128-bit salt and 310,000 iterations. Passwords are never trimmed and are limited to 8-128 characters. PBKDF2 was selected because it is natively available in the deployed Worker runtime without adding a native/WASM password-hashing dependency. Argon2id remains the preferred future upgrade if the runtime/dependency policy makes it practical.
 
-Random session, verification, password-reset, OAuth-state, and PKCE values use cryptographically secure randomness. Reusable raw session/reset/verification secrets are not stored in D1.
+Random session, verification, password-reset, OAuth-state, and PKCE values use cryptographically secure randomness. Reusable raw session/reset/verification secrets are not stored in D1. New verification and reset links carry their token in the URL fragment (`#token=...`) so the secret is not sent in the initial HTTP request or ordinary access logs; query-string links remain readable only for backward compatibility.
 
-Normal sessions expire after 30 days. Verification links expire after 60 minutes. Password-reset links expire after 45 minutes. Resetting a password invalidates all existing sessions before creating a fresh session.
+Normal sessions expire after 30 days and each account is capped at 12 active server-side sessions. Verification links expire after 60 minutes. Password-reset links expire after 45 minutes. Issuing a newer one-time link does not invalidate a previously delivered link; successfully consuming one invalidates the account's remaining links of that type. Resetting a password invalidates all existing sessions before creating a fresh session.
 
 ## Cookie and CSRF policy
 
-The session cookie is HttpOnly, SameSite=Lax, Path=/, and Secure in production. Secure is intentionally omitted only for local non-HTTPS development. State-changing auth/community endpoints enforce same-origin requests in addition to SameSite protection. Google sign-in validates state, PKCE and nonce. Return paths accept only safe relative URLs and reject absolute/cross-origin redirects.
+The session cookie is HttpOnly, SameSite=Lax, Path=/, and Secure everywhere except explicit local development. State-changing auth/community/evidence endpoints enforce same-origin Origin/Fetch-Metadata checks in addition to SameSite protection. Google sign-in validates state, PKCE and nonce, atomically consumes OAuth state, and validates the signed ID token against Google's JWKS. Return paths accept only safe relative URLs and reject absolute/cross-origin redirects.
 
 ## Contribution policy
 
-Public browsing is allowed without authentication. Profile setup is allowed after authentication. Contribution actions require a completed public profile. Email/password identities additionally require email verification. Google and hosted-platform identities are treated as already carrying a trusted provider verification signal.
+Public browsing is allowed without authentication. Profile setup is allowed after authentication. Contribution actions require a completed account whose email/trust state has been verified. Google and trusted hosted-platform identities set that account-level verification state, so authorization does not depend on whichever linked provider happened to create the current session.
 
 ## Email delivery
 
@@ -58,6 +58,9 @@ The email abstraction in `lib/email.ts` currently supports Resend when `RESEND_A
 APP_BASE_URL=https://your-anime-clash-host
 ENVIRONMENT=production
 
+# Only behind a trusted hosted-auth proxy that strips/injects oai-authenticated-user-*:
+# AUTH_TRUST_HOSTED_IDENTITY_HEADERS=true
+
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 GOOGLE_REDIRECT_URI=https://your-anime-clash-host/api/auth/google/callback
@@ -68,14 +71,17 @@ RESEND_API_KEY=...
 ANIME_CLASH_ADMIN_USER_ID=usr_...
 ```
 
-Temporary backward compatibility also recognizes `ANIME_CLASH_ADMIN_ID` for a request authenticated specifically through the hosted ChatGPT provider. Production should migrate moderation configuration to `ANIME_CLASH_ADMIN_USER_ID` after identifying the migrated internal account.
+Temporary backward compatibility also recognizes `ANIME_CLASH_ADMIN_ID` by matching the account's linked legacy ChatGPT identity, regardless of which linked provider created the current app session. Production should migrate moderation configuration to `ANIME_CLASH_ADMIN_USER_ID` after identifying the migrated internal account.
 
 For local development only:
 
 ```text
 ENVIRONMENT=development
+APP_BASE_URL=http://localhost:3000
 AUTH_DEV_EMAIL_LOG=true
 ```
+
+`APP_BASE_URL` is mandatory outside explicit development and must be HTTPS there. `GOOGLE_REDIRECT_URI` must be exactly the same origin and use `/api/auth/google/callback`; invalid configuration disables the Google button rather than attempting a loose redirect.
 
 Never expose Google secrets, Resend keys, raw sessions, passwords, password hashes, reset tokens, verification tokens, or OAuth access tokens to the client bundle or production logs.
 
@@ -91,4 +97,4 @@ pnpm lint
 pnpm build
 ```
 
-The authentication tests cover password hashing/verification, token hashing, return-path protection, legacy ownership migration, and database uniqueness. Google OAuth and real email delivery still require deployment-environment smoke tests because they depend on external credentials and provider callbacks.
+The authentication tests cover password hashing/verification, token hashing, return-path protection, request-size enforcement, same-origin mutation checks, legacy ownership migration, and database uniqueness. Google OAuth and real email delivery still require deployment-environment smoke tests because they depend on external credentials and provider callbacks.
