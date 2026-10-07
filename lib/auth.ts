@@ -238,8 +238,12 @@ export async function requireCurrentUser(returnTo='/'):Promise<CurrentUser>{
 }
 
 export async function createSession(userIdValue:string){
- const db=database(),token=randomToken(32),tokenHash=await hashOpaqueToken(token),now=Date.now(),expires=now+SESSION_TTL_MS;
- await db.prepare('INSERT INTO auth_sessions (id,user_id,token_hash,created,expires,last_used) VALUES (?,?,?,?,?,?)').bind(crypto.randomUUID(),userIdValue,tokenHash,now,expires,now).run();
+ const db=database(),token=randomToken(32),tokenHash=await hashOpaqueToken(token),now=Date.now(),expires=now+SESSION_TTL_MS,id=crypto.randomUUID();
+ await db.batch([
+  db.prepare('DELETE FROM auth_sessions WHERE expires<=?').bind(now),
+  db.prepare('INSERT INTO auth_sessions (id,user_id,token_hash,created,expires,last_used) VALUES (?,?,?,?,?,?)').bind(id,userIdValue,tokenHash,now,expires,now),
+  db.prepare('DELETE FROM auth_sessions WHERE user_id=? AND id NOT IN (SELECT id FROM auth_sessions WHERE user_id=? ORDER BY created DESC LIMIT 12)').bind(userIdValue,userIdValue)
+ ]);
  const jar=await cookies();
  jar.set(SESSION_COOKIE,token,sessionCookieOptions(new Date(expires)));
  return token;
