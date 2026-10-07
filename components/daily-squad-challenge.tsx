@@ -118,6 +118,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  const [query,setQuery]=useState('');
  const [series,setSeries]=useState('all');
  const [role,setRole]=useState('all');
+ const [tag,setTag]=useState('all');
  const [maxCost,setMaxCost]=useState(100);
  const [order,setOrder]=useState<'cost-asc'|'cost-desc'|'name'|'series'>('cost-asc');
  const [selected,setSelected]=useState<SquadChallengeFighter[]>([]);
@@ -160,15 +161,13 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
   finally{setLoading(false)}
  },[]);
 
- useEffect(()=>{void load();},[load]);
-
  useEffect(()=>{
   const id=new URLSearchParams(location.search).get('challengeSquad');
-  if(!id)return;
+  if(!id){void load();return}
   void api<{submission:Submission}>(`/api/squad-submissions?id=${encodeURIComponent(id)}`)
-   .then(result=>setShared(result.submission))
-   .catch(error=>toast.error((error as Error).message));
- },[]);
+   .then(async result=>{setShared(result.submission);await load(result.submission.challengeId)})
+   .catch(error=>{toast.error((error as Error).message);void load()});
+ },[load]);
 
  const challengeId=challenge?.id||'';
  useEffect(()=>{
@@ -180,12 +179,13 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
 
  const seriesOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.series))].sort():[],[challenge]);
  const roleOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.role))].sort():[],[challenge]);
+ const tagOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.flatMap(f=>f.tags))].sort():[],[challenge]);
  const filtered=useMemo(()=>{
   if(!challenge)return [];
   const q=query.trim().toLowerCase();
   const rows=challenge.fighters.filter(f=>{
    const haystack=`${f.characterName} ${f.versionName} ${f.aliases.join(' ')} ${f.series} ${f.role} ${f.tags.join(' ')}`.toLowerCase();
-   return (!q||haystack.includes(q))&&(series==='all'||f.series===series)&&(role==='all'||f.role===role)&&f.cost<=maxCost;
+   return (!q||haystack.includes(q))&&(series==='all'||f.series===series)&&(role==='all'||f.role===role)&&(tag==='all'||f.tags.includes(tag))&&f.cost<=maxCost;
   });
   return rows.sort((a,b)=>{
    if(order==='cost-desc')return b.cost-a.cost||a.versionName.localeCompare(b.versionName);
@@ -193,7 +193,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    if(order==='series')return a.series.localeCompare(b.series)||a.characterName.localeCompare(b.characterName);
    return a.cost-b.cost||a.versionName.localeCompare(b.versionName);
   });
- },[challenge,query,series,role,maxCost,order]);
+ },[challenge,query,series,role,tag,maxCost,order]);
 
  const toggle=(fighter:SquadChallengeFighter)=>{
   if(!challenge||!active||viewer?.submissionLocked)return;
@@ -271,6 +271,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  return <div className="daily-squad-system">
   {shared&&<section className="panel challenge-shared">
    <div className="section-heading"><div><span className="eyebrow">SHARED CHALLENGE SQUAD</span><h2>{shared.name}</h2></div><button className="secondary" onClick={()=>setShared(null)}><X size={15}/>Close</button></div>
+   <p className="challenge-owner">{shared.challenge.title} · {shared.challenge.target?.versionName||shared.challenge.target?.characterName||'Open build'}</p>
    <p className="challenge-owner">@{shared.owner.username} · {shared.totalCost}/{shared.challenge.budget} pts</p>
    <div className="submission-members">{shared.members.map(member=><span key={member.versionId}><strong>{member.characterName}</strong><small>{member.versionName} · {member.cost} pts</small></span>)}</div>
    <p className="strategy-copy">{shared.strategy}</p>
@@ -300,6 +301,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
      <div className="daily-filters">
       <label>Series<select value={series} onChange={event=>setSeries(event.target.value)}><option value="all">All series</option>{seriesOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
       <label>Role<select value={role} onChange={event=>setRole(event.target.value)}><option value="all">All roles</option>{roleOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+      <label>Tag<select value={tag} onChange={event=>setTag(event.target.value)}><option value="all">All tags</option>{tagOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
       <label>Max cost<input type="number" min={1} max={challenge.budget} value={maxCost} onChange={event=>setMaxCost(Math.max(1,Math.min(challenge.budget,Number(event.target.value)||challenge.budget)))}/></label>
       <label>Sort<select value={order} onChange={event=>setOrder(event.target.value as typeof order)}><option value="cost-asc">Cost: low → high</option><option value="cost-desc">Cost: high → low</option><option value="name">Name</option><option value="series">Series</option></select></label>
      </div>
@@ -335,7 +337,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     </div>
     <label>Squad name<input value={name} maxLength={60} onChange={event=>setName(event.target.value)} placeholder="The Counter Squad" disabled={Boolean(viewer?.submissionLocked)}/><small>{name.trim().length}/60</small></label>
     <label>Explain your strategy<textarea value={strategy} minLength={10} maxLength={1500} onChange={event=>setStrategy(event.target.value)} placeholder="Explain how the exact selected versions work together…" disabled={Boolean(viewer?.submissionLocked)}/><small>{strategy.length}/1500</small></label>
-    <div className="submission-preview"><small>SUBMISSION PREVIEW</small>{selected.map(item=><span key={item.versionId}>{item.characterName}<b>{item.cost}</b></span>)}<span className="submission-total">TOTAL<b>{totalCost} / {challenge.budget}</b></span></div>
+    <div className="submission-preview"><small>SUBMISSION PREVIEW</small>{selected.map(item=><span key={item.versionId}>{item.characterName}<b>{item.cost}</b></span>)}<span className="submission-total">TOTAL<b>{totalCost} / {challenge.budget}</b></span>{strategy.trim()&&<p>{strategy.trim()}</p>}</div>
     {viewer?.submissionLocked&&<p className="locked-entry">This entry is locked because community voting has started.</p>}
     <button className="primary full" disabled={busy||!submitReady} onClick={submit}>{editingId?'Update challenge squad':'Submit squad'}</button>
     {!authenticated&&<small>Sign in to submit. Browsing remains public.</small>}
