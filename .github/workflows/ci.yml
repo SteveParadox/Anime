@@ -14,25 +14,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.19.0
-      - name: Enable pnpm
+      - name: Bootstrap source and Node
+        shell: bash
         run: |
+          set -euo pipefail
+          REF="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git clone --depth 1 --branch "$REF" "https://github.com/${GITHUB_REPOSITORY}.git" repo
+          curl -fsSL "https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-x64.tar.xz" -o "$RUNNER_TEMP/node.tar.xz"
+          mkdir -p "$RUNNER_TEMP/node22"
+          tar -xJf "$RUNNER_TEMP/node.tar.xz" -C "$RUNNER_TEMP/node22" --strip-components=1
+          echo "$RUNNER_TEMP/node22/bin" >> "$GITHUB_PATH"
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd repo
           corepack enable
           corepack prepare pnpm@11.25.0 --activate
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile
       - name: Authentication tests
-        run: pnpm test:auth
+        run: cd repo && pnpm test:auth
       - name: Domain regression tests
-        run: pnpm test:domain
+        run: cd repo && pnpm test:domain
       - name: TypeScript
-        run: pnpm exec tsc --noEmit
+        run: cd repo && pnpm exec tsc --noEmit
       - name: Lint
-        run: pnpm lint
+        run: cd repo && pnpm lint
       - name: Build
-        run: pnpm build
+        run: cd repo && pnpm build
