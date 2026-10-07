@@ -4,8 +4,9 @@ import {createSession,revokeUnverifiedEmailCredentialAccess} from '@/lib/auth';
 import {hashOpaqueToken,normalizeEmail,safeRelativeReturnPath,userId} from '@/lib/auth-crypto';
 import {clearGoogleCookies,GOOGLE_NONCE_COOKIE,GOOGLE_STATE_COOKIE,GOOGLE_VERIFIER_COOKIE,googleConfig,verifyGoogleIdToken} from '@/lib/google-auth';
 
+function redirectNoStore(location:string|URL){return new Response(null,{status:302,headers:{Location:String(location),'Cache-Control':'no-store'}})}
 function fail(request:Request,code:string){
- const base=new URL('/auth',new URL(request.url).origin);base.searchParams.set('error',code);return Response.redirect(base,302);
+ const base=new URL('/auth',new URL(request.url).origin);base.searchParams.set('error',code);return redirectNoStore(base);
 }
 function safeText(value:unknown,max=200){return typeof value==='string'?value.slice(0,max):''}
 
@@ -68,5 +69,5 @@ export async function GET(request:Request){
  await createSession(resolvedUserId);await clearGoogleCookies();
  const account=await db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(resolvedUserId).first<any>(),returnTo=safeRelativeReturnPath(oauth.returnTo||'/');
  const destination=account?.profileCompleted?returnTo:`/complete-profile?return_to=${encodeURIComponent(returnTo)}`;
- return Response.redirect(new URL(destination,new URL(request.url).origin),302);
+ return redirectNoStore(new URL(destination,new URL(request.url).origin));
 }
