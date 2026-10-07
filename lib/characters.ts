@@ -220,6 +220,7 @@ export const versionAbilities:VersionAbility[]=[
   {versionId,abilityId:'madara-ocular',status:'available' as const},
   {versionId,abilityId:'madara-susanoo',status:'available' as const}
  ]),
+ {versionId:'madara-revived',abilityId:'madara-limbo',status:'available'},
  {versionId:'madara-ten-tails-jinchuriki',abilityId:'madara-limbo',status:'available'},
  {versionId:'madara-ten-tails-jinchuriki',abilityId:'madara-ten-tails',status:'mastered'},
 
@@ -246,7 +247,7 @@ export const versionAbilities:VersionAbility[]=[
  {versionId:'saitama-hero-association',abilityId:'saitama-serious-punch',status:'available'},
 
  ...['megumi-season-1','megumi-shibuya'].map(versionId=>({versionId,abilityId:'megumi-ten-shadows',status:'available' as const})),
- {versionId:'megumi-shibuya',abilityId:'megumi-chimera-shadow-garden',status:'limited'}
+ ...['megumi-season-1','megumi-shibuya'].map(versionId=>({versionId,abilityId:'megumi-chimera-shadow-garden',status:'limited' as const}))
 ];
 
 export function versionsForCharacter(characterId:string){
