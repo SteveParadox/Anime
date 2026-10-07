@@ -57,6 +57,13 @@
       "when": 1791402000000,
       "tag": "0007_expand_squad_roster",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791402600000,
+      "tag": "0008_correct_roster_abilities",
+      "breakpoints": true
     }
   ]
 }
