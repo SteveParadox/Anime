@@ -19,7 +19,7 @@ const schema=z.discriminatedUnion('action',[
  z.object({action:z.literal('comment'),battle:idText,argumentId:z.number().int().positive(),body:bodyText}),
  z.object({action:z.literal('reaction'),argumentId:z.number().int().positive(),reaction:z.enum(['upvote','dispute'])}),
  z.object({action:z.literal('add_evidence'),battle:idText,argumentUser:idText,reference:z.string().trim().min(3).max(300),context:z.string().trim().max(700)}),
- z.object({action:z.literal('report'),subjectType:z.enum(['post','argument','comment','profile']),subjectId:idText,reason:z.string().trim().min(5).max(500)}),
+ z.object({action:z.literal('report'),subjectType:z.enum(['post','argument','comment','profile','evidence']),subjectId:idText,reason:z.string().trim().min(5).max(500)}),
  z.object({action:z.literal('squad_challenge'),challengerSquad:idText,opponentSquad:idText,rules:z.string().trim().min(5).max(700)}),
  z.object({action:z.literal('challenge_vote'),challenge:idText,side:z.enum(['challenger','opponent'])}),
  z.object({action:z.literal('tournament_vote'),week:idText,match:idText,pick:idText}),
@@ -79,7 +79,7 @@ export async function GET(req:Request){try{
   ]);
   for(const a of debate){a.comments=comments.results.filter((c:any)=>c.argumentUser===a.user);a.addedEvidence=evidenceRows.results.filter((e:any)=>e.argumentUser===a.user);a.myReaction=a.myReaction||null;}
  }
- const myVotes=user?(await db.prepare('SELECT battle,side,difficulty FROM votes WHERE user=?').bind(user.userId).all<any>()).results:[];
+ const myVotes=user?(await db.prepare('SELECT battle,side,difficulty,reason,evidence FROM votes WHERE user=?').bind(user.userId).all<any>()).results:[];
  const battles=[...bs.results.map((b:any)=>normalizeBattle({...JSON.parse(b.payload),id:b.id,created:b.created})),...starterBattles];
  return json({battles,votes:vs.results,results:aggregateBattleResults(vs.results),myVotes,progress:ps.results,squads:ss.results.map((s:any)=>({...s,members:arr(s.members)})),debate,user:!!user,profile:currentProfile,isAdmin:admin(user?.userId),unread:notes?.n||0,challenge:dailyChallenge()});
  }catch(e){console.error('Community load failed',e);return json({error:'Could not load the community. Please try again.'},503);}}
@@ -115,6 +115,6 @@ export async function POST(req:Request){try{
  if(d.action==='tournament_vote'){const t=await tournament(db,user.userId),m=t.matches.find((m:any)=>m.id===d.match&&m.active);if(d.week!==t.week||!m||![m.a,m.b].includes(d.pick))return json({error:'That tournament round is closed.'},409);await db.prepare('INSERT INTO tournament_votes (week,match,user,pick,created) VALUES (?,?,?,?,?) ON CONFLICT(week,match,user) DO UPDATE SET pick=excluded.pick,created=excluded.created').bind(d.week,d.match,user.userId,d.pick,now).run();}
  if(d.action==='watchlist'){if(!seasonalAnime.some(a=>a.id===d.anime))return json({error:'Anime not found.'},404);if(d.status==='remove')await db.prepare('DELETE FROM watchlist WHERE user=? AND anime=?').bind(user.userId,d.anime).run();else await db.prepare('INSERT INTO watchlist (user,anime,status,created) VALUES (?,?,?,?) ON CONFLICT(user,anime) DO UPDATE SET status=excluded.status').bind(user.userId,d.anime,d.status,now).run();}
  if(d.action==='notification_read'){if(d.id==='all')await db.prepare('UPDATE notifications SET read=1 WHERE user=?').bind(user.userId).run();else await db.prepare('UPDATE notifications SET read=1 WHERE id=? AND user=?').bind(d.id,user.userId).run();}
- if(d.action==='moderation'){if(!admin(user.userId))return json({error:'Admin access required.'},403);const report=await db.prepare('SELECT * FROM reports WHERE id=? AND status="open"').bind(d.report).first<any>();if(!report)return json({error:'Report not found.'},404);if(d.deleteContent&&report.subject_type==='post')await db.prepare('UPDATE posts SET deleted=1,body="[removed by moderator]" WHERE id=?').bind(report.subject_id).run();if(d.deleteContent&&report.subject_type==='comment')await db.prepare('DELETE FROM comments WHERE id=?').bind(report.subject_id).run();await db.prepare('UPDATE reports SET status=? WHERE id=?').bind(d.decision,d.report).run();}
+ if(d.action==='moderation'){if(!admin(user.userId))return json({error:'Admin access required.'},403);const report=await db.prepare('SELECT * FROM reports WHERE id=? AND status="open"').bind(d.report).first<any>();if(!report)return json({error:'Report not found.'},404);if(d.deleteContent&&report.subject_type==='post')await db.prepare('UPDATE posts SET deleted=1,body="[removed by moderator]" WHERE id=?').bind(report.subject_id).run();if(d.deleteContent&&report.subject_type==='comment')await db.prepare('DELETE FROM comments WHERE id=?').bind(report.subject_id).run();if(d.deleteContent&&report.subject_type==='evidence')await db.prepare('DELETE FROM argument_evidence WHERE id=?').bind(report.subject_id).run();await db.prepare('UPDATE reports SET status=? WHERE id=?').bind(d.decision,d.report).run();}
  return json({ok:true,id});
  }catch(e){console.error('Community save failed',e);return json({error:'Could not save. Your draft is still here; please try again.'},503);}}
