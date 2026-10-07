@@ -18,7 +18,7 @@ export async function POST(request:Request){
   if(!validUsername(username))return authJson({error:'Username must be 3–24 characters using lowercase letters, numbers, or underscores.'},400);
   const limit=await enforceAuthRateLimits(request,'register',email,{ipLimit:8,identityLimit:4,windowMs:30*60_000});
   if(!limit.allowed)return authJson({error:'Too many registration attempts. Try again later.'},429,{'Retry-After':String(limit.retryAfterSeconds)});
-  const db=database();
+  const baseUrl=appBaseUrl(request),db=database();
   if(await db.prepare('SELECT 1 FROM users WHERE email_normalized=?').bind(email).first())return authJson({error:'An account with this email already exists.'},409);
   if(await db.prepare('SELECT 1 FROM profiles WHERE handle=?').bind(username).first())return authJson({error:'That username is already taken.'},409);
   const id=userId(),now=Date.now(),credential=await hashPassword(parsed.data.password);
@@ -32,7 +32,7 @@ export async function POST(request:Request){
    ]);
   }catch(e){console.error('Registration transaction failed',{name:(e as Error).name});return authJson({error:'Could not create the account. The email or username may already be in use.'},409)}
   await createSession(id);
-  const url=`${appBaseUrl(request)}/verify-email?token=${encodeURIComponent(verificationRaw)}`;
+  const url=`${baseUrl}/verify-email#token=${encodeURIComponent(verificationRaw)}`;
   const delivery=await sendVerificationEmail(email,url,VERIFY_TTL_MINUTES);
   return authJson({ok:true,user:{id,email,emailVerified:false,username,displayName:parsed.data.displayName.trim()},verificationEmailSent:delivery.sent},201);
  }catch(e:any){console.error('Registration failed',{name:e?.name});return authJson({error:e?.status===413?'Request body is too large.':'Could not create the account.'},e?.status||500)}
