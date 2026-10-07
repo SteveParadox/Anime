@@ -23,7 +23,7 @@ export type CurrentUser={
 };
 type PlatformIdentity={provider:'chatgpt';providerUserId:string;email:string;displayName:string};
 
-export const SESSION_COOKIE='anime_clash_session';
+export const SESSION_COOKIE=env.ENVIRONMENT==='development'?'anime_clash_session':'__Host-anime_clash_session';
 const SESSION_TTL_MS=30*24*60*60_000;
 
 function sessionCookieOptions(expires:Date){
