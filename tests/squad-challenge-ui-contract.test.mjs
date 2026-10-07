@@ -54,3 +54,10 @@ test('moderator-removed challenge submissions are surfaced as unavailable to the
  assert.match(ui,/submissionRemoved/);
  assert.match(ui,/removed by moderation and cannot be resubmitted/);
 });
+
+
+test('owners can delete only through the explicit unlocked-entry control',()=>{
+ assert.match(ui,/action:'delete',submissionId:editingId/);
+ assert.match(ui,/confirm\('Delete this challenge entry\?/);
+ assert.match(ui,/editingId&&active&&!viewer\?\.submissionLocked/);
+});
