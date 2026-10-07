@@ -19,6 +19,8 @@ export async function GET(request:Request){
  const [stateHash,verifierHash]=await Promise.all([hashOpaqueToken(state),hashOpaqueToken(verifier)]),db=database(),now=Date.now();
  const oauth=await db.prepare('SELECT return_to AS returnTo,pkce_verifier_hash AS verifierHash,expires,used FROM auth_oauth_states WHERE state_hash=? LIMIT 1').bind(stateHash).first<any>();
  if(!oauth||oauth.used||Number(oauth.expires)<=now||oauth.verifierHash!==verifierHash){await clearGoogleCookies();return fail(request,'google_state')}
+ const claimed=await db.prepare('UPDATE auth_oauth_states SET used=1 WHERE state_hash=? AND used=0 AND expires>?').bind(stateHash,now).run();
+ if(!claimed.meta.changes){await clearGoogleCookies();return fail(request,'google_state')}
  let tokenResponse:Response;
  try{
   tokenResponse=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,client_id:config.clientId,client_secret:config.clientSecret,redirect_uri:config.redirectUri,grant_type:'authorization_code',code_verifier:verifier})});
@@ -58,7 +60,6 @@ export async function GET(request:Request){
   if(!collision)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(email,email,now,resolvedUserId).run();
  }
  if(picture)await db.prepare(`UPDATE profiles SET avatar_url=CASE WHEN avatar_url IS NULL OR avatar_url='' THEN ? ELSE avatar_url END,updated=? WHERE user=?`).bind(picture,now,resolvedUserId).run();
- await db.prepare('UPDATE auth_oauth_states SET used=1 WHERE state_hash=?').bind(stateHash).run();
  await createSession(resolvedUserId);await clearGoogleCookies();
  const account=await db.prepare('SELECT profile_completed AS profileCompleted FROM users WHERE id=?').bind(resolvedUserId).first<any>(),returnTo=safeRelativeReturnPath(oauth.returnTo||'/');
  const destination=account?.profileCompleted?returnTo:`/complete-profile?return_to=${encodeURIComponent(returnTo)}`;
