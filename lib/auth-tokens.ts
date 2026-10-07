@@ -6,6 +6,7 @@ export const VERIFY_TTL_MINUTES=60;
 export const RESET_TTL_MINUTES=45;
 
 export function appBaseUrl(request:Request){
+ if(env.ENVIRONMENT==='production'&&!env.APP_BASE_URL)throw new Error('APP_BASE_URL is required in production.');
  const candidate=String(env.APP_BASE_URL||new URL(request.url).origin).trim();
  let url:URL;
  try{url=new URL(candidate)}catch{throw new Error('APP_BASE_URL must be a valid absolute URL.')}
