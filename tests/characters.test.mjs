@@ -85,8 +85,20 @@ test('version and link IDs are unique',()=>{
  assert.equal(new Set(linkKeys).size,linkKeys.length);
 });
 
-test('append-only migration seed mirrors the curated version catalog',()=>{
- const migration=readFileSync('drizzle/0004_character_versions.sql','utf8');
- for(const version of characterVersions)assert.ok(migration.includes(`VALUES ('${version.id}','${version.characterId}'`),version.id);
- for(const link of versionAbilities)assert.ok(migration.includes(`'${link.versionId}','${link.abilityId}'`),`${link.versionId} -> ${link.abilityId}`);
+test('append-only migration history mirrors the curated version catalog',()=>{
+ const migrationHistory=[
+  readFileSync('drizzle/0004_character_versions.sql','utf8'),
+  readFileSync('drizzle/0007_expand_squad_roster.sql','utf8')
+ ].join('\n');
+ for(const version of characterVersions)assert.ok(migrationHistory.includes(`('${version.id}','${version.characterId}'`),version.id);
+ for(const link of versionAbilities)assert.ok(migrationHistory.includes(`'${link.versionId}','${link.abilityId}'`),`${link.versionId} -> ${link.abilityId}`);
+});
+
+test('expanded challenge roster exposes stable combat versions and search aliases',()=>{
+ for(const id of ['madara-ten-tails-jinchuriki','gojo-shibuya','gojo-shinjuku','itachi-akatsuki','aizen-hogyoku','saitama-hero-association','megumi-season-1'])assert.ok(versionById(id),id);
+ assert.match(characterVersionSearchText('madara').toLowerCase(),/ten-tails|ten tails/);
+ assert.match(characterVersionSearchText('gojo').toLowerCase(),/shibuya/);
+ assert.match(characterVersionSearchText('itachi').toLowerCase(),/akatsuki/);
+ assert.match(characterVersionSearchText('aizen').toLowerCase(),/hogyoku|hōgyoku/);
+ assert.match(characterVersionSearchText('megumi').toLowerCase(),/shibuya/);
 });
