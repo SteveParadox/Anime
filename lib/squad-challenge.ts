@@ -1,6 +1,6 @@
 import {fighters} from '@/lib/catalog';
 import {abilitiesForVersion,versionById} from '@/lib/characters';
-import {validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
+import {resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
 
 export const SQUAD_CHALLENGE_TYPES=['defeat_target','survive','defend','capture','open_build'] as const;
 export const SQUAD_CHALLENGE_STATUSES=['scheduled','active','closed'] as const;
@@ -152,9 +152,7 @@ function templateForDay(day:string){
 }
 
 export function effectiveChallengeStatus(challenge:Pick<SquadChallengeRecord,'status'|'startsAt'|'endsAt'>,now=Date.now()):SquadChallengeStatus{
- if(challenge.status==='closed'||now>=challenge.endsAt)return 'closed';
- if(now<challenge.startsAt)return 'scheduled';
- return 'active';
+ return resolveSquadChallengeStatus(challenge.status,challenge.startsAt,challenge.endsAt,now);
 }
 
 export function parseRules(raw:unknown):SquadChallengeRules{
