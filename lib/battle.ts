@@ -1,3 +1,4 @@
+import type {StructuredArgumentEvidence} from './evidence';
 export const BATTLE_TYPES=['death_battle','knockout','first_blood','capture','survival'] as const;
 export const BATTLE_LOCATIONS=['neutral_arena','earth','soul_society','custom'] as const;
 export const SPEED_RULES=['normal','equalized'] as const;
@@ -56,11 +57,13 @@ export type BattleArgument={
  created:number;
  handle:string;
  displayName:string;
+ owned:boolean;
  upvotes:number;
  disputes:number;
  myReaction:'upvote'|'dispute'|null;
  comments:{id:string;body:string;created:number;handle:string}[];
  addedEvidence:ArgumentEvidence[];
+ structuredEvidence:StructuredArgumentEvidence[];
 };
 
 export type BattleResult={

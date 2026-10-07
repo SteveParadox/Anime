@@ -14,3 +14,30 @@ export const notifications=sqliteTable('notifications',{id:text('id').primaryKey
 export const reports=sqliteTable('reports',{id:text('id').primaryKey(),reporter:text('reporter').notNull(),subjectType:text('subject_type').notNull(),subjectId:text('subject_id').notNull(),reason:text('reason').notNull(),status:text('status').notNull().default('open'),created:integer('created').notNull()},t=>[index('idx_reports_status_created').on(t.status,t.created)]);
 export const watchlist=sqliteTable('watchlist',{user:text('user').notNull(),anime:text('anime').notNull(),status:text('status').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.user,t.anime]})]);
 export const tournamentVotes=sqliteTable('tournament_votes',{week:text('week').notNull(),match:text('match').notNull(),user:text('user').notNull(),pick:text('pick').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.week,t.match,t.user]})]);
+
+export const evidenceRecords=sqliteTable('evidence_records',{
+ id:text('id').primaryKey(),
+ characterId:text('character_id').notNull(),
+ sourceType:text('source_type').notNull(),
+ series:text('series').notNull(),
+ category:text('category').notNull(),
+ title:text('title').notNull(),
+ description:text('description').notNull(),
+ episode:integer('episode'),
+ timestamp:text('timestamp'),
+ chapter:integer('chapter'),
+ page:integer('page'),
+ submittedBy:text('submitted_by').notNull(),
+ created:integer('created').notNull(),
+ updated:integer('updated').notNull(),
+ deleted:integer('deleted').notNull().default(0),
+ deletedAt:integer('deleted_at')
+},t=>[index('idx_evidence_records_character').on(t.characterId),index('idx_evidence_records_character_category').on(t.characterId,t.category),index('idx_evidence_records_source_type').on(t.sourceType),index('idx_evidence_records_created').on(t.created),index('idx_evidence_records_active_character_created').on(t.characterId,t.deleted,t.created)]);
+
+export const argumentEvidenceLinks=sqliteTable('argument_evidence_links',{
+ battle:text('battle').notNull(),
+ argumentUser:text('argument_user').notNull(),
+ evidenceId:text('evidence_id').notNull(),
+ linkedBy:text('linked_by').notNull(),
+ created:integer('created').notNull()
+},t=>[primaryKey({columns:[t.battle,t.argumentUser,t.evidenceId]}),index('idx_argument_evidence_links_battle_user').on(t.battle,t.argumentUser),index('idx_argument_evidence_links_evidence').on(t.evidenceId),index('idx_argument_evidence_links_created').on(t.created)]);
