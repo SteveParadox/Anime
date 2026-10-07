@@ -9,16 +9,31 @@ export function requestIp(request:Request){
 
 export async function checkRateLimit(scope:string,rawKey:string,limit:number,windowMs:number,blockMs=windowMs):Promise<RateLimitResult>{
  const db=database(),now=Date.now(),keyHash=await hashOpaqueToken(`${scope}:${rawKey}`);
- const row=await db.prepare('SELECT window_start AS windowStart,count,blocked_until AS blockedUntil FROM auth_rate_limits WHERE key_hash=?').bind(keyHash).first<any>();
- if(row&&Number(row.blockedUntil||0)>now)return {allowed:false,retryAfterSeconds:Math.max(1,Math.ceil((Number(row.blockedUntil)-now)/1000))};
- if(!row||now-Number(row.windowStart)>=windowMs){
-  await db.prepare('INSERT INTO auth_rate_limits (key_hash,scope,window_start,count,blocked_until) VALUES (?,?,?,1,0) ON CONFLICT(key_hash) DO UPDATE SET scope=excluded.scope,window_start=excluded.window_start,count=1,blocked_until=0').bind(keyHash,scope,now).run();
-  return {allowed:true,retryAfterSeconds:0};
- }
- const next=Number(row.count||0)+1;
- const blockedUntil=next>limit?now+blockMs:0;
- await db.prepare('UPDATE auth_rate_limits SET count=?,blocked_until=? WHERE key_hash=?').bind(next,blockedUntil,keyHash).run();
- return next>limit?{allowed:false,retryAfterSeconds:Math.max(1,Math.ceil(blockMs/1000))}:{allowed:true,retryAfterSeconds:0};
+ const row=await db.prepare(`
+  INSERT INTO auth_rate_limits (key_hash,scope,window_start,count,blocked_until)
+  VALUES (?,?,?,1,0)
+  ON CONFLICT(key_hash) DO UPDATE SET
+   scope=excluded.scope,
+   window_start=CASE
+    WHEN excluded.window_start-auth_rate_limits.window_start>=? THEN excluded.window_start
+    ELSE auth_rate_limits.window_start
+   END,
+   count=CASE
+    WHEN excluded.window_start-auth_rate_limits.window_start>=? THEN 1
+    ELSE auth_rate_limits.count+1
+   END,
+   blocked_until=CASE
+    WHEN auth_rate_limits.blocked_until>excluded.window_start THEN auth_rate_limits.blocked_until
+    WHEN excluded.window_start-auth_rate_limits.window_start>=? THEN 0
+    WHEN auth_rate_limits.count+1>? THEN excluded.window_start+?
+    ELSE 0
+   END
+  RETURNING count,blocked_until AS blockedUntil
+ `).bind(keyHash,scope,now,windowMs,windowMs,windowMs,limit,blockMs).first<any>();
+ if(!row)throw new Error('Rate limiter state could not be updated.');
+ const blockedUntil=Number(row.blockedUntil||0),count=Number(row.count||0);
+ if(blockedUntil>now||count>limit)return {allowed:false,retryAfterSeconds:Math.max(1,Math.ceil((Math.max(blockedUntil,now+1000)-now)/1000))};
+ return {allowed:true,retryAfterSeconds:0};
 }
 
 export async function enforceAuthRateLimits(request:Request,scope:string,identity?:string,options?:{ipLimit?:number;identityLimit?:number;windowMs?:number;blockMs?:number}){
