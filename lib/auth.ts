@@ -26,7 +26,7 @@ export const SESSION_COOKIE='anime_clash_session';
 const SESSION_TTL_MS=30*24*60*60_000;
 
 function sessionCookieOptions(expires:Date){
- return {httpOnly:true,secure:env.ENVIRONMENT==='production',sameSite:'lax' as const,path:'/',expires};
+ return {httpOnly:true,secure:env.ENVIRONMENT!=='development',sameSite:'lax' as const,path:'/',expires};
 }
 
 function decodeHeaderName(value:string|null,encoding:string|null){
@@ -105,7 +105,7 @@ async function mergeTrustedDuplicateIntoLegacy(db:D1Database,sourceUserId:string
 
   db.prepare('UPDATE auth_identities SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
   db.prepare('UPDATE auth_sessions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
-  db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=?').bind(sourceUserId),
+  db.prepare('DELETE FROM email_verification_tokens WHERE user_id=?').bind(sourceUserId),
   db.prepare('UPDATE password_reset_tokens SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
 
   // Release the normalized email before assigning it to the legacy account.
@@ -145,6 +145,7 @@ async function resolvePlatform(identity:PlatformIdentity):Promise<CurrentUser>{
    if(owner&&owner.id!==linked.userId)await mergeTrustedDuplicateIntoLegacy(db,owner.id,linked.userId,identity.email);
    else if(!owner)await db.prepare('UPDATE users SET email=?,email_normalized=?,email_verified=1,updated=? WHERE id=?').bind(identity.email,identity.email,now,linked.userId).run();
   }
+  await db.prepare(`UPDATE auth_identities SET provider_email=? WHERE provider='chatgpt' AND provider_user_id=?`).bind(identity.email,identity.providerUserId).run();
   const current=await readCurrentUser(linked.userId,'chatgpt',identity.providerUserId);
   if(current)return current;
  }
@@ -211,5 +212,5 @@ export function isAdminUser(user:CurrentUser|null|undefined){
 export async function publicAuthState(){
  const user=await getCurrentUser();
  if(!user)return {authenticated:false,user:null};
- return {authenticated:true,user:{id:user.userId,email:user.email,emailVerified:user.emailVerified,username:user.username,displayName:user.displayName,avatarUrl:user.avatarUrl,profileCompleted:user.profileCompleted,provider:user.provider}};
+ return {authenticated:true,user:{id:user.userId,email:user.email,emailVerified:user.emailVerified,username:user.username,displayName:user.displayName,avatarUrl:user.avatarUrl,profileCompleted:user.profileCompleted,requiresEmailVerification:user.provider==='email'&&!user.emailVerified}};
 }
