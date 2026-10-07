@@ -87,3 +87,22 @@ test('top ranking requires five votes and uses aggregate net YES ordering',()=>{
  assert.match(submissions,/v\.verdict='no'/);
  assert.doesNotMatch(submissions,/wilsonLowerBound/);
 });
+
+
+test('daily challenge target is structured Madara and headline uses character identity, not version text',()=>{
+ assert.match(domain,/key:'ten-tails-madara'/);
+ assert.match(domain,/targetCharacterId:'madara'/);
+ assert.match(domain,/targetVersionId:'madara-ten-tails-jinchuriki'/);
+ assert.match(domain,/template\.title\(targetCharacter\.name\)/);
+});
+
+test('structured evidence writes require canonical character versions',()=>{
+ const evidence=readFileSync('app/api/evidence/route.ts','utf8');
+ assert.match(evidence,/!version\.canonical/);
+ assert.match(evidence,/version\.characterId!==character\.id/);
+});
+
+test('profile favorite-character writes reject IDs outside the canonical fighter catalog',()=>{
+ const community=readFileSync('app/api/community/route.ts','utf8');
+ assert.match(community,/favoriteCharacters\.some\(characterId=>!fighters\.some\(f=>f\.id===characterId\)\)/);
+});
