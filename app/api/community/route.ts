@@ -3,6 +3,7 @@ import {clubs,fighters,starterBattles,dailyChallenge,seasonalAnime,tournamentSee
 import {BATTLE_TYPES,BATTLE_LOCATIONS,SPEED_RULES,KNOWLEDGE_RULES,PREP_TIMES,VOTE_DIFFICULTIES,normalizeBattle} from '@/lib/battle';
 import {abilityById,validateBattleVersionSelection,versionById} from '@/lib/characters';
 import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
+import {sameOrigin} from '@/lib/auth-request';
 import {z} from 'zod';
 
 const short=z.string().trim().min(1).max(120), idText=z.string().trim().min(1).max(180), bodyText=z.string().trim().min(3).max(2000);
@@ -93,7 +94,7 @@ export async function GET(req:Request){try{
  }catch(e){console.error('Community load failed',e);return json({error:'Could not load the community. Please try again.'},503);}}
 
 export async function POST(req:Request){try{
- const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)return json({error:'Invalid origin'},403);const user=await getCurrentUser();if(!user)return json({error:'Sign in to save your contribution.'},401);const raw=await req.text();if(raw.length>15000)return json({error:'Submission is too large'},413);let parsed;try{parsed=schema.safeParse(JSON.parse(raw));}catch{return json({error:'Invalid submission'},400);}if(!parsed.success)return json({error:'Check the fields and provide the required details.'},400);const d=parsed.data,db=database(),now=Date.now();if(d.action!=='profile'&&!canContribute(user))return json({error:user.profileCompleted?'Verify your email before contributing.':'Complete your profile before contributing.'},403);let id=crypto.randomUUID();
+ if(!sameOrigin(req))return json({error:'Invalid origin'},403);const user=await getCurrentUser();if(!user)return json({error:'Sign in to save your contribution.'},401);const raw=await req.text();if(raw.length>15000)return json({error:'Submission is too large'},413);let parsed;try{parsed=schema.safeParse(JSON.parse(raw));}catch{return json({error:'Invalid submission'},400);}if(!parsed.success)return json({error:'Check the fields and provide the required details.'},400);const d=parsed.data,db=database(),now=Date.now();if(d.action!=='profile'&&!canContribute(user))return json({error:user.profileCompleted?'Verify your email before contributing.':'Complete your profile before contributing.'},403);let id=crypto.randomUUID();
  if(d.action==='profile'){try{await db.batch([db.prepare(`INSERT INTO profiles (user,handle,display_name,bio,favorite_anime,favorite_characters,created,updated) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(user) DO UPDATE SET handle=excluded.handle,display_name=excluded.display_name,bio=excluded.bio,favorite_anime=excluded.favorite_anime,favorite_characters=excluded.favorite_characters,updated=excluded.updated`).bind(user.userId,d.handle.toLowerCase(),d.displayName,d.bio,JSON.stringify(d.favoriteAnime),JSON.stringify(d.favoriteCharacters),now,now),db.prepare('UPDATE users SET profile_completed=1,updated=? WHERE id=?').bind(now,user.userId)]);}catch{return json({error:'That handle is already taken.'},409);}}
  if(d.action==='battle'){
   const fighterA=fighters.find(f=>f.id===d.fighterAId),fighterB=fighters.find(f=>f.id===d.fighterBId);
