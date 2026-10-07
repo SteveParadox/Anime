@@ -18,8 +18,8 @@ export async function POST(request:Request){
   if(!limit.allowed)return authJson({ok:true,message:publicMessage});
   const row=await database().prepare(`SELECT u.id FROM users u JOIN auth_identities i ON i.user_id=u.id AND i.provider='email' WHERE u.email_normalized=? LIMIT 1`).bind(email).first<any>();
   if(row){
-   const token=await createPasswordResetToken(row.id);
-   await sendPasswordResetEmail(email,`${appBaseUrl(request)}/reset-password#token=${encodeURIComponent(token.raw)}`,RESET_TTL_MINUTES);
+   const baseUrl=appBaseUrl(request),token=await createPasswordResetToken(row.id);
+   await sendPasswordResetEmail(email,`${baseUrl}/reset-password#token=${encodeURIComponent(token.raw)}`,RESET_TTL_MINUTES);
   }
   return authJson({ok:true,message:publicMessage});
  }catch(e:any){console.error('Forgot-password failed',{name:e?.name});return authJson({ok:true,message:publicMessage})}
