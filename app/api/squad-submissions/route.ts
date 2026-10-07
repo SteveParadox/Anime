@@ -238,7 +238,11 @@ export async function GET(request:Request){
   }else if(!id)rows=rows.slice(0,limit);
 
   const grouped=await membersFor(db,rows.map(row=>row.id));
-  const submissions=rows.map((row,index)=>publicSubmission(row,grouped.get(row.id)||[],viewerId,now,!id&&challengeId?index+1:undefined));
+  let qualifiedRank=0;
+  const submissions=rows.map(row=>{
+   const rank=!id&&Boolean(challengeId)&&sort==='top'&&row.totalVotes>=5?++qualifiedRank:undefined;
+   return publicSubmission(row,grouped.get(row.id)||[],viewerId,now,rank);
+  });
   return authJson(id?{submission:submissions[0]}:{submissions});
  }catch(error){
   console.error('Squad submission load failed',error);
