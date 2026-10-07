@@ -147,7 +147,11 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    if(next.viewer.mySubmissionId){
     const mine=await api<{submission:Submission}>(`/api/squad-submissions?id=${encodeURIComponent(next.viewer.mySubmissionId)}`);
     const byVersion=new Map(next.challenge.fighters.map(f=>[f.versionId,f]));
-    setSelected(mine.submission.members.map(member=>byVersion.get(member.versionId)).filter((item):item is SquadChallengeFighter=>Boolean(item)));
+    setSelected(mine.submission.members.map(member=>{
+     const current=byVersion.get(member.versionId);
+     if(!current)return null;
+     return mine.submission.locked?{...current,characterName:member.characterName,versionName:member.versionName,cost:member.cost}:current;
+    }).filter((item):item is SquadChallengeFighter=>Boolean(item)));
     setName(mine.submission.name);
     setStrategy(mine.submission.strategy);
     setEditingId(mine.submission.id);
