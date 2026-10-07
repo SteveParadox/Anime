@@ -46,6 +46,7 @@ export type SquadChallengeFighter={
  cost:number;
  series:string;
  role:string;
+ tags:string[];
  aliases:string[];
  keyAbilities:{id:string;name:string;status:string}[];
 };
@@ -209,6 +210,7 @@ export async function challengeFighters(db:D1Database,challengeId:string):Promis
    cost:Number(row.cost),
    series:character.series,
    role:character.role,
+   tags:character.tags,
    aliases:version.aliases,
    keyAbilities:abilitiesForVersion(version.id).slice(0,4).map(({ability,link})=>({id:ability.id,name:ability.name,status:link.status}))
   }];
