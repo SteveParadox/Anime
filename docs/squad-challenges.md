@@ -40,7 +40,7 @@ Effective lifecycle is:
 
 Only active challenges accept submissions and votes.
 
-The initial release uses curated server-side templates over characters and versions that already exist in the canonical catalog. It does not invent free-text targets. The current templates use exact Goku, Naruto, and Luffy versions. Adding a Madara challenge first requires adding Madara and the intended Madara version to the canonical character/version catalog.
+The release uses curated server-side templates over characters and versions in the canonical catalog. It does not invent free-text targets. The current rotation includes exact Goku, Madara, Naruto, and Luffy targets. On October 7, 2026 the UTC rotation resolves to **Madara Uchiha**, with **Ten-Tails Jinchuriki Madara** as the structured target version. The expanded squad roster also includes version-aware Gojo, Itachi, Aizen, Saitama, and Megumi entries.
 
 ## Submission rules
 
@@ -127,9 +127,11 @@ Public responses include profile handle, display name, and avatar where appropri
 
 ## Initial administration
 
-The first release keeps the daily schedule curated in server code and baseline costs in `squad_version_costs`. Challenge-specific values are copied into `daily_squad_challenge_costs`, so an administrator can override a scheduled/current challenge without changing the global baseline.
+The first release keeps the daily schedule curated in server code using deterministic UTC epoch-day rotation and baseline costs in `squad_version_costs`. Challenge-specific values are copied into `daily_squad_challenge_costs`, so an administrator can override a scheduled/current challenge without changing the global baseline.
 
 A dedicated admin challenge editor is intentionally deferred. Normal users cannot create daily challenges.
+
+Roster expansion is append-only: migration `0007_expand_squad_roster.sql` adds the Madara, Gojo, Itachi, Aizen, Saitama, and Megumi character-version/ability seeds plus their squad baseline costs without rewriting `0004` or `0006`.
 
 ## Validation
 
