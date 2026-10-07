@@ -15,7 +15,7 @@ type ChallengeHistoryDbRow={
  status:SquadChallengeStatus;
 };
 
-type MySubmissionDbRow={id:string;lockedAt:number|null};
+type MySubmissionDbRow={id:string;lockedAt:number|null;removed:number};
 
 function publicChallenge(challenge:Awaited<ReturnType<typeof findChallenge>>,now:number){
  if(!challenge)return null;
@@ -47,7 +47,7 @@ export async function GET(request:Request){
   const [fighters,historyRows,mySubmission]=await Promise.all([
    challengeFighters(db,challenge.id),
    db.prepare(`SELECT id,type,title,description,target_character_id AS targetCharacterId,target_version_id AS targetVersionId,budget,min_members AS minMembers,max_members AS maxMembers,rules_json AS rulesJson,starts_at AS startsAt,ends_at AS endsAt,status,created FROM daily_squad_challenges ORDER BY starts_at DESC LIMIT 30`).all<ChallengeHistoryDbRow>(),
-   user?db.prepare('SELECT id,locked_at AS lockedAt FROM squad_submissions WHERE challenge_id=? AND owner=? AND removed=0 LIMIT 1').bind(challenge.id,user.userId).first<MySubmissionDbRow>():null
+   user?db.prepare('SELECT id,locked_at AS lockedAt,removed FROM squad_submissions WHERE challenge_id=? AND owner=? LIMIT 1').bind(challenge.id,user.userId).first<MySubmissionDbRow>():null
   ]);
 
   const history=historyRows.results.map(row=>({
@@ -64,7 +64,7 @@ export async function GET(request:Request){
   return authJson({
    challenge:{...publicChallenge(challenge,now),fighters},
    history,
-   viewer:{authenticated:Boolean(user),mySubmissionId:mySubmission?.id||null,submissionLocked:Boolean(mySubmission?.lockedAt)}
+   viewer:{authenticated:Boolean(user),mySubmissionId:mySubmission&&!mySubmission.removed?mySubmission.id:null,submissionLocked:Boolean(mySubmission?.lockedAt),submissionRemoved:Boolean(mySubmission?.removed&&mySubmission?.lockedAt)}
   });
  }catch(error){
   console.error('Squad challenge load failed',error);
