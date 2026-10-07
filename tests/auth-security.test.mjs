@@ -72,5 +72,5 @@ test('mutation origin checks reject cross-origin and sibling-site requests',()=>
 
 test('JSON body limit is enforced on bytes, not JavaScript character count',async()=>{
  const request=new Request('https://anime.example/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:'界'.repeat(20)})});
- await assert.rejects(()=>readJson(request,30),(error)=>Boolean(error&&typeof error==='object'&&'status' in error&&(error as any).status===413));
+ await assert.rejects(()=>readJson(request,30),(error)=>Boolean(error&&typeof error==='object'&&'status' in error&&error.status===413));
 });
