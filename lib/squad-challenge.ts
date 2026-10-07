@@ -1,6 +1,6 @@
 import {fighters} from '@/lib/catalog';
 import {abilitiesForVersion,versionById} from '@/lib/characters';
-import {resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
+import {dailyChallengeRotationIndex,resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
 
 export const SQUAD_CHALLENGE_TYPES=['defeat_target','survive','defend','capture','open_build'] as const;
 export const SQUAD_CHALLENGE_STATUSES=['scheduled','active','closed'] as const;
@@ -112,18 +112,6 @@ const DAILY_TEMPLATES:DailyTemplate[]=[
   rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. No outside assistance. Use only abilities available to the exact selected versions.'}
  },
  {
-  key:'six-paths-naruto',
-  type:'defeat_target',
-  title:target=>`Defeat ${target}`,
-  description:'Assemble a version-specific team that can overcome clones, mobility, and Six Paths pressure.',
-  targetCharacterId:'naruto',
-  targetVersionId:'naruto-six-paths',
-  budget:100,
-  minMembers:1,
-  maxMembers:5,
-  rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. Team members begin together. No outside assistance.'}
- },
- {
   key:'ten-tails-madara',
   type:'defeat_target',
   title:target=>`Defeat ${target}`,
@@ -134,6 +122,18 @@ const DAILY_TEMPLATES:DailyTemplate[]=[
   minMembers:1,
   maxMembers:5,
   rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. No outside assistance. Madara uses the exact Ten-Tails Jinchuriki version shown on the target card.'}
+ },
+ {
+  key:'six-paths-naruto',
+  type:'defeat_target',
+  title:target=>`Defeat ${target}`,
+  description:'Assemble a version-specific team that can overcome clones, mobility, and Six Paths pressure.',
+  targetCharacterId:'naruto',
+  targetVersionId:'naruto-six-paths',
+  budget:100,
+  minMembers:1,
+  maxMembers:5,
+  rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. Team members begin together. No outside assistance.'}
  },
  {
   key:'gear-five-luffy',
@@ -159,8 +159,7 @@ function utcDayBounds(day:string){
 }
 
 function templateForDay(day:string){
- const score=[...day].reduce((sum,ch)=>sum+(ch>='0'&&ch<='9'?Number(ch):0),0);
- return DAILY_TEMPLATES[score%DAILY_TEMPLATES.length];
+ return DAILY_TEMPLATES[dailyChallengeRotationIndex(day,DAILY_TEMPLATES.length)];
 }
 
 export function effectiveChallengeStatus(challenge:Pick<SquadChallengeRecord,'status'|'startsAt'|'endsAt'>,now=Date.now()):SquadChallengeStatus{
