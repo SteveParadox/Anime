@@ -170,7 +170,14 @@ export function parseRules(raw:unknown):SquadChallengeRules{
  if(typeof raw!=='string')return {};
  try{
   const parsed=JSON.parse(raw);
-  return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed as SquadChallengeRules:{};
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return {};
+  const value=parsed as Record<string,unknown>,rules:SquadChallengeRules={};
+  for(const key of ['battleType','location','speed','knowledge','prepTime','notes'] as const){
+   if(typeof value[key]==='string')rules[key]=value[key] as string;
+  }
+  if(typeof value.transformationsAllowed==='boolean')rules.transformationsAllowed=value.transformationsAllowed;
+  if(typeof value.standardEquipment==='boolean')rules.standardEquipment=value.standardEquipment;
+  return rules;
  }catch{return {}}
 }
 
