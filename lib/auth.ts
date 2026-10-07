@@ -164,7 +164,8 @@ export async function revokeUnverifiedEmailCredentialAccess(db:D1Database,userId
   db.prepare("DELETE FROM auth_identities WHERE user_id=? AND provider='email'").bind(userIdValue),
   db.prepare('DELETE FROM auth_sessions WHERE user_id=?').bind(userIdValue),
   db.prepare('DELETE FROM password_reset_tokens WHERE user_id=?').bind(userIdValue),
-  db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=? AND used=0').bind(userIdValue)
+  db.prepare('UPDATE email_verification_tokens SET used=1 WHERE user_id=? AND used=0').bind(userIdValue),
+  db.prepare('UPDATE users SET profile_completed=0,updated=? WHERE id=?').bind(Date.now(),userIdValue)
  ]);
  return true;
 }
