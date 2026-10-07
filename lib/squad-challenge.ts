@@ -88,7 +88,7 @@ type SquadVersionCostDbRow={
 type DailyTemplate={
  key:string;
  type:SquadChallengeType;
- title:(targetName:string)=>string;
+ title:(targetCharacterName:string)=>string;
  description:string;
  targetCharacterId:string;
  targetVersionId:string;
@@ -122,6 +122,18 @@ const DAILY_TEMPLATES:DailyTemplate[]=[
   minMembers:1,
   maxMembers:5,
   rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. Team members begin together. No outside assistance.'}
+ },
+ {
+  key:'ten-tails-madara',
+  type:'defeat_target',
+  title:target=>`Defeat ${target}`,
+  description:'Build a counter-squad for Madara’s Ten-Tails jinchuriki battlefield control without exceeding the point budget.',
+  targetCharacterId:'madara',
+  targetVersionId:'madara-ten-tails-jinchuriki',
+  budget:100,
+  minMembers:1,
+  maxMembers:5,
+  rules:{battleType:'knockout',location:'neutral_arena',speed:'normal',knowledge:'basic',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:'Neutral battlefield. No outside assistance. Madara uses the exact Ten-Tails Jinchuriki version shown on the target card.'}
  },
  {
   key:'gear-five-luffy',
@@ -209,7 +221,7 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
  const {startsAt,endsAt}=utcDayBounds(day),created=now;
  const statements:D1PreparedStatement[]=[
   db.prepare(`INSERT OR IGNORE INTO daily_squad_challenges (id,type,title,description,target_character_id,target_version_id,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-   .bind(id,template.type,template.title(targetVersion.name),template.description,template.targetCharacterId,template.targetVersionId,template.budget,template.minMembers,template.maxMembers,JSON.stringify(template.rules),startsAt,endsAt,'active',created)
+   .bind(id,template.type,template.title(targetCharacter.name),template.description,template.targetCharacterId,template.targetVersionId,template.budget,template.minMembers,template.maxMembers,JSON.stringify(template.rules),startsAt,endsAt,'active',created)
  ];
  for(const row of costs){
   statements.push(db.prepare('INSERT OR IGNORE INTO daily_squad_challenge_costs (challenge_id,character_id,version_id,cost) VALUES (?,?,?,?)').bind(id,row.characterId,row.versionId,Number(row.cost)));
@@ -222,7 +234,7 @@ export async function challengeFighters(db:D1Database,challengeId:string):Promis
  const rows=(await db.prepare('SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? ORDER BY cost ASC,version_id ASC').bind(challengeId).all<SquadVersionCostDbRow>()).results;
  return rows.flatMap(row=>{
   const character=fighters.find(f=>f.id===row.characterId),version=versionById(row.versionId);
-  if(!character||!version||version.characterId!==character.id)return [];
+  if(!character||!version||!version.canonical||version.characterId!==character.id)return [];
   return [{
    characterId:character.id,
    characterName:character.name,
