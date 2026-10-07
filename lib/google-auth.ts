@@ -25,8 +25,13 @@ type GoogleClaims={
 let jwksCache:{expiresAt:number;keys:GoogleJwk[]}|null=null;
 
 export function googleConfig(){
- const clientId=String(env.GOOGLE_CLIENT_ID||''),clientSecret=String(env.GOOGLE_CLIENT_SECRET||''),redirectUri=String(env.GOOGLE_REDIRECT_URI||'');
- return {clientId,clientSecret,redirectUri,configured:Boolean(clientId&&clientSecret&&redirectUri)};
+ const clientId=String(env.GOOGLE_CLIENT_ID||''),clientSecret=String(env.GOOGLE_CLIENT_SECRET||''),redirectUri=String(env.GOOGLE_REDIRECT_URI||'').trim();
+ let redirectValid=false;
+ try{
+  const redirect=new URL(redirectUri),base=env.APP_BASE_URL?new URL(String(env.APP_BASE_URL)):null;
+  redirectValid=['http:','https:'].includes(redirect.protocol)&&(!env.ENVIRONMENT||env.ENVIRONMENT!=='production'||redirect.protocol==='https:')&&(!base||redirect.origin===base.origin);
+ }catch{redirectValid=false}
+ return {clientId,clientSecret,redirectUri,configured:Boolean(clientId&&clientSecret&&redirectUri&&redirectValid)};
 }
 
 export async function setGoogleCookies(state:string,verifier:string,nonce:string){
