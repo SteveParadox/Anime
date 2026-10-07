@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '../lib/squad-challenge-policy.ts';
+import {dailyChallengeRotationIndex,resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '../lib/squad-challenge-policy.ts';
 
 test('squad identity policy allows one through challenge maximum members',()=>{
  const selections=[
@@ -58,4 +58,13 @@ test('challenge lifecycle is determined from server time boundaries',()=>{
  assert.equal(resolveSquadChallengeStatus('active',start,end,1_500),'active');
  assert.equal(resolveSquadChallengeStatus('active',start,end,2_000),'closed');
  assert.equal(resolveSquadChallengeStatus('closed',start,end,1_500),'closed');
+});
+
+
+test('daily challenge rotation advances by UTC day and selects Madara on 2026-10-07',()=>{
+ assert.equal(dailyChallengeRotationIndex('2026-10-07',4),1);
+ assert.equal(dailyChallengeRotationIndex('2026-10-08',4),2);
+ assert.equal(dailyChallengeRotationIndex('2026-10-09',4),3);
+ assert.equal(dailyChallengeRotationIndex('2026-10-10',4),0);
+ assert.throws(()=>dailyChallengeRotationIndex('not-a-date',4),/rotation input is invalid/);
 });
