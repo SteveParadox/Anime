@@ -5,6 +5,8 @@ export const GOOGLE_STATE_COOKIE='anime_google_state';
 export const GOOGLE_VERIFIER_COOKIE='anime_google_verifier';
 export const GOOGLE_NONCE_COOKIE='anime_google_nonce';
 
+type GoogleJwk=JsonWebKey&{kid?:string};
+
 type GoogleClaims={
  iss:string;
  aud:string|string[];
@@ -19,7 +21,7 @@ type GoogleClaims={
  azp?:string;
 };
 
-let jwksCache:{expiresAt:number;keys:JsonWebKey[]}|null=null;
+let jwksCache:{expiresAt:number;keys:GoogleJwk[]}|null=null;
 
 export function googleConfig(){
  const clientId=String(env.GOOGLE_CLIENT_ID||''),clientSecret=String(env.GOOGLE_CLIENT_SECRET||''),redirectUri=String(env.GOOGLE_REDIRECT_URI||'');
@@ -57,7 +59,7 @@ async function googleJwks(){
  if(jwksCache&&jwksCache.expiresAt>now)return jwksCache.keys;
  const response=await fetch('https://www.googleapis.com/oauth2/v3/certs',{headers:{Accept:'application/json'}});
  if(!response.ok)throw new Error('Google signing keys are unavailable.');
- const body=await response.json() as {keys?:JsonWebKey[]};
+ const body=await response.json() as {keys?:GoogleJwk[]};
  if(!Array.isArray(body.keys)||!body.keys.length)throw new Error('Google signing keys are invalid.');
  const cacheControl=response.headers.get('cache-control')||'',maxAge=Number(cacheControl.match(/max-age=(\d+)/)?.[1]||300);
  jwksCache={keys:body.keys,expiresAt:now+Math.max(60,Math.min(maxAge,86400))*1000};
@@ -84,7 +86,7 @@ export async function verifyGoogleIdToken(token:string,expectedAudience:string,e
  }catch{return null}
 }
 
-async function verifyWithKey(jwk:JsonWebKey,parts:string[],payloadText:string,signature:Uint8Array,expectedAudience:string,expectedNonce:string):Promise<GoogleClaims|null>{
+async function verifyWithKey(jwk:GoogleJwk,parts:string[],payloadText:string,signature:Uint8Array,expectedAudience:string,expectedNonce:string):Promise<GoogleClaims|null>{
  const key=await crypto.subtle.importKey('jwk',jwk,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);
  const signed=new TextEncoder().encode(parts[0]+'.'+parts[1]);
  const valid=await crypto.subtle.verify({name:'RSASSA-PKCS1-v1_5'},key,signature,signed);
