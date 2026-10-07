@@ -1,3 +1,5 @@
+// Compatibility-only helper for hosted platform auth routes.
+// Community and feature code must use lib/auth.ts so ownership resolves through internal users.
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
