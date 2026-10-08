@@ -3,6 +3,8 @@ import {canContribute,getCurrentUser} from '@/lib/auth';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
 import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMembers,type SquadChallengeStatus} from '@/lib/squad-challenge';
 import {z} from 'zod';
+import {parseRoleSnapshot,parseTraitSnapshot} from '@/lib/version-strategy';
+import {analyzeSquadComposition,type VersionRole,type StrategicTrait} from '@/lib/squad-synergy';
 
 const idText=z.string().trim().min(1).max(180);
 const memberSchema=z.object({characterId:idText,versionId:idText}).strict();
@@ -78,9 +80,10 @@ type SubmissionMemberView={
  versionId:string;
  versionName:string;
  cost:number;
+ roles:VersionRole[]|null;
+ traits:StrategicTrait[]|null;
 };
-
-type SubmissionMemberDbRow=SubmissionMemberView&{submissionId:string};
+type SubmissionMemberDbRow=Omit<SubmissionMemberView,'roles'|'traits'>&{submissionId:string;rolesSnapshot:string|null;traitsSnapshot:string|null};
 type DeleteSubmissionDbRow={owner:string;challengeId:string;status:SquadChallengeStatus;startsAt:number;endsAt:number;votes:number};
 type ExistingSubmissionDbRow={id:string;lockedAt:number|null;votes:number};
 type BindValue=string|number|null;
@@ -155,11 +158,11 @@ function normalizeRow(row:SubmissionAggregateDbRow):SubmissionRow{
 async function membersFor(db:D1Database,submissionIds:string[]){
  if(!submissionIds.length)return new Map<string,SubmissionMemberView[]>();
  const placeholders=submissionIds.map(()=>'?').join(',');
- const rows=(await db.prepare(`SELECT submission_id AS submissionId,position,character_id AS characterId,version_id AS versionId,character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id IN (${placeholders}) ORDER BY submission_id ASC,position ASC`).bind(...submissionIds).all<SubmissionMemberDbRow>()).results;
+ const rows=(await db.prepare(`SELECT submission_id AS submissionId,position,character_id AS characterId,version_id AS versionId,character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost,roles_snapshot AS rolesSnapshot,traits_snapshot AS traitsSnapshot FROM squad_submission_members WHERE submission_id IN (${placeholders}) ORDER BY submission_id ASC,position ASC`).bind(...submissionIds).all<SubmissionMemberDbRow>()).results;
  const grouped=new Map<string,SubmissionMemberView[]>();
  for(const row of rows){
   const list=grouped.get(row.submissionId)||[];
-  list.push({position:Number(row.position),characterId:row.characterId,versionId:row.versionId,characterName:row.characterName,versionName:row.versionName,cost:Number(row.cost)});
+  list.push({position:Number(row.position),characterId:row.characterId,versionId:row.versionId,characterName:row.characterName,versionName:row.versionName,cost:Number(row.cost),roles:parseRoleSnapshot(row.rolesSnapshot),traits:parseTraitSnapshot(row.traitsSnapshot)});
   grouped.set(row.submissionId,list);
  }
  return grouped;
@@ -189,6 +192,7 @@ function publicSubmission(row:SubmissionRow,members:SubmissionMemberView[],viewe
   strategy:row.strategy,
   totalCost:row.totalCost,
   members,
+  composition:analyzeSquadComposition(members.filter(m=>m.roles!==null).map(m=>({versionId:m.versionId,characterName:m.characterName,roles:m.roles||[],traits:m.traits||[]}))),
   locked:Boolean(row.lockedAt||row.totalVotes>0),
   editable:owned&&challengeState==='active'&&!row.lockedAt&&row.totalVotes===0,
   created:row.created,
@@ -280,7 +284,7 @@ export async function POST(request:Request){
    statements.push(db.prepare('INSERT INTO squad_submissions (id,challenge_id,owner,name,strategy,total_cost,locked_at,removed,created,updated) VALUES (?,?,?,?,?,?,NULL,0,?,?)').bind(submissionId,challenge.id,user.userId,input.name,input.strategy,totalCost,now,now));
   }
   for(const member of snapshots){
-   statements.push(db.prepare('INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot) VALUES (?,?,?,?,?,?,?)').bind(submissionId,member.position,member.characterId,member.versionId,member.characterName,member.versionName,member.cost));
+   statements.push(db.prepare('INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot,roles_snapshot,traits_snapshot) VALUES (?,?,?,?,?,?,?,?,?)').bind(submissionId,member.position,member.characterId,member.versionId,member.characterName,member.versionName,member.cost,JSON.stringify(member.roles),JSON.stringify(member.traits)));
   }
   await db.batch(statements);
   return authJson({ok:true,id:submissionId,totalCost,updated:Boolean(existing)});
