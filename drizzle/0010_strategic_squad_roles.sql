@@ -1,8 +1,8 @@
 -- Append-only tactical metadata. Existing submissions/squads retain original IDs and snapshots.
 CREATE TABLE `version_combat_roles` (
  `version_id` text NOT NULL REFERENCES `character_versions`(`id`) ON DELETE CASCADE,
- `role` text NOT NULL CHECK (`role` IN ('dps','tank','support','healer','controller','strategist','assassin','speedster','summoner','reality_manipulator','defense')),
- `priority` text NOT NULL CHECK (`priority` IN ('primary','secondary')),
+ `role` text NOT NULL CONSTRAINT `version_combat_roles_role_valid` CHECK (`role` IN ('dps','tank','support','healer','controller','strategist','assassin','speedster','summoner','reality_manipulator','defense')),
+ `priority` text NOT NULL CONSTRAINT `version_combat_roles_priority_valid` CHECK (`priority` IN ('primary','secondary')),
  `notes` text NOT NULL DEFAULT '',
  PRIMARY KEY (`version_id`,`role`)
 );
@@ -11,7 +11,7 @@ CREATE INDEX `idx_version_combat_roles_role` ON `version_combat_roles` (`role`,`
 --> statement-breakpoint
 CREATE TABLE `version_strategic_traits` (
  `version_id` text NOT NULL REFERENCES `character_versions`(`id`) ON DELETE CASCADE,
- `trait` text NOT NULL CHECK (`trait` IN ('healing','barrier','crowd_control','mobility','teleportation','information','buff','debuff','sealing','summoning','illusion','stealth','long_range','close_range','area_damage','single_target','adaptation','prediction','anti_regeneration')),
+ `trait` text NOT NULL CONSTRAINT `version_strategic_traits_trait_valid` CHECK (`trait` IN ('healing','barrier','crowd_control','mobility','teleportation','information','buff','debuff','sealing','summoning','illusion','stealth','long_range','close_range','area_damage','single_target','adaptation','prediction','anti_regeneration')),
  PRIMARY KEY (`version_id`,`trait`)
 );
 --> statement-breakpoint

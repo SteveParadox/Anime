@@ -184,7 +184,7 @@ export function parseRules(raw:unknown):SquadChallengeRules{
  }
  if(typeof value.transformationsAllowed==='boolean')rules.transformationsAllowed=value.transformationsAllowed;
  if(typeof value.standardEquipment==='boolean')rules.standardEquipment=value.standardEquipment;
- rules.roleRequirements=parseRoleRequirements(value.roleRequirements);
+ if(value.roleRequirements!==undefined)rules.roleRequirements=parseRoleRequirements(value.roleRequirements);
  return rules;
 }
 
