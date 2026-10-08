@@ -73,7 +73,9 @@ export const squadSubmissionMembers=sqliteTable('squad_submission_members',{
  versionId:text('version_id').notNull(),
  characterNameSnapshot:text('character_name_snapshot').notNull(),
  versionNameSnapshot:text('version_name_snapshot').notNull(),
- costSnapshot:integer('cost_snapshot').notNull()
+ costSnapshot:integer('cost_snapshot').notNull(),
+ rolesSnapshot:text('roles_snapshot'),
+ traitsSnapshot:text('traits_snapshot')
 },t=>[
  primaryKey({columns:[t.submissionId,t.position]}),
  uniqueIndex('idx_squad_submission_members_version').on(t.submissionId,t.versionId),
@@ -159,6 +161,19 @@ export const versionAbilities=sqliteTable('version_abilities',{
  notes:text('notes').notNull().default('')
 },t=>[primaryKey({columns:[t.versionId,t.abilityId]}),index('idx_version_abilities_version').on(t.versionId),index('idx_version_abilities_ability').on(t.abilityId)]);
 
+
+
+export const versionCombatRoles=sqliteTable('version_combat_roles',{
+ versionId:text('version_id').notNull().references(()=>characterVersions.id,{onDelete:'cascade'}),
+ role:text('role').notNull(),
+ priority:text('priority').notNull(),
+ notes:text('notes').notNull().default('')
+},t=>[primaryKey({columns:[t.versionId,t.role]}),index('idx_version_combat_roles_role').on(t.role,t.versionId)]);
+
+export const versionStrategicTraits=sqliteTable('version_strategic_traits',{
+ versionId:text('version_id').notNull().references(()=>characterVersions.id,{onDelete:'cascade'}),
+ trait:text('trait').notNull()
+},t=>[primaryKey({columns:[t.versionId,t.trait]}),index('idx_version_strategic_traits_trait').on(t.trait,t.versionId)]);
 
 export const users=sqliteTable('users',{
  id:text('id').primaryKey(),
