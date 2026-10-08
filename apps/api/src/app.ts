@@ -2,6 +2,8 @@ import Fastify from 'fastify';
 import {env} from './config/env';
 import {getPool} from '@anime/database/client';
 import {withHttpContext} from './lib/http-context';
+import {verifyProxySignature} from '@anime/contracts/proxy-auth';
+import {databaseReady} from './lib/readiness';
 import {routeHandlers} from './routes.generated';
 
 export function createApp(){
@@ -10,6 +12,20 @@ export function createApp(){
  app.removeAllContentTypeParsers();
  app.addContentTypeParser('*',{parseAs:'string'},(_request,body,done)=>done(null,body));
  app.addHook('onRequest',async(request,reply)=>{
+  // Public Railway URLs cannot spoof browser identity, forwarded IPs or bypass Vercel.
+  if(request.url.startsWith('/api/')){
+   const verified=verifyProxySignature(
+    env.API_PROXY_SHARED_SECRET||'',
+    request.headers['x-anime-proxy-timestamp'] as string|undefined,
+    request.headers['x-anime-proxy-ip'] as string|undefined,
+    request.headers['x-anime-proxy-signature'] as string|undefined,
+    request.method,new URL(request.url,'http://internal').pathname+new URL(request.url,'http://internal').search
+   );
+   if(env.NODE_ENV==='production'&&!verified){
+    reply.code(403).send({error:'API requests must pass through the application gateway.'});
+    return;
+   }
+  }
   reply.header('x-content-type-options','nosniff');
   reply.header('referrer-policy','strict-origin-when-cross-origin');
   const origin=request.headers.origin;
@@ -32,7 +48,7 @@ export function createApp(){
  });
  app.get('/health/live',async()=>({status:'ok'}));
  app.get('/health/ready',async(_request,reply)=>{
-  try{await getPool(env.DATABASE_URL,env.DB_POOL_MAX).query('SELECT 1');return {status:'ready'};}
+  try{if(!await databaseReady(getPool(env.DATABASE_URL,env.DB_POOL_MAX)))throw new Error('Schema not ready');return {status:'ready'};}
   catch{reply.code(503);return {status:'unavailable'};}
  });
  for(const route of routeHandlers){
@@ -41,10 +57,17 @@ export function createApp(){
    app.route({method:method as 'GET'|'POST',url:route.path,handler:async(request,reply)=>{
     const headers=new Headers();
     for(const [name,value] of Object.entries(request.headers)){
-     if(name==='host'||name==='x-anime-verified-ip'||name.startsWith('oai-authenticated-user-')||name.startsWith('x-forwarded-'))continue;
+     if(name==='host'||name==='x-anime-verified-ip'||name.startsWith('x-anime-proxy-')||name.startsWith('oai-authenticated-user-')||name.startsWith('x-forwarded-'))continue;
      if(value!==undefined)headers.set(name,Array.isArray(value)?value.join(','):value);
     }
-    headers.set('x-anime-verified-ip',request.ip);
+    const verified=verifyProxySignature(
+     env.API_PROXY_SHARED_SECRET||'',
+     request.headers['x-anime-proxy-timestamp'] as string|undefined,
+     request.headers['x-anime-proxy-ip'] as string|undefined,
+     request.headers['x-anime-proxy-signature'] as string|undefined,
+     request.method,new URL(request.raw.url||route.path,'http://internal').pathname+new URL(request.raw.url||route.path,'http://internal').search
+    );
+    headers.set('x-anime-verified-ip',verified?String(request.headers['x-anime-proxy-ip']):request.ip);
     const rawPath=request.raw.url||route.path;
     if(!rawPath.startsWith('/')||rawPath.startsWith('//')){
      reply.code(400).send({error:'Invalid request path.'});return;
