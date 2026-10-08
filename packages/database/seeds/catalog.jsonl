@@ -1,0 +1,465 @@
+{"table":"character_versions","values":{"aliases":"[\"Saiyan Saga\"]","arc":"Saiyan Saga","canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku combat profile during the Saiyan Saga.","era":"Dragon Ball Z","id":"goku-saiyan-saga","name":"Saiyan Saga Goku","parent_version_id":null,"short_name":"Saiyan Saga","sort_order":10,"source_endpoint":"Dragon Ball Z \u00b7 Saiyan Saga"}}
+{"table":"character_versions","values":{"aliases":"[\"Namek\"]","arc":"Namek Saga","canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku combat profile during the Namek conflict before later Super Saiyan-era states.","era":"Dragon Ball Z","id":"goku-namek-saga","name":"Namek Saga Goku","parent_version_id":"goku-saiyan-saga","short_name":"Namek Saga","sort_order":20,"source_endpoint":"Dragon Ball Z \u00b7 Namek Saga"}}
+{"table":"character_versions","values":{"aliases":"[\"SSJ\",\"Super Saiyan 1\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using the Super Saiyan state.","era":"Dragon Ball Z","id":"goku-super-saiyan","name":"Super Saiyan Goku","parent_version_id":"goku-namek-saga","short_name":"Super Saiyan","sort_order":30,"source_endpoint":"Dragon Ball Z"}}
+{"table":"character_versions","values":{"aliases":"[\"SSJ2\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using Super Saiyan 2.","era":"Dragon Ball Z","id":"goku-super-saiyan-2","name":"Super Saiyan 2 Goku","parent_version_id":"goku-super-saiyan","short_name":"Super Saiyan 2","sort_order":40,"source_endpoint":"Dragon Ball Z"}}
+{"table":"character_versions","values":{"aliases":"[\"SSJ3\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using Super Saiyan 3.","era":"Dragon Ball Z","id":"goku-super-saiyan-3","name":"Super Saiyan 3 Goku","parent_version_id":"goku-super-saiyan-2","short_name":"Super Saiyan 3","sort_order":50,"source_endpoint":"Dragon Ball Z"}}
+{"table":"character_versions","values":{"aliases":"[\"End Z\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Compatibility version for the existing starter matchup endpoint.","era":"Dragon Ball Z","id":"goku-end-z","name":"End of Dragon Ball Z Goku","parent_version_id":"goku-super-saiyan-3","short_name":"End of Z","sort_order":55,"source_endpoint":"End of Dragon Ball Z"}}
+{"table":"character_versions","values":{"aliases":"[\"SSG\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using Super Saiyan God.","era":"Dragon Ball Super","id":"goku-super-saiyan-god","name":"Super Saiyan God Goku","parent_version_id":"goku-end-z","short_name":"Super Saiyan God","sort_order":60,"source_endpoint":"Dragon Ball Super"}}
+{"table":"character_versions","values":{"aliases":"[\"SSB\",\"Super Saiyan God Super Saiyan\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using Super Saiyan Blue.","era":"Dragon Ball Super","id":"goku-super-saiyan-blue","name":"Super Saiyan Blue Goku","parent_version_id":"goku-super-saiyan-god","short_name":"Super Saiyan Blue","sort_order":70,"source_endpoint":"Dragon Ball Super"}}
+{"table":"character_versions","values":{"aliases":"[\"Ultra Instinct Omen\",\"UI Sign\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using the incomplete Ultra Instinct Sign state.","era":"Dragon Ball Super","id":"goku-ui-sign","name":"Ultra Instinct Sign Goku","parent_version_id":"goku-super-saiyan-blue","short_name":"UI Sign","sort_order":80,"source_endpoint":"Dragon Ball Super"}}
+{"table":"character_versions","values":{"aliases":"[\"MUI\",\"Ultra Instinct\"]","arc":null,"canonical":1,"character_id":"goku","created":1791375000000,"description":"Goku using the completed Ultra Instinct state represented by the current catalog endpoint.","era":"Dragon Ball Super","id":"goku-mastered-ultra-instinct","name":"Mastered Ultra Instinct Goku","parent_version_id":"goku-ui-sign","short_name":"Mastered Ultra Instinct","sort_order":90,"source_endpoint":"Dragon Ball Super anime, episode 131"}}
+{"table":"character_versions","values":{"aliases":"[\"Academy\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto during his academy-era combat profile.","era":"Naruto","id":"naruto-academy","name":"Academy Naruto","parent_version_id":null,"short_name":"Academy","sort_order":10,"source_endpoint":"Naruto \u00b7 Academy era"}}
+{"table":"character_versions","values":{"aliases":"[\"Ch\u016bnin Exam\",\"Chunin Exams\"]","arc":"Chunin Exams","canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto during the Chunin Exam era.","era":"Naruto","id":"naruto-chunin-exam","name":"Chunin Exam Naruto","parent_version_id":"naruto-academy","short_name":"Chunin Exam","sort_order":20,"source_endpoint":"Naruto \u00b7 Chunin Exams"}}
+{"table":"character_versions","values":{"aliases":"[\"End of original Naruto\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Compatibility version for the existing starter matchup endpoint.","era":"Naruto","id":"naruto-original-series-end","name":"End of Original Series Naruto","parent_version_id":"naruto-chunin-exam","short_name":"Original Series End","sort_order":25,"source_endpoint":"End of original Naruto series"}}
+{"table":"character_versions","values":{"aliases":"[\"Base Shippuden\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto in his Shippuden-era baseline combat profile.","era":"Naruto Shippuden","id":"naruto-shippuden","name":"Shippuden Naruto","parent_version_id":"naruto-original-series-end","short_name":"Shippuden","sort_order":30,"source_endpoint":"Naruto Shippuden"}}
+{"table":"character_versions","values":{"aliases":"[\"Sage Naruto\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto using Sage Mode.","era":"Naruto Shippuden","id":"naruto-sage-mode","name":"Sage Mode Naruto","parent_version_id":"naruto-shippuden","short_name":"Sage Mode","sort_order":40,"source_endpoint":"Naruto Shippuden"}}
+{"table":"character_versions","values":{"aliases":"[\"Kurama Chakra Mode\",\"KCM\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto using Kurama Chakra Mode.","era":"Naruto Shippuden","id":"naruto-kcm","name":"KCM Naruto","parent_version_id":"naruto-sage-mode","short_name":"KCM","sort_order":50,"source_endpoint":"Naruto Shippuden"}}
+{"table":"character_versions","values":{"aliases":"[\"Six Paths Sage Mode\",\"SPSM\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto using his Six Paths-era combat profile.","era":"Naruto Shippuden","id":"naruto-six-paths","name":"Six Paths Naruto","parent_version_id":"naruto-kcm","short_name":"Six Paths","sort_order":60,"source_endpoint":"Naruto Shippuden \u00b7 Fourth Shinobi World War"}}
+{"table":"character_versions","values":{"aliases":"[\"Baryon\"]","arc":null,"canonical":1,"character_id":"naruto","created":1791375000000,"description":"Naruto using Baryon Mode.","era":"Boruto","id":"naruto-baryon-mode","name":"Baryon Mode Naruto","parent_version_id":"naruto-six-paths","short_name":"Baryon Mode","sort_order":70,"source_endpoint":"Boruto-era material"}}
+{"table":"character_versions","values":{"aliases":"[\"Shikai\"]","arc":null,"canonical":1,"character_id":"ichigo","created":1791375000000,"description":"Ichigo using the Shikai state represented in the existing catalog.","era":null,"id":"ichigo-shikai","name":"Shikai Ichigo","parent_version_id":null,"short_name":"Shikai","sort_order":10,"source_endpoint":"Bleach anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Bankai\"]","arc":null,"canonical":1,"character_id":"ichigo","created":1791375000000,"description":"Ichigo using Bankai.","era":null,"id":"ichigo-bankai","name":"Bankai Ichigo","parent_version_id":"ichigo-shikai","short_name":"Bankai","sort_order":20,"source_endpoint":"Bleach anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Hollow Mask\"]","arc":null,"canonical":1,"character_id":"ichigo","created":1791375000000,"description":"Ichigo using the Hollowfication state represented in the existing catalog.","era":null,"id":"ichigo-hollowfication","name":"Hollowfication Ichigo","parent_version_id":"ichigo-bankai","short_name":"Hollowfication","sort_order":30,"source_endpoint":"Bleach anime"}}
+{"table":"character_versions","values":{"aliases":"[\"End of original Bleach anime\"]","arc":null,"canonical":1,"character_id":"ichigo","created":1791375000000,"description":"Compatibility version for the existing starter matchup endpoint.","era":null,"id":"ichigo-original-anime-end","name":"End of Original Bleach Anime Ichigo","parent_version_id":"ichigo-hollowfication","short_name":"Original Anime End","sort_order":40,"source_endpoint":"End of original Bleach anime"}}
+{"table":"character_versions","values":{"aliases":"[\"End of East Blue\"]","arc":null,"canonical":1,"character_id":"luffy","created":1791375000000,"description":"Compatibility profile for the existing East Blue starter matchup.","era":null,"id":"luffy-east-blue-end","name":"East Blue Luffy","parent_version_id":null,"short_name":"East Blue","sort_order":10,"source_endpoint":"End of East Blue"}}
+{"table":"character_versions","values":{"aliases":"[\"Base\"]","arc":null,"canonical":1,"character_id":"luffy","created":1791375000000,"description":"Luffy baseline combat profile represented in the existing catalog.","era":null,"id":"luffy-base","name":"Base Luffy","parent_version_id":"luffy-east-blue-end","short_name":"Base","sort_order":20,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Gear Second\"]","arc":null,"canonical":1,"character_id":"luffy","created":1791375000000,"description":"Luffy using Gear 2.","era":null,"id":"luffy-gear-2","name":"Gear 2 Luffy","parent_version_id":"luffy-base","short_name":"Gear 2","sort_order":30,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Gear Fourth\"]","arc":null,"canonical":1,"character_id":"luffy","created":1791375000000,"description":"Luffy using Gear 4.","era":null,"id":"luffy-gear-4","name":"Gear 4 Luffy","parent_version_id":"luffy-gear-2","short_name":"Gear 4","sort_order":40,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Gear Fifth\"]","arc":null,"canonical":1,"character_id":"luffy","created":1791375000000,"description":"Luffy using Gear 5 as represented by the current catalog endpoint.","era":null,"id":"luffy-gear-5","name":"Gear 5 Luffy","parent_version_id":"luffy-gear-4","short_name":"Gear 5","sort_order":50,"source_endpoint":"Egghead anime arc"}}
+{"table":"character_versions","values":{"aliases":"[\"Season 1\"]","arc":null,"canonical":1,"character_id":"tanjiro","created":1791375000000,"description":"Compatibility version for the existing starter matchup.","era":null,"id":"tanjiro-season-1","name":"Season 1 Tanjiro","parent_version_id":null,"short_name":"Season 1","sort_order":10,"source_endpoint":"Demon Slayer Season 1"}}
+{"table":"character_versions","values":{"aliases":"[\"Water Breathing\"]","arc":null,"canonical":1,"character_id":"tanjiro","created":1791375000000,"description":"Tanjiro combat profile centered on Water Breathing from the existing catalog.","era":null,"id":"tanjiro-water-breathing","name":"Water Breathing Tanjiro","parent_version_id":"tanjiro-season-1","short_name":"Water Breathing","sort_order":20,"source_endpoint":"Demon Slayer anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Hinokami Kagura\"]","arc":null,"canonical":1,"character_id":"tanjiro","created":1791375000000,"description":"Tanjiro combat profile using Hinokami Kagura from the existing catalog.","era":null,"id":"tanjiro-hinokami-kagura","name":"Hinokami Kagura Tanjiro","parent_version_id":"tanjiro-water-breathing","short_name":"Hinokami Kagura","sort_order":30,"source_endpoint":"Hashira Training anime arc"}}
+{"table":"character_versions","values":{"aliases":"[\"Season 1\"]","arc":null,"canonical":1,"character_id":"levi","created":1791375000000,"description":"Compatibility version for the existing starter matchup.","era":null,"id":"levi-season-1","name":"Season 1 Levi","parent_version_id":null,"short_name":"Season 1","sort_order":10,"source_endpoint":"Attack on Titan Season 1"}}
+{"table":"character_versions","values":{"aliases":"[\"Standard ODM gear\"]","arc":null,"canonical":1,"character_id":"levi","created":1791375000000,"description":"Levi with standard ODM gear as represented in the existing catalog.","era":null,"id":"levi-standard-odm","name":"Standard ODM Levi","parent_version_id":"levi-season-1","short_name":"Standard ODM","sort_order":20,"source_endpoint":"Attack on Titan anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Thunder spears\"]","arc":null,"canonical":1,"character_id":"levi","created":1791375000000,"description":"Levi with Thunder Spear equipment as represented in the existing catalog.","era":null,"id":"levi-thunder-spears","name":"Thunder Spear Levi","parent_version_id":"levi-standard-odm","short_name":"Thunder Spears","sort_order":30,"source_endpoint":"Attack on Titan Final Season"}}
+{"table":"character_versions","values":{"aliases":"[\"Byakugo Seal\"]","arc":null,"canonical":1,"character_id":"sakura","created":1791375000000,"description":"Sakura using the Byakug\u014d Seal state represented in the current catalog.","era":null,"id":"sakura-byakugo","name":"Byakug\u014d Seal Sakura","parent_version_id":null,"short_name":"Byakug\u014d Seal","sort_order":10,"source_endpoint":"Naruto Shippuden anime, episode 500"}}
+{"table":"character_versions","values":{"aliases":"[\"Standard shinobi equipment\"]","arc":null,"canonical":1,"character_id":"shikamaru","created":1791375000000,"description":"Shikamaru with the standard shinobi equipment represented in the current catalog.","era":null,"id":"shikamaru-standard","name":"Standard Shikamaru","parent_version_id":null,"short_name":"Standard","sort_order":10,"source_endpoint":"Naruto Shippuden anime, episode 500"}}
+{"table":"character_versions","values":{"aliases":"[\"Brain Point\"]","arc":null,"canonical":1,"character_id":"chopper","created":1791375000000,"description":"Chopper using Brain Point.","era":null,"id":"chopper-brain-point","name":"Brain Point Chopper","parent_version_id":null,"short_name":"Brain Point","sort_order":10,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Guard Point\"]","arc":null,"canonical":1,"character_id":"chopper","created":1791375000000,"description":"Chopper using Guard Point.","era":null,"id":"chopper-guard-point","name":"Guard Point Chopper","parent_version_id":"chopper-brain-point","short_name":"Guard Point","sort_order":20,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Monster Point\"]","arc":null,"canonical":1,"character_id":"chopper","created":1791375000000,"description":"Chopper using Monster Point as represented in the existing catalog.","era":null,"id":"chopper-monster-point","name":"Monster Point Chopper","parent_version_id":"chopper-guard-point","short_name":"Monster Point","sort_order":30,"source_endpoint":"Egghead anime arc"}}
+{"table":"character_versions","values":{"aliases":"[\"Standard ODM gear\"]","arc":null,"canonical":1,"character_id":"mikasa","created":1791375000000,"description":"Mikasa with standard ODM gear as represented in the existing catalog.","era":null,"id":"mikasa-standard-odm","name":"Standard ODM Mikasa","parent_version_id":null,"short_name":"Standard ODM","sort_order":10,"source_endpoint":"Attack on Titan anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Thunder spears\"]","arc":null,"canonical":1,"character_id":"mikasa","created":1791375000000,"description":"Mikasa with Thunder Spear equipment as represented in the existing catalog.","era":null,"id":"mikasa-thunder-spears","name":"Thunder Spear Mikasa","parent_version_id":"mikasa-standard-odm","short_name":"Thunder Spears","sort_order":20,"source_endpoint":"Attack on Titan Final Season"}}
+{"table":"character_versions","values":{"aliases":"[\"Kabuto\"]","arc":null,"canonical":1,"character_id":"usopp","created":1791375000000,"description":"Usopp using Kabuto as represented in the existing catalog.","era":null,"id":"usopp-kabuto","name":"Kabuto Usopp","parent_version_id":null,"short_name":"Kabuto","sort_order":10,"source_endpoint":"One Piece anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Pop Greens\"]","arc":null,"canonical":1,"character_id":"usopp","created":1791375000000,"description":"Usopp using Pop Greens as represented in the current catalog.","era":null,"id":"usopp-pop-greens","name":"Pop Greens Usopp","parent_version_id":"usopp-kabuto","short_name":"Pop Greens","sort_order":20,"source_endpoint":"Egghead anime arc"}}
+{"table":"character_versions","values":{"aliases":"[\"Shikai\"]","arc":null,"canonical":1,"character_id":"rukia","created":1791375000000,"description":"Rukia using Shikai.","era":null,"id":"rukia-shikai","name":"Shikai Rukia","parent_version_id":null,"short_name":"Shikai","sort_order":10,"source_endpoint":"Bleach anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Bankai\"]","arc":null,"canonical":1,"character_id":"rukia","created":1791375000000,"description":"Rukia using Bankai as represented in the current catalog endpoint.","era":null,"id":"rukia-bankai","name":"Bankai Rukia","parent_version_id":"rukia-shikai","short_name":"Bankai","sort_order":20,"source_endpoint":"Thousand-Year Blood War anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Full Cowling\"]","arc":null,"canonical":1,"character_id":"deku","created":1791375000000,"description":"Deku using Full Cowling as represented in the existing catalog.","era":null,"id":"deku-full-cowling","name":"Full Cowling Deku","parent_version_id":null,"short_name":"Full Cowling","sort_order":10,"source_endpoint":"My Hero Academia anime"}}
+{"table":"character_versions","values":{"aliases":"[\"One For All 100%\",\"OFA 100\"]","arc":null,"canonical":1,"character_id":"deku","created":1791375000000,"description":"Deku using the One For All 100% state represented in the current catalog.","era":null,"id":"deku-ofa-100","name":"One For All 100% Deku","parent_version_id":"deku-full-cowling","short_name":"OFA 100%","sort_order":20,"source_endpoint":"My Hero Academia anime, Final Season"}}
+{"table":"character_versions","values":{"aliases":"[\"Cursed energy reinforcement\"]","arc":null,"canonical":1,"character_id":"yuji","created":1791375000000,"description":"Yuji using cursed-energy reinforcement as represented in the existing catalog.","era":null,"id":"yuji-cursed-energy","name":"Cursed Energy Reinforcement Yuji","parent_version_id":null,"short_name":"Cursed Energy","sort_order":10,"source_endpoint":"Jujutsu Kaisen anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Black Flash\"]","arc":null,"canonical":1,"character_id":"yuji","created":1791375000000,"description":"Yuji combat profile centered on Black Flash as represented in the existing catalog.","era":null,"id":"yuji-black-flash","name":"Black Flash Yuji","parent_version_id":"yuji-cursed-energy","short_name":"Black Flash","sort_order":20,"source_endpoint":"Shibuya Incident anime arc"}}
+{"table":"character_versions","values":{"aliases":"[\"Human\"]","arc":null,"canonical":1,"character_id":"denji","created":1791375000000,"description":"Denji in human state.","era":null,"id":"denji-human","name":"Human Denji","parent_version_id":null,"short_name":"Human","sort_order":10,"source_endpoint":"Chainsaw Man anime season 1"}}
+{"table":"character_versions","values":{"aliases":"[\"Chainsaw hybrid\"]","arc":null,"canonical":1,"character_id":"denji","created":1791375000000,"description":"Denji in his hybrid transformation as represented in the current catalog.","era":null,"id":"denji-chainsaw-hybrid","name":"Chainsaw Hybrid Denji","parent_version_id":"denji-human","short_name":"Chainsaw Hybrid","sort_order":20,"source_endpoint":"Chainsaw Man anime season 1"}}
+{"table":"character_versions","values":{"aliases":"[\"Black form\"]","arc":null,"canonical":1,"character_id":"asta","created":1791375000000,"description":"Asta using Black Form as represented in the existing catalog.","era":null,"id":"asta-black-form","name":"Black Form Asta","parent_version_id":null,"short_name":"Black Form","sort_order":10,"source_endpoint":"Black Clover anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Devil Union\"]","arc":null,"canonical":1,"character_id":"asta","created":1791375000000,"description":"Asta using Devil Union as represented in the current catalog.","era":null,"id":"asta-devil-union","name":"Devil Union Asta","parent_version_id":"asta-black-form","short_name":"Devil Union","sort_order":20,"source_endpoint":"Black Clover anime, episode 170"}}
+{"table":"character_versions","values":{"aliases":"[\"Science Kingdom equipment\"]","arc":null,"canonical":1,"character_id":"senku","created":1791375000000,"description":"Senku with the Science Kingdom equipment state represented in the existing catalog.","era":null,"id":"senku-science-kingdom","name":"Science Kingdom Senku","parent_version_id":null,"short_name":"Science Kingdom","sort_order":10,"source_endpoint":"Dr. Stone anime, Science Future"}}
+{"table":"character_versions","values":{"aliases":"[\"Adolla Burst\"]","arc":null,"canonical":1,"character_id":"shinra","created":1791375000000,"description":"Shinra using the Adolla Burst state represented in the existing catalog.","era":null,"id":"shinra-adolla-burst","name":"Adolla Burst Shinra","parent_version_id":null,"short_name":"Adolla Burst","sort_order":10,"source_endpoint":"Fire Force anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Rapid\"]","arc":null,"canonical":1,"character_id":"shinra","created":1791375000000,"description":"Shinra combat profile represented by the existing Rapid catalog state.","era":null,"id":"shinra-rapid","name":"Rapid Shinra","parent_version_id":"shinra-adolla-burst","short_name":"Rapid","sort_order":20,"source_endpoint":"Fire Force anime season 3"}}
+{"table":"character_versions","values":{"aliases":"[\"Reanimated Madara\",\"Edo Madara\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"madara","created":1791398520000,"description":"Madara in his reanimated Fourth Shinobi World War combat state.","era":"Naruto Shippuden","id":"madara-edo-tensei","name":"Edo Tensei Madara","parent_version_id":null,"short_name":"Edo Tensei","sort_order":10,"source_endpoint":"Naruto Shippuden \u00b7 Fourth Shinobi World War"}}
+{"table":"character_versions","values":{"aliases":"[\"Alive Madara\",\"Revived Uchiha Madara\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"madara","created":1791398520000,"description":"Madara after returning to a living body during the Fourth Shinobi World War.","era":"Naruto Shippuden","id":"madara-revived","name":"Revived Madara","parent_version_id":"madara-edo-tensei","short_name":"Revived","sort_order":20,"source_endpoint":"Naruto Shippuden \u00b7 Fourth Shinobi World War"}}
+{"table":"character_versions","values":{"aliases":"[\"Juubi Madara\",\"Six Paths Madara\",\"Ten Tails Madara\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"madara","created":1791398520000,"description":"Madara in his Ten-Tails jinchuriki Six Paths-era combat state.","era":"Naruto Shippuden","id":"madara-ten-tails-jinchuriki","name":"Ten-Tails Jinchuriki Madara","parent_version_id":"madara-revived","short_name":"Ten-Tails Jinchuriki","sort_order":30,"source_endpoint":"Naruto Shippuden \u00b7 Fourth Shinobi World War"}}
+{"table":"character_versions","values":{"aliases":"[\"Awakened Gojo\",\"Teen Gojo\"]","arc":"Hidden Inventory","canonical":1,"character_id":"gojo","created":1791398520000,"description":"Gojo after his awakening during the Hidden Inventory period.","era":"Jujutsu Kaisen","id":"gojo-hidden-inventory-awakened","name":"Awakened Hidden Inventory Gojo","parent_version_id":null,"short_name":"Awakened","sort_order":10,"source_endpoint":"Jujutsu Kaisen \u00b7 Hidden Inventory"}}
+{"table":"character_versions","values":{"aliases":"[\"Shibuya Gojo\",\"Adult Gojo\"]","arc":"Shibuya Incident","canonical":1,"character_id":"gojo","created":1791398520000,"description":"Gojo at the Shibuya Incident anime endpoint.","era":"Jujutsu Kaisen","id":"gojo-shibuya","name":"Shibuya Incident Gojo","parent_version_id":"gojo-hidden-inventory-awakened","short_name":"Shibuya","sort_order":20,"source_endpoint":"Jujutsu Kaisen \u00b7 Shibuya Incident"}}
+{"table":"character_versions","values":{"aliases":"[\"Shinjuku Gojo\"]","arc":"Shinjuku Showdown","canonical":1,"character_id":"gojo","created":1791398520000,"description":"Gojo at his Shinjuku Showdown manga combat endpoint.","era":"Jujutsu Kaisen","id":"gojo-shinjuku","name":"Shinjuku Showdown Gojo","parent_version_id":"gojo-shibuya","short_name":"Shinjuku","sort_order":30,"source_endpoint":"Jujutsu Kaisen manga \u00b7 Shinjuku Showdown"}}
+{"table":"character_versions","values":{"aliases":"[\"Living Itachi\",\"Akatsuki-era Itachi\"]","arc":null,"canonical":1,"character_id":"itachi","created":1791398520000,"description":"Itachi during his Akatsuki-era combat profile.","era":"Naruto Shippuden","id":"itachi-akatsuki","name":"Akatsuki Itachi","parent_version_id":null,"short_name":"Akatsuki","sort_order":10,"source_endpoint":"Naruto Shippuden \u00b7 Akatsuki era"}}
+{"table":"character_versions","values":{"aliases":"[\"Reanimated Itachi\",\"Edo Itachi\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"itachi","created":1791398520000,"description":"Itachi in his reanimated Fourth Shinobi World War combat state.","era":"Naruto Shippuden","id":"itachi-edo-tensei","name":"Edo Tensei Itachi","parent_version_id":"itachi-akatsuki","short_name":"Edo Tensei","sort_order":20,"source_endpoint":"Naruto Shippuden \u00b7 Fourth Shinobi World War"}}
+{"table":"character_versions","values":{"aliases":"[\"Captain Aizen\"]","arc":"Soul Society","canonical":1,"character_id":"aizen","created":1791398520000,"description":"Aizen at the Soul Society conflict endpoint before later Hogyoku transformations.","era":"Bleach","id":"aizen-soul-society","name":"Soul Society Aizen","parent_version_id":null,"short_name":"Soul Society","sort_order":10,"source_endpoint":"Bleach \u00b7 Soul Society arc"}}
+{"table":"character_versions","values":{"aliases":"[\"H\u014dgyoku Aizen\",\"Transcendent Aizen\"]","arc":"Arrancar / Fake Karakura Town","canonical":1,"character_id":"aizen","created":1791398520000,"description":"Aizen during his Hogyoku-evolved combat state.","era":"Bleach","id":"aizen-hogyoku","name":"Hogyoku Aizen","parent_version_id":"aizen-soul-society","short_name":"Hogyoku","sort_order":20,"source_endpoint":"Bleach \u00b7 Arrancar conflict"}}
+{"table":"character_versions","values":{"aliases":"[\"TYBW Aizen\",\"Muken Aizen\"]","arc":null,"canonical":1,"character_id":"aizen","created":1791398520000,"description":"Aizen at the Thousand-Year Blood War anime endpoint.","era":"Bleach: Thousand-Year Blood War","id":"aizen-tybw","name":"Thousand-Year Blood War Aizen","parent_version_id":"aizen-hogyoku","short_name":"TYBW","sort_order":30,"source_endpoint":"Bleach: Thousand-Year Blood War anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Caped Baldy\",\"Saitama\"]","arc":null,"canonical":1,"character_id":"saitama","created":1791398520000,"description":"Saitama at the current anime Hero Association combat endpoint.","era":"One-Punch Man","id":"saitama-hero-association","name":"Hero Association Saitama","parent_version_id":null,"short_name":"Hero Association","sort_order":10,"source_endpoint":"One-Punch Man anime"}}
+{"table":"character_versions","values":{"aliases":"[\"Season 1\"]","arc":null,"canonical":1,"character_id":"megumi","created":1791398520000,"description":"Megumi at the first-season anime combat endpoint.","era":"Jujutsu Kaisen","id":"megumi-season-1","name":"Season 1 Megumi","parent_version_id":null,"short_name":"Season 1","sort_order":10,"source_endpoint":"Jujutsu Kaisen anime season 1"}}
+{"table":"character_versions","values":{"aliases":"[\"Shibuya Megumi\"]","arc":"Shibuya Incident","canonical":1,"character_id":"megumi","created":1791398520000,"description":"Megumi at the Shibuya Incident anime endpoint.","era":"Jujutsu Kaisen","id":"megumi-shibuya","name":"Shibuya Incident Megumi","parent_version_id":"megumi-season-1","short_name":"Shibuya","sort_order":20,"source_endpoint":"Jujutsu Kaisen \u00b7 Shibuya Incident"}}
+{"table":"abilities","values":{"category":"physical","character_id":"goku","created":1791375000000,"description":"Close-range martial arts skill from the existing catalog profile.","id":"goku-martial-arts","name":"Martial Arts"}}
+{"table":"abilities","values":{"category":"energy","character_id":"goku","created":1791375000000,"description":"Energy manipulation and combat reinforcement.","id":"goku-ki-control","name":"Ki Control"}}
+{"table":"abilities","values":{"category":"technique","character_id":"goku","created":1791375000000,"description":"Signature ki-wave technique.","id":"goku-kamehameha","name":"Kamehameha"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"goku","created":1791375000000,"description":"Super Saiyan transformation access.","id":"goku-super-saiyan-ability","name":"Super Saiyan"}}
+{"table":"abilities","values":{"category":"energy","character_id":"goku","created":1791375000000,"description":"Divine ki used by later Dragon Ball Super profiles.","id":"goku-god-ki","name":"God Ki"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"goku","created":1791375000000,"description":"God-ki Super Saiyan state.","id":"goku-blue-ability","name":"Super Saiyan Blue"}}
+{"table":"abilities","values":{"category":"passive","character_id":"goku","created":1791375000000,"description":"Autonomous combat movement associated with Ultra Instinct states.","id":"goku-ui","name":"Ultra Instinct"}}
+{"table":"abilities","values":{"category":"technique","character_id":"naruto","created":1791375000000,"description":"Clone technique represented in the existing catalog summary.","id":"naruto-shadow-clone","name":"Shadow Clone Technique"}}
+{"table":"abilities","values":{"category":"technique","character_id":"naruto","created":1791375000000,"description":"Rotating chakra technique and its later variants.","id":"naruto-rasengan","name":"Rasengan"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"naruto","created":1791375000000,"description":"Sage Mode transformation and sensory combat state.","id":"naruto-sage-ability","name":"Sage Mode"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"naruto","created":1791375000000,"description":"Kurama chakra transformation state.","id":"naruto-kurama-chakra","name":"Kurama Chakra Mode"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"naruto","created":1791375000000,"description":"Six Paths-era enhanced state.","id":"naruto-six-paths-sage","name":"Six Paths Sage Mode"}}
+{"table":"abilities","values":{"category":"hax","character_id":"naruto","created":1791375000000,"description":"Six Paths-era orb technique.","id":"naruto-truth-seeking-orbs","name":"Truth-Seeking Orbs"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"naruto","created":1791375000000,"description":"Baryon Mode transformation state.","id":"naruto-baryon","name":"Baryon Mode"}}
+{"table":"abilities","values":{"category":"weapon","character_id":"ichigo","created":1791375000000,"description":"Sword combat from the existing catalog summary.","id":"ichigo-zanpakuto","name":"Zanpakut\u014d Combat"}}
+{"table":"abilities","values":{"category":"technique","character_id":"ichigo","created":1791375000000,"description":"Energy attack from the existing catalog summary.","id":"ichigo-getsuga","name":"Getsuga Tensh\u014d"}}
+{"table":"abilities","values":{"category":"energy","character_id":"luffy","created":1791375000000,"description":"Haki-based combat from the existing catalog summary.","id":"luffy-haki","name":"Haki"}}
+{"table":"abilities","values":{"category":"weapon","character_id":"tanjiro","created":1791375000000,"description":"Sword technique from the existing catalog summary.","id":"tanjiro-swordplay","name":"Precision Swordplay"}}
+{"table":"abilities","values":{"category":"mobility","character_id":"levi","created":1791375000000,"description":"ODM movement and aerial positioning from the existing catalog summary.","id":"levi-odm","name":"ODM Mobility"}}
+{"table":"abilities","values":{"category":"technique","character_id":"sakura","created":1791375000000,"description":"Medical support from the existing catalog summary.","id":"sakura-medical","name":"Medical Ninjutsu"}}
+{"table":"abilities","values":{"category":"hax","character_id":"shikamaru","created":1791375000000,"description":"Shadow possession control from the existing catalog summary.","id":"shikamaru-shadow","name":"Shadow Possession"}}
+{"table":"abilities","values":{"category":"technique","character_id":"chopper","created":1791375000000,"description":"Medical support from the existing catalog summary.","id":"chopper-medicine","name":"Field Medicine"}}
+{"table":"abilities","values":{"category":"mobility","character_id":"mikasa","created":1791375000000,"description":"ODM movement from the existing catalog summary.","id":"mikasa-odm","name":"ODM Mobility"}}
+{"table":"abilities","values":{"category":"weapon","character_id":"usopp","created":1791375000000,"description":"Ranged combat from the existing catalog summary.","id":"usopp-marksmanship","name":"Long-range Marksmanship"}}
+{"table":"abilities","values":{"category":"weapon","character_id":"rukia","created":1791375000000,"description":"Ice-based Zanpakut\u014d combat from the existing catalog summary.","id":"rukia-ice-zanpakuto","name":"Ice-type Zanpakut\u014d"}}
+{"table":"abilities","values":{"category":"energy","character_id":"deku","created":1791375000000,"description":"One For All output from the existing catalog summary.","id":"deku-ofa","name":"One For All"}}
+{"table":"abilities","values":{"category":"energy","character_id":"yuji","created":1791375000000,"description":"Cursed-energy reinforcement from the existing catalog summary.","id":"yuji-cursed-energy-ability","name":"Cursed Energy Reinforcement"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"denji","created":1791375000000,"description":"Hybrid transformation from the existing catalog summary.","id":"denji-chainsaws","name":"Chainsaw Hybrid Transformation"}}
+{"table":"abilities","values":{"category":"weapon","character_id":"asta","created":1791375000000,"description":"Anti-magic sword combat from the existing catalog summary.","id":"asta-anti-magic","name":"Anti-Magic Swords"}}
+{"table":"abilities","values":{"category":"other","character_id":"senku","created":1791375000000,"description":"Scientific planning and invention from the existing catalog summary.","id":"senku-science","name":"Scientific Planning"}}
+{"table":"abilities","values":{"category":"energy","character_id":"shinra","created":1791375000000,"description":"Ignition ability from the existing catalog summary.","id":"shinra-ignition","name":"Third-generation Ignition"}}
+{"table":"abilities","values":{"category":"sensory","character_id":"madara","created":1791398520000,"description":"Ocular techniques associated with Madara combat profiles.","id":"madara-ocular","name":"Sharingan and Rinnegan"}}
+{"table":"abilities","values":{"category":"defensive","character_id":"madara","created":1791398520000,"description":"Uchiha chakra avatar used for offense and defense.","id":"madara-susanoo","name":"Susanoo"}}
+{"table":"abilities","values":{"category":"hax","character_id":"madara","created":1791398520000,"description":"Six Paths-era parallel shadow technique.","id":"madara-limbo","name":"Limbo"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"madara","created":1791398520000,"description":"Ten-Tails jinchuriki transformation state.","id":"madara-ten-tails","name":"Ten-Tails Jinchuriki"}}
+{"table":"abilities","values":{"category":"hax","character_id":"gojo","created":1791398520000,"description":"Spatial cursed technique used for Infinity, Blue, Red, and Hollow Purple applications.","id":"gojo-limitless","name":"Limitless"}}
+{"table":"abilities","values":{"category":"sensory","character_id":"gojo","created":1791398520000,"description":"Exceptional cursed-energy perception and efficiency.","id":"gojo-six-eyes","name":"Six Eyes"}}
+{"table":"abilities","values":{"category":"hax","character_id":"gojo","created":1791398520000,"description":"Gojo domain expansion.","id":"gojo-unlimited-void","name":"Unlimited Void"}}
+{"table":"abilities","values":{"category":"technique","character_id":"gojo","created":1791398520000,"description":"Reverse cursed energy used for recovery and technique support.","id":"gojo-rct","name":"Reverse Cursed Technique"}}
+{"table":"abilities","values":{"category":"hax","character_id":"itachi","created":1791398520000,"description":"Sharingan-based illusion techniques including high-level genjutsu.","id":"itachi-genjutsu","name":"Sharingan Genjutsu"}}
+{"table":"abilities","values":{"category":"technique","character_id":"itachi","created":1791398520000,"description":"Mangekyo Sharingan black-flame technique.","id":"itachi-amaterasu","name":"Amaterasu"}}
+{"table":"abilities","values":{"category":"defensive","character_id":"itachi","created":1791398520000,"description":"Itachi defensive and offensive chakra avatar.","id":"itachi-susanoo","name":"Susanoo"}}
+{"table":"abilities","values":{"category":"hax","character_id":"aizen","created":1791398520000,"description":"Complete hypnosis through Aizen zanpakuto ability.","id":"aizen-kyoka-suigetsu","name":"Kyoka Suigetsu"}}
+{"table":"abilities","values":{"category":"technique","character_id":"aizen","created":1791398520000,"description":"High-level Soul Reaper spell techniques.","id":"aizen-kido","name":"Kido"}}
+{"table":"abilities","values":{"category":"transformation","character_id":"aizen","created":1791398520000,"description":"Hogyoku-driven transformation and adaptation state.","id":"aizen-hogyoku-ability","name":"Hogyoku Evolution"}}
+{"table":"abilities","values":{"category":"physical","character_id":"saitama","created":1791398520000,"description":"Extreme strength, speed, durability, and close-range combat.","id":"saitama-physical","name":"Overwhelming Physical Ability"}}
+{"table":"abilities","values":{"category":"technique","character_id":"saitama","created":1791398520000,"description":"A named high-output punch from Saitama serious-series attacks.","id":"saitama-serious-punch","name":"Serious Punch"}}
+{"table":"abilities","values":{"category":"summoning","character_id":"megumi","created":1791398520000,"description":"Shikigami-based inherited cursed technique.","id":"megumi-ten-shadows","name":"Ten Shadows Technique"}}
+{"table":"abilities","values":{"category":"hax","character_id":"megumi","created":1791398520000,"description":"Megumi incomplete domain expansion.","id":"megumi-chimera-shadow-garden","name":"Chimera Shadow Garden"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-saiyan-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-saiyan-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-saiyan-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-namek-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-namek-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-namek-saga"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-super-saiyan"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-super-saiyan"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-super-saiyan"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-super-saiyan-2"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-super-saiyan-2"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-super-saiyan-2"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-super-saiyan-3"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-super-saiyan-3"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-super-saiyan-3"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-end-z"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-end-z"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-end-z"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-super-saiyan-god"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-super-saiyan-god"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-super-saiyan-god"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-ui-sign"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-ui-sign"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-ui-sign"}}
+{"table":"version_abilities","values":{"ability_id":"goku-martial-arts","notes":"","status":"available","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ki-control","notes":"","status":"available","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_abilities","values":{"ability_id":"goku-kamehameha","notes":"","status":"available","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_abilities","values":{"ability_id":"goku-super-saiyan-ability","notes":"","status":"available","version_id":"goku-super-saiyan"}}
+{"table":"version_abilities","values":{"ability_id":"goku-super-saiyan-ability","notes":"","status":"available","version_id":"goku-super-saiyan-2"}}
+{"table":"version_abilities","values":{"ability_id":"goku-super-saiyan-ability","notes":"","status":"available","version_id":"goku-super-saiyan-3"}}
+{"table":"version_abilities","values":{"ability_id":"goku-super-saiyan-ability","notes":"","status":"available","version_id":"goku-end-z"}}
+{"table":"version_abilities","values":{"ability_id":"goku-god-ki","notes":"","status":"available","version_id":"goku-super-saiyan-god"}}
+{"table":"version_abilities","values":{"ability_id":"goku-god-ki","notes":"","status":"available","version_id":"goku-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"goku-god-ki","notes":"","status":"available","version_id":"goku-ui-sign"}}
+{"table":"version_abilities","values":{"ability_id":"goku-god-ki","notes":"","status":"available","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-chunin-exam"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-original-series-end"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-shippuden"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-sage-mode"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-kcm"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-six-paths"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-shadow-clone","notes":"","status":"available","version_id":"naruto-baryon-mode"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-original-series-end"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-shippuden"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-sage-mode"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-kcm"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-six-paths"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-rasengan","notes":"","status":"available","version_id":"naruto-baryon-mode"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-zanpakuto","notes":"","status":"available","version_id":"ichigo-shikai"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-zanpakuto","notes":"","status":"available","version_id":"ichigo-bankai"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-zanpakuto","notes":"","status":"available","version_id":"ichigo-hollowfication"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-zanpakuto","notes":"","status":"available","version_id":"ichigo-original-anime-end"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-getsuga","notes":"","status":"available","version_id":"ichigo-shikai"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-getsuga","notes":"","status":"available","version_id":"ichigo-bankai"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-getsuga","notes":"","status":"available","version_id":"ichigo-hollowfication"}}
+{"table":"version_abilities","values":{"ability_id":"ichigo-getsuga","notes":"","status":"available","version_id":"ichigo-original-anime-end"}}
+{"table":"version_abilities","values":{"ability_id":"luffy-haki","notes":"","status":"available","version_id":"luffy-base"}}
+{"table":"version_abilities","values":{"ability_id":"luffy-haki","notes":"","status":"available","version_id":"luffy-gear-2"}}
+{"table":"version_abilities","values":{"ability_id":"luffy-haki","notes":"","status":"available","version_id":"luffy-gear-4"}}
+{"table":"version_abilities","values":{"ability_id":"luffy-haki","notes":"","status":"available","version_id":"luffy-gear-5"}}
+{"table":"version_abilities","values":{"ability_id":"tanjiro-swordplay","notes":"","status":"available","version_id":"tanjiro-season-1"}}
+{"table":"version_abilities","values":{"ability_id":"tanjiro-swordplay","notes":"","status":"available","version_id":"tanjiro-water-breathing"}}
+{"table":"version_abilities","values":{"ability_id":"tanjiro-swordplay","notes":"","status":"available","version_id":"tanjiro-hinokami-kagura"}}
+{"table":"version_abilities","values":{"ability_id":"levi-odm","notes":"","status":"available","version_id":"levi-season-1"}}
+{"table":"version_abilities","values":{"ability_id":"levi-odm","notes":"","status":"available","version_id":"levi-standard-odm"}}
+{"table":"version_abilities","values":{"ability_id":"levi-odm","notes":"","status":"available","version_id":"levi-thunder-spears"}}
+{"table":"version_abilities","values":{"ability_id":"chopper-medicine","notes":"","status":"available","version_id":"chopper-brain-point"}}
+{"table":"version_abilities","values":{"ability_id":"chopper-medicine","notes":"","status":"available","version_id":"chopper-guard-point"}}
+{"table":"version_abilities","values":{"ability_id":"chopper-medicine","notes":"","status":"available","version_id":"chopper-monster-point"}}
+{"table":"version_abilities","values":{"ability_id":"mikasa-odm","notes":"","status":"available","version_id":"mikasa-standard-odm"}}
+{"table":"version_abilities","values":{"ability_id":"mikasa-odm","notes":"","status":"available","version_id":"mikasa-thunder-spears"}}
+{"table":"version_abilities","values":{"ability_id":"usopp-marksmanship","notes":"","status":"available","version_id":"usopp-kabuto"}}
+{"table":"version_abilities","values":{"ability_id":"usopp-marksmanship","notes":"","status":"available","version_id":"usopp-pop-greens"}}
+{"table":"version_abilities","values":{"ability_id":"rukia-ice-zanpakuto","notes":"","status":"available","version_id":"rukia-shikai"}}
+{"table":"version_abilities","values":{"ability_id":"rukia-ice-zanpakuto","notes":"","status":"available","version_id":"rukia-bankai"}}
+{"table":"version_abilities","values":{"ability_id":"deku-ofa","notes":"","status":"available","version_id":"deku-full-cowling"}}
+{"table":"version_abilities","values":{"ability_id":"deku-ofa","notes":"","status":"available","version_id":"deku-ofa-100"}}
+{"table":"version_abilities","values":{"ability_id":"yuji-cursed-energy-ability","notes":"","status":"available","version_id":"yuji-cursed-energy"}}
+{"table":"version_abilities","values":{"ability_id":"yuji-cursed-energy-ability","notes":"","status":"available","version_id":"yuji-black-flash"}}
+{"table":"version_abilities","values":{"ability_id":"asta-anti-magic","notes":"","status":"available","version_id":"asta-black-form"}}
+{"table":"version_abilities","values":{"ability_id":"asta-anti-magic","notes":"","status":"available","version_id":"asta-devil-union"}}
+{"table":"version_abilities","values":{"ability_id":"shinra-ignition","notes":"","status":"available","version_id":"shinra-adolla-burst"}}
+{"table":"version_abilities","values":{"ability_id":"shinra-ignition","notes":"","status":"available","version_id":"shinra-rapid"}}
+{"table":"version_abilities","values":{"ability_id":"goku-blue-ability","notes":"","status":"mastered","version_id":"goku-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ui","notes":"","status":"limited","version_id":"goku-ui-sign"}}
+{"table":"version_abilities","values":{"ability_id":"goku-ui","notes":"","status":"mastered","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-sage-ability","notes":"","status":"mastered","version_id":"naruto-sage-mode"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-kurama-chakra","notes":"","status":"available","version_id":"naruto-kcm"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-six-paths-sage","notes":"","status":"mastered","version_id":"naruto-six-paths"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-truth-seeking-orbs","notes":"","status":"available","version_id":"naruto-six-paths"}}
+{"table":"version_abilities","values":{"ability_id":"naruto-baryon","notes":"","status":"conditional","version_id":"naruto-baryon-mode"}}
+{"table":"version_abilities","values":{"ability_id":"sakura-medical","notes":"","status":"available","version_id":"sakura-byakugo"}}
+{"table":"version_abilities","values":{"ability_id":"shikamaru-shadow","notes":"","status":"available","version_id":"shikamaru-standard"}}
+{"table":"version_abilities","values":{"ability_id":"denji-chainsaws","notes":"","status":"available","version_id":"denji-chainsaw-hybrid"}}
+{"table":"version_abilities","values":{"ability_id":"senku-science","notes":"","status":"available","version_id":"senku-science-kingdom"}}
+{"table":"version_abilities","values":{"ability_id":"madara-ocular","notes":"","status":"available","version_id":"madara-edo-tensei"}}
+{"table":"version_abilities","values":{"ability_id":"madara-susanoo","notes":"","status":"available","version_id":"madara-edo-tensei"}}
+{"table":"version_abilities","values":{"ability_id":"madara-ocular","notes":"","status":"available","version_id":"madara-revived"}}
+{"table":"version_abilities","values":{"ability_id":"madara-susanoo","notes":"","status":"available","version_id":"madara-revived"}}
+{"table":"version_abilities","values":{"ability_id":"madara-ocular","notes":"","status":"available","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_abilities","values":{"ability_id":"madara-susanoo","notes":"","status":"available","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_abilities","values":{"ability_id":"madara-limbo","notes":"","status":"available","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_abilities","values":{"ability_id":"madara-ten-tails","notes":"","status":"mastered","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-limitless","notes":"","status":"mastered","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-six-eyes","notes":"","status":"available","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-rct","notes":"","status":"available","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-limitless","notes":"","status":"mastered","version_id":"gojo-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-six-eyes","notes":"","status":"available","version_id":"gojo-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-rct","notes":"","status":"available","version_id":"gojo-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-unlimited-void","notes":"","status":"mastered","version_id":"gojo-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-limitless","notes":"","status":"mastered","version_id":"gojo-shinjuku"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-six-eyes","notes":"","status":"available","version_id":"gojo-shinjuku"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-rct","notes":"","status":"available","version_id":"gojo-shinjuku"}}
+{"table":"version_abilities","values":{"ability_id":"gojo-unlimited-void","notes":"","status":"mastered","version_id":"gojo-shinjuku"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-genjutsu","notes":"","status":"mastered","version_id":"itachi-akatsuki"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-amaterasu","notes":"","status":"available","version_id":"itachi-akatsuki"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-susanoo","notes":"","status":"available","version_id":"itachi-akatsuki"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-genjutsu","notes":"","status":"mastered","version_id":"itachi-edo-tensei"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-amaterasu","notes":"","status":"available","version_id":"itachi-edo-tensei"}}
+{"table":"version_abilities","values":{"ability_id":"itachi-susanoo","notes":"","status":"available","version_id":"itachi-edo-tensei"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kyoka-suigetsu","notes":"","status":"mastered","version_id":"aizen-soul-society"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kido","notes":"","status":"available","version_id":"aizen-soul-society"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kyoka-suigetsu","notes":"","status":"mastered","version_id":"aizen-hogyoku"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kido","notes":"","status":"available","version_id":"aizen-hogyoku"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-hogyoku-ability","notes":"","status":"available","version_id":"aizen-hogyoku"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kyoka-suigetsu","notes":"","status":"mastered","version_id":"aizen-tybw"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-kido","notes":"","status":"available","version_id":"aizen-tybw"}}
+{"table":"version_abilities","values":{"ability_id":"aizen-hogyoku-ability","notes":"","status":"available","version_id":"aizen-tybw"}}
+{"table":"version_abilities","values":{"ability_id":"saitama-physical","notes":"","status":"mastered","version_id":"saitama-hero-association"}}
+{"table":"version_abilities","values":{"ability_id":"saitama-serious-punch","notes":"","status":"available","version_id":"saitama-hero-association"}}
+{"table":"version_abilities","values":{"ability_id":"megumi-ten-shadows","notes":"","status":"available","version_id":"megumi-season-1"}}
+{"table":"version_abilities","values":{"ability_id":"megumi-ten-shadows","notes":"","status":"available","version_id":"megumi-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"megumi-chimera-shadow-garden","notes":"","status":"limited","version_id":"megumi-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"madara-limbo","notes":"","status":"available","version_id":"madara-revived"}}
+{"table":"version_abilities","values":{"ability_id":"megumi-chimera-shadow-garden","notes":"","status":"limited","version_id":"megumi-season-1"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":30,"updated":1791396000000,"version_id":"goku-saiyan-saga"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":45,"updated":1791396000000,"version_id":"goku-namek-saga"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":58,"updated":1791396000000,"version_id":"goku-super-saiyan"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":64,"updated":1791396000000,"version_id":"goku-super-saiyan-2"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":72,"updated":1791396000000,"version_id":"goku-super-saiyan-3"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":76,"updated":1791396000000,"version_id":"goku-end-z"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":83,"updated":1791396000000,"version_id":"goku-super-saiyan-god"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":91,"updated":1791396000000,"version_id":"goku-super-saiyan-blue"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":96,"updated":1791396000000,"version_id":"goku-ui-sign"}}
+{"table":"squad_version_costs","values":{"character_id":"goku","cost":100,"updated":1791396000000,"version_id":"goku-mastered-ultra-instinct"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":8,"updated":1791396000000,"version_id":"naruto-academy"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":15,"updated":1791396000000,"version_id":"naruto-chunin-exam"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":20,"updated":1791396000000,"version_id":"naruto-original-series-end"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":25,"updated":1791396000000,"version_id":"naruto-shippuden"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":34,"updated":1791396000000,"version_id":"naruto-sage-mode"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":49,"updated":1791396000000,"version_id":"naruto-kcm"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":72,"updated":1791396000000,"version_id":"naruto-six-paths"}}
+{"table":"squad_version_costs","values":{"character_id":"naruto","cost":94,"updated":1791396000000,"version_id":"naruto-baryon-mode"}}
+{"table":"squad_version_costs","values":{"character_id":"ichigo","cost":28,"updated":1791396000000,"version_id":"ichigo-shikai"}}
+{"table":"squad_version_costs","values":{"character_id":"ichigo","cost":52,"updated":1791396000000,"version_id":"ichigo-bankai"}}
+{"table":"squad_version_costs","values":{"character_id":"ichigo","cost":68,"updated":1791396000000,"version_id":"ichigo-hollowfication"}}
+{"table":"squad_version_costs","values":{"character_id":"ichigo","cost":74,"updated":1791396000000,"version_id":"ichigo-original-anime-end"}}
+{"table":"squad_version_costs","values":{"character_id":"luffy","cost":18,"updated":1791396000000,"version_id":"luffy-east-blue-end"}}
+{"table":"squad_version_costs","values":{"character_id":"luffy","cost":25,"updated":1791396000000,"version_id":"luffy-base"}}
+{"table":"squad_version_costs","values":{"character_id":"luffy","cost":38,"updated":1791396000000,"version_id":"luffy-gear-2"}}
+{"table":"squad_version_costs","values":{"character_id":"luffy","cost":67,"updated":1791396000000,"version_id":"luffy-gear-4"}}
+{"table":"squad_version_costs","values":{"character_id":"luffy","cost":92,"updated":1791396000000,"version_id":"luffy-gear-5"}}
+{"table":"squad_version_costs","values":{"character_id":"tanjiro","cost":10,"updated":1791396000000,"version_id":"tanjiro-season-1"}}
+{"table":"squad_version_costs","values":{"character_id":"tanjiro","cost":13,"updated":1791396000000,"version_id":"tanjiro-water-breathing"}}
+{"table":"squad_version_costs","values":{"character_id":"tanjiro","cost":20,"updated":1791396000000,"version_id":"tanjiro-hinokami-kagura"}}
+{"table":"squad_version_costs","values":{"character_id":"levi","cost":12,"updated":1791396000000,"version_id":"levi-season-1"}}
+{"table":"squad_version_costs","values":{"character_id":"levi","cost":15,"updated":1791396000000,"version_id":"levi-standard-odm"}}
+{"table":"squad_version_costs","values":{"character_id":"levi","cost":18,"updated":1791396000000,"version_id":"levi-thunder-spears"}}
+{"table":"squad_version_costs","values":{"character_id":"sakura","cost":22,"updated":1791396000000,"version_id":"sakura-byakugo"}}
+{"table":"squad_version_costs","values":{"character_id":"shikamaru","cost":18,"updated":1791396000000,"version_id":"shikamaru-standard"}}
+{"table":"squad_version_costs","values":{"character_id":"chopper","cost":10,"updated":1791396000000,"version_id":"chopper-brain-point"}}
+{"table":"squad_version_costs","values":{"character_id":"chopper","cost":13,"updated":1791396000000,"version_id":"chopper-guard-point"}}
+{"table":"squad_version_costs","values":{"character_id":"chopper","cost":25,"updated":1791396000000,"version_id":"chopper-monster-point"}}
+{"table":"squad_version_costs","values":{"character_id":"mikasa","cost":12,"updated":1791396000000,"version_id":"mikasa-standard-odm"}}
+{"table":"squad_version_costs","values":{"character_id":"mikasa","cost":18,"updated":1791396000000,"version_id":"mikasa-thunder-spears"}}
+{"table":"squad_version_costs","values":{"character_id":"usopp","cost":8,"updated":1791396000000,"version_id":"usopp-kabuto"}}
+{"table":"squad_version_costs","values":{"character_id":"usopp","cost":12,"updated":1791396000000,"version_id":"usopp-pop-greens"}}
+{"table":"squad_version_costs","values":{"character_id":"rukia","cost":26,"updated":1791396000000,"version_id":"rukia-shikai"}}
+{"table":"squad_version_costs","values":{"character_id":"rukia","cost":58,"updated":1791396000000,"version_id":"rukia-bankai"}}
+{"table":"squad_version_costs","values":{"character_id":"deku","cost":38,"updated":1791396000000,"version_id":"deku-full-cowling"}}
+{"table":"squad_version_costs","values":{"character_id":"deku","cost":68,"updated":1791396000000,"version_id":"deku-ofa-100"}}
+{"table":"squad_version_costs","values":{"character_id":"yuji","cost":16,"updated":1791396000000,"version_id":"yuji-cursed-energy"}}
+{"table":"squad_version_costs","values":{"character_id":"yuji","cost":24,"updated":1791396000000,"version_id":"yuji-black-flash"}}
+{"table":"squad_version_costs","values":{"character_id":"denji","cost":8,"updated":1791396000000,"version_id":"denji-human"}}
+{"table":"squad_version_costs","values":{"character_id":"denji","cost":32,"updated":1791396000000,"version_id":"denji-chainsaw-hybrid"}}
+{"table":"squad_version_costs","values":{"character_id":"asta","cost":42,"updated":1791396000000,"version_id":"asta-black-form"}}
+{"table":"squad_version_costs","values":{"character_id":"asta","cost":68,"updated":1791396000000,"version_id":"asta-devil-union"}}
+{"table":"squad_version_costs","values":{"character_id":"senku","cost":8,"updated":1791396000000,"version_id":"senku-science-kingdom"}}
+{"table":"squad_version_costs","values":{"character_id":"shinra","cost":44,"updated":1791396000000,"version_id":"shinra-adolla-burst"}}
+{"table":"squad_version_costs","values":{"character_id":"shinra","cost":63,"updated":1791396000000,"version_id":"shinra-rapid"}}
+{"table":"squad_version_costs","values":{"character_id":"madara","cost":78,"updated":1791398520000,"version_id":"madara-edo-tensei"}}
+{"table":"squad_version_costs","values":{"character_id":"madara","cost":86,"updated":1791398520000,"version_id":"madara-revived"}}
+{"table":"squad_version_costs","values":{"character_id":"madara","cost":98,"updated":1791398520000,"version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"squad_version_costs","values":{"character_id":"gojo","cost":34,"updated":1791398520000,"version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"squad_version_costs","values":{"character_id":"gojo","cost":38,"updated":1791398520000,"version_id":"gojo-shibuya"}}
+{"table":"squad_version_costs","values":{"character_id":"gojo","cost":44,"updated":1791398520000,"version_id":"gojo-shinjuku"}}
+{"table":"squad_version_costs","values":{"character_id":"itachi","cost":30,"updated":1791398520000,"version_id":"itachi-akatsuki"}}
+{"table":"squad_version_costs","values":{"character_id":"itachi","cost":37,"updated":1791398520000,"version_id":"itachi-edo-tensei"}}
+{"table":"squad_version_costs","values":{"character_id":"aizen","cost":55,"updated":1791398520000,"version_id":"aizen-soul-society"}}
+{"table":"squad_version_costs","values":{"character_id":"aizen","cost":75,"updated":1791398520000,"version_id":"aizen-hogyoku"}}
+{"table":"squad_version_costs","values":{"character_id":"aizen","cost":82,"updated":1791398520000,"version_id":"aizen-tybw"}}
+{"table":"squad_version_costs","values":{"character_id":"saitama","cost":95,"updated":1791398520000,"version_id":"saitama-hero-association"}}
+{"table":"squad_version_costs","values":{"character_id":"megumi","cost":8,"updated":1791398520000,"version_id":"megumi-season-1"}}
+{"table":"squad_version_costs","values":{"character_id":"megumi","cost":12,"updated":1791398520000,"version_id":"megumi-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"naruto-chunin-exam"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"summoner","version_id":"naruto-chunin-exam"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"naruto-six-paths"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"support","version_id":"naruto-six-paths"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"speedster","version_id":"naruto-six-paths"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"controller","version_id":"naruto-six-paths"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"goku-saiyan-saga"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"defense","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"defense","version_id":"gojo-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"gojo-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"gojo-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"defense","version_id":"gojo-shinjuku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"gojo-shinjuku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"gojo-shinjuku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"aizen-soul-society"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"aizen-soul-society"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"aizen-hogyoku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"aizen-hogyoku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"aizen-hogyoku"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"aizen-tybw"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"aizen-tybw"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"itachi-akatsuki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"itachi-akatsuki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"assassin","version_id":"itachi-akatsuki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"itachi-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"itachi-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"assassin","version_id":"itachi-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"assassin","version_id":"levi-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"levi-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"assassin","version_id":"levi-thunder-spears"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"levi-thunder-spears"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"levi-thunder-spears"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"healer","version_id":"sakura-byakugo"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"sakura-byakugo"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"tank","version_id":"sakura-byakugo"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"healer","version_id":"chopper-brain-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"support","version_id":"chopper-brain-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"tank","version_id":"chopper-guard-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"support","version_id":"chopper-guard-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"tank","version_id":"chopper-monster-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"chopper-monster-point"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"shikamaru-standard"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"shikamaru-standard"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"summoner","version_id":"megumi-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"megumi-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"summoner","version_id":"megumi-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"megumi-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"strategist","version_id":"megumi-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"madara-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"madara-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"tank","version_id":"madara-edo-tensei"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"tank","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"senku-science-kingdom"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"support","version_id":"senku-science-kingdom"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"asta-devil-union"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"assassin","version_id":"asta-devil-union"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"support","version_id":"usopp-pop-greens"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"usopp-pop-greens"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"rukia-bankai"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"rukia-bankai"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"assassin","version_id":"mikasa-thunder-spears"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"mikasa-thunder-spears"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"saitama-hero-association"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"tank","version_id":"saitama-hero-association"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"shinra-rapid"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"shinra-rapid"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"naruto-chunin-exam"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"naruto-chunin-exam"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"naruto-six-paths"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"naruto-six-paths"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"naruto-six-paths"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"naruto-six-paths"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"goku-saiyan-saga"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"goku-saiyan-saga"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"goku-mastered-ultra-instinct"}}
+{"table":"version_strategic_traits","values":{"trait":"barrier","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"gojo-hidden-inventory-awakened"}}
+{"table":"version_strategic_traits","values":{"trait":"barrier","version_id":"gojo-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"gojo-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"gojo-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"barrier","version_id":"gojo-shinjuku"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"gojo-shinjuku"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"gojo-shinjuku"}}
+{"table":"version_strategic_traits","values":{"trait":"illusion","version_id":"aizen-soul-society"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"aizen-soul-society"}}
+{"table":"version_strategic_traits","values":{"trait":"illusion","version_id":"aizen-hogyoku"}}
+{"table":"version_strategic_traits","values":{"trait":"adaptation","version_id":"aizen-hogyoku"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"aizen-hogyoku"}}
+{"table":"version_strategic_traits","values":{"trait":"illusion","version_id":"aizen-tybw"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"aizen-tybw"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"aizen-tybw"}}
+{"table":"version_strategic_traits","values":{"trait":"illusion","version_id":"itachi-akatsuki"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"itachi-akatsuki"}}
+{"table":"version_strategic_traits","values":{"trait":"sealing","version_id":"itachi-akatsuki"}}
+{"table":"version_strategic_traits","values":{"trait":"illusion","version_id":"itachi-edo-tensei"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"itachi-edo-tensei"}}
+{"table":"version_strategic_traits","values":{"trait":"sealing","version_id":"itachi-edo-tensei"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"levi-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"levi-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"levi-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"levi-thunder-spears"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"levi-thunder-spears"}}
+{"table":"version_strategic_traits","values":{"trait":"healing","version_id":"sakura-byakugo"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"sakura-byakugo"}}
+{"table":"version_strategic_traits","values":{"trait":"healing","version_id":"chopper-brain-point"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"chopper-brain-point"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"chopper-guard-point"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"chopper-monster-point"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"shikamaru-standard"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"shikamaru-standard"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"megumi-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"megumi-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"megumi-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"megumi-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"madara-edo-tensei"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"madara-edo-tensei"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"madara-ten-tails-jinchuriki"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"senku-science-kingdom"}}
+{"table":"version_strategic_traits","values":{"trait":"prediction","version_id":"senku-science-kingdom"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"asta-devil-union"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"asta-devil-union"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"usopp-pop-greens"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"usopp-pop-greens"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"rukia-bankai"}}
+{"table":"version_strategic_traits","values":{"trait":"crowd_control","version_id":"rukia-bankai"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"mikasa-thunder-spears"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"mikasa-thunder-spears"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"saitama-hero-association"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"saitama-hero-association"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"shinra-rapid"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"shinra-rapid"}}

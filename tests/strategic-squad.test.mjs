@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {COMBAT_ROLES,ROLE_DEFINITIONS,parseRoleRequirements,roleRequirementProgress,validateRoleRequirements,analyzeSquadComposition} from '../lib/squad-synergy.ts';
+import {COMBAT_ROLES,ROLE_DEFINITIONS,parseRoleRequirements,roleRequirementProgress,validateRoleRequirements,analyzeSquadComposition} from '../packages/domain/src/squad-synergy.ts';
 
 const m=(versionId,roles,traits=[])=>({versionId,characterName:versionId,roles:roles.map((role,i)=>({role,priority:i===0?'primary':'secondary'})),traits});
 test('role taxonomy has 11 defined, distinct stable identifiers',()=>{

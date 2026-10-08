@@ -126,7 +126,7 @@ test('cost and name snapshots survive later price changes',()=>{
   db.exec("UPDATE daily_squad_challenge_costs SET cost=76 WHERE challenge_id='daily-2026-10-07' AND version_id='naruto-six-paths'");
   db.exec("UPDATE squad_version_costs SET cost=76 WHERE version_id='naruto-six-paths'");
   const old=db.prepare("SELECT version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id='sub'").get();
-  assert.deepEqual(old,{versionName:'Six Paths Naruto',cost:70});
+  assert.deepEqual({...old},{versionName:'Six Paths Naruto',cost:70});
   assert.equal(db.prepare("SELECT cost FROM daily_squad_challenge_costs WHERE challenge_id='daily-2026-10-07' AND version_id='naruto-six-paths'").get().cost,76);
  }finally{db.close()}
 });
@@ -146,7 +146,7 @@ test('0007 expands the roster without mutating an existing historical squad subm
   apply(db,migrations[7]);
 
   const snapshot=db.prepare("SELECT character_name_snapshot AS characterName,version_name_snapshot AS versionName,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id='history-sub'").get();
-  assert.deepEqual(snapshot,{characterName:'Naruto Uzumaki',versionName:'Six Paths Naruto',cost:72});
+  assert.deepEqual({...snapshot},{characterName:'Naruto Uzumaki',versionName:'Six Paths Naruto',cost:72});
   assert.equal(db.prepare("SELECT cost FROM daily_squad_challenge_costs WHERE challenge_id='history-day' AND version_id='naruto-six-paths'").get().cost,72);
   assert.equal(db.prepare("SELECT cost FROM squad_version_costs WHERE version_id='gojo-shibuya'").get().cost,38);
   assert.equal(db.prepare("SELECT character_id AS characterId FROM character_versions WHERE id='madara-ten-tails-jinchuriki'").get().characterId,'madara');

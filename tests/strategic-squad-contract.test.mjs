@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const challenges=readFileSync('lib/squad-challenge.ts','utf8');
-const submissions=readFileSync('app/api/squad-submissions/route.ts','utf8');
-const builder=readFileSync('components/daily-squad-challenge.tsx','utf8');
+const challenges=readFileSync('apps/api/src/lib/squad-challenge.ts','utf8');
+const submissions=readFileSync('apps/api/src/routes/squad-submissions/route.ts','utf8');
+const builder=readFileSync('apps/web/components/daily-squad-challenge.tsx','utf8');
 test('role validation uses server-side version data rather than browser roles',()=>{
  assert.match(submissions,/z\.object\(\{characterId:idText,versionId:idText\}\)\.strict\(\)/);
  assert.match(challenges,/loadVersionStrategies\(db,versionIds\)/);

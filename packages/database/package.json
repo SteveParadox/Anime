@@ -1,0 +1,19 @@
+{
+  "name": "@anime/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./schema": "./src/schema.ts",
+    "./client": "./src/client.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "pg": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.0.0",
+    "drizzle-kit": "0.31.10",
+    "typescript": "5.9.3"
+  }
+}

@@ -6,7 +6,7 @@ import {
  formatEvidenceLocation,
  isValidEvidenceTimestamp,
  normalizeEvidenceTimestamp
-} from '../lib/evidence.ts';
+} from '../packages/domain/src/evidence.ts';
 
 test('evidence enums remain stable',()=>{
  assert.deepEqual(EVIDENCE_SOURCE_TYPES,['anime','manga']);

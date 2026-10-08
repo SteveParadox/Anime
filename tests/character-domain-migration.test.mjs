@@ -57,7 +57,7 @@ test('0004 preserves existing community rows and adds version relationships',()=
 
   db.exec("INSERT INTO evidence_records (id,character_id,version_id,ability_id,source_type,series,category,title,description,episode,timestamp,chapter,page,submitted_by,created,updated,deleted,deleted_at) VALUES ('e2','naruto','naruto-six-paths','naruto-truth-seeking-orbs','manga','Naruto','ability','Truth-Seeking Orbs feat','Version-scoped post-migration feat.',NULL,NULL,674,10,'u1',2,2,0,NULL)");
   const scoped=db.prepare("SELECT character_id AS characterId,version_id AS versionId,ability_id AS abilityId FROM evidence_records WHERE id='e2'").get();
-  assert.deepEqual(scoped,{characterId:'naruto',versionId:'naruto-six-paths',abilityId:'naruto-truth-seeking-orbs'});
+  assert.deepEqual({...scoped},{characterId:'naruto',versionId:'naruto-six-paths',abilityId:'naruto-truth-seeking-orbs'});
  }finally{
   db.close();
  }

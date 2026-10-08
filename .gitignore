@@ -1,0 +1,13 @@
+node_modules/
+.pnpm-store/
+.next/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.wrangler/
+*.sqlite
+*.db
+*.jsonl
+!packages/database/seeds/catalog.jsonl

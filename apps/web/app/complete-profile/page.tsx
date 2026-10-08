@@ -1,0 +1,10 @@
+'use client';
+import {apiFetch} from '@/services/api';
+import {useEffect,useState} from 'react';
+import {safeRelativeReturnPath} from '@anime/domain/auth-crypto';
+export default function CompleteProfile(){
+ const [username,setUsername]=useState(''),[displayName,setDisplayName]=useState(''),[returnTo,setReturnTo]=useState('/'),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{const q=new URLSearchParams(location.search);setReturnTo(safeRelativeReturnPath(q.get('return_to')));apiFetch('/api/auth/me').then(r=>r.json()).then((d:any)=>{if(!d.authenticated){location.href='/auth'}else{setUsername(d.user?.username?.startsWith('animefan_')?'':d.user?.username||'');setDisplayName(d.user?.displayName||'')}})},[]);
+ const submit=async(e:React.FormEvent)=>{e.preventDefault();setBusy(true);setError('');const r=await apiFetch('/api/auth/complete-profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,displayName})}),d:any=await r.json();if(!r.ok)setError(d.error||'Could not save profile.');else location.href=returnTo;setBusy(false)};
+ return <main className="auth-shell"><section className="auth-card"><a className="auth-brand" href="/">ANIME CLASH</a><h1>Complete your profile</h1><p>Choose the public username used in profile links and community attribution.</p>{error&&<div className="auth-error">{error}</div>}<form className="auth-form" onSubmit={submit}><label>Username<input value={username} onChange={e=>setUsername(e.target.value.toLowerCase())} pattern="[a-z0-9_]{3,24}" minLength={3} maxLength={24} required/></label><label>Display name<input value={displayName} onChange={e=>setDisplayName(e.target.value)} maxLength={120} required/></label><button className="auth-primary" disabled={busy}>{busy?'Saving…':'Finish profile'}</button></form></section></main>
+}

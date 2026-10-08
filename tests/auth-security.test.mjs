@@ -9,8 +9,8 @@ import {
  safeRelativeReturnPath,
  validUsername,
  verifyPassword
-} from '../lib/auth-crypto.ts';
-import {readJson,sameOrigin} from '../lib/auth-request.ts';
+} from '../packages/domain/src/auth-crypto.ts';
+import {readJson,sameOrigin} from '../apps/api/src/lib/auth-request.ts';
 
 test('email and username normalization are deterministic',()=>{
  assert.equal(normalizeEmail('  Fan@Example.COM  '),'fan@example.com');
