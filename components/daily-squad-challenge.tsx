@@ -319,7 +319,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    <div><span className="eyebrow">TARGET</span><h2>{challenge.target?.characterName||'Open build'}</h2><strong>{challenge.target?.versionName||'No fixed target'}</strong><small>{challenge.target?.series}</small></div>
    <div className="challenge-rule-grid">{rules.map(item=><span key={item.label}><small>{item.label}</small><b>{item.value}</b></span>)}</div>
    {challenge.rules.notes&&<p>{challenge.rules.notes}</p>}
-   {requirements.length>0&&<div className="squad-requirements"><strong>Role requirements</strong>{requirements.map(item=><span key={item.description} className={item.valid?'met':'unmet'}>{item.valid?'✓':'○'} {item.description} · {item.count} matched</span>)}</div>
+   {requirements.length>0&&<div className="squad-requirements"><strong>Role requirements</strong>{requirements.map(item=><span key={item.description} className={item.valid?'met':'unmet'}>{item.valid?'✓':'○'} {item.description} · {item.count} matched</span>)}</div>}
   </div>
 
   {challenge.status==='active'?<div className="daily-builder-layout">
