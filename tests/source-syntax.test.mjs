@@ -15,8 +15,8 @@ function* sourceFiles(directory){
 }
 
 test('application TypeScript and JSX files have no syntax errors',()=>{
- const paths=['app','components','lib','db'].flatMap(root=>[...sourceFiles(root)]).sort();
- assert.ok(paths.includes(join('components','daily-squad-challenge.tsx')),'Daily squad UI must be covered');
+ const paths=['apps/web/app','apps/web/components','apps/web/hooks','apps/api/src','packages/domain/src','packages/contracts/src','packages/database/src'].flatMap(root=>[...sourceFiles(root)]).sort();
+ assert.ok(paths.includes(join('apps/web/components','daily-squad-challenge.tsx')),'Daily squad UI must be covered');
  const errors=[];
  for(const file of paths){
   const syntaxKind=file.endsWith('.tsx')?ts.ScriptKind.TSX:ts.ScriptKind.TS;
@@ -27,5 +27,5 @@ test('application TypeScript and JSX files have no syntax errors',()=>{
    errors.push(`${file}:${position.line+1}:${position.character+1}: ${message}`);
   }
  }
- assert.deepEqual(errors,[],'A malformed JSX expression prevents Vite from serving the app');
+ assert.deepEqual(errors,[],'A malformed JSX expression prevents the applications from starting');
 });

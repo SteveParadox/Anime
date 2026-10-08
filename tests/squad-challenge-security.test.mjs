@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const domain=readFileSync('lib/squad-challenge.ts','utf8');
-const submissions=readFileSync('app/api/squad-submissions/route.ts','utf8');
-const votes=readFileSync('app/api/squad-submissions/vote/route.ts','utf8');
-const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
-const policy=readFileSync('lib/squad-challenge-policy.ts','utf8');
+const domain=readFileSync('apps/api/src/lib/squad-challenge.ts','utf8');
+const submissions=readFileSync('apps/api/src/routes/squad-submissions/route.ts','utf8');
+const votes=readFileSync('apps/api/src/routes/squad-submissions/vote/route.ts','utf8');
+const challengeApi=readFileSync('apps/api/src/routes/squad-challenges/route.ts','utf8');
+const policy=readFileSync('packages/domain/src/squad-challenge-policy.ts','utf8');
 
 test('submission contract never accepts client-authoritative fighter cost',()=>{
  const submitSchema=submissions.slice(submissions.indexOf("action:z.literal('submit')"),submissions.indexOf("action:z.literal('delete')"));
@@ -67,13 +67,13 @@ test('public submission responses do not expose account email or provider subjec
 
 
 test('moderation removal locks an entry so the owner cannot restore it',()=>{
- const community=readFileSync('app/api/community/route.ts','utf8');
+ const community=readFileSync('apps/api/src/routes/community/route.ts','utf8');
  assert.match(community,/subject_type==='squad_submission'/);
  assert.match(community,/removed=1,locked_at=COALESCE\(locked_at,\?\),updated=\?/);
 });
 
 test('account reconciliation preserves squad ownership without creating self votes',()=>{
- const auth=readFileSync('lib/auth.ts','utf8');
+ const auth=readFileSync('apps/api/src/lib/auth.ts','utf8');
  assert.match(auth,/UPDATE squad_submissions SET owner=\? WHERE owner=\?/);
  assert.match(auth,/UPDATE squad_submission_votes SET user=\? WHERE user=\?/);
  assert.match(auth,/DELETE FROM squad_submission_votes WHERE user=\? AND EXISTS \(SELECT 1 FROM squad_submissions/);
@@ -104,20 +104,20 @@ test('template architecture permits future targetless challenge types without fa
 });
 
 test('structured evidence writes require canonical character versions',()=>{
- const evidence=readFileSync('app/api/evidence/route.ts','utf8');
+ const evidence=readFileSync('apps/api/src/routes/evidence/route.ts','utf8');
  assert.match(evidence,/!version\.canonical/);
  assert.match(evidence,/version\.characterId!==character\.id/);
 });
 
 test('profile favorite-character writes reject IDs outside the canonical fighter catalog',()=>{
- const community=readFileSync('app/api/community/route.ts','utf8');
+ const community=readFileSync('apps/api/src/routes/community/route.ts','utf8');
  assert.match(community,/favoriteCharacters\.some\(characterId=>!fighters\.some\(f=>f\.id===characterId\)\)/);
 });
 
 
 test('submission reads treat vote existence as authoritative lock state',()=>{
  assert.match(submissions,/editable:owned&&challengeState==='active'&&!row\.lockedAt&&row\.totalVotes===0/);
- const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
+ const challengeApi=readFileSync('apps/api/src/routes/squad-challenges/route.ts','utf8');
  assert.match(challengeApi,/submissionLocked:Boolean\(mySubmission&&\(mySubmission\.lockedAt\|\|Number\(mySubmission\.votes\)>0\)\)/);
 });
 
@@ -129,14 +129,14 @@ test('concurrent first submissions fail as conflict rather than generic server e
 
 
 test('archived challenge reads do not create or depend on the current daily challenge',()=>{
- const challengeApi=readFileSync('app/api/squad-challenges/route.ts','utf8');
+ const challengeApi=readFileSync('apps/api/src/routes/squad-challenges/route.ts','utf8');
  assert.match(challengeApi,/requestedId\?await findChallenge\(db,requestedId\):await ensureDailyChallenge\(db,now\)/);
  assert.doesNotMatch(challengeApi,/const today=await ensureDailyChallenge/);
 });
 
 
 test('squad submission reports require a real public foreign-owned subject and deduplicate open reports',()=>{
- const community=readFileSync('app/api/community/route.ts','utf8');
+ const community=readFileSync('apps/api/src/routes/community/route.ts','utf8');
  assert.match(community,/subjectType==='squad_submission'/);
  assert.match(community,/SELECT owner,removed FROM squad_submissions WHERE id=\? LIMIT 1/);
  assert.match(community,/You cannot report your own squad submission/);

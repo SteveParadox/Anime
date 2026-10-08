@@ -3,8 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: read
@@ -12,35 +11,49 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: anime
+          POSTGRES_PASSWORD: anime
+          POSTGRES_DB: anime_clash
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U anime -d anime_clash"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://anime:anime@localhost:5432/anime_clash
+      TEST_DATABASE_URL: postgresql://anime:anime@localhost:5432/anime_clash
+      APP_BASE_URL: http://localhost:3000
+      API_UPSTREAM_ORIGIN: http://localhost:4000
     steps:
-      - name: Bootstrap source and Node
-        shell: bash
-        run: |
-          set -euo pipefail
-          REF="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git clone --depth 1 --branch "$REF" "https://github.com/${GITHUB_REPOSITORY}.git" repo
-          curl -fsSL "https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-x64.tar.xz" -o "$RUNNER_TEMP/node.tar.xz"
-          mkdir -p "$RUNNER_TEMP/node22"
-          tar -xJf "$RUNNER_TEMP/node.tar.xz" -C "$RUNNER_TEMP/node22" --strip-components=1
-          echo "$RUNNER_TEMP/node22/bin" >> "$GITHUB_PATH"
-      - name: Install dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd repo
-          corepack enable
-          corepack prepare pnpm@11.25.0 --activate
-          pnpm install --frozen-lockfile
-      - name: Authentication tests
-        run: cd repo && pnpm test:auth
-      - name: Domain regression tests
-        run: cd repo && pnpm test:domain
-      - name: Squad challenge tests
-        run: cd repo && pnpm test:squads
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Syntax, domain, authentication, and squad tests
+        run: pnpm test
       - name: TypeScript
-        run: cd repo && pnpm exec tsc --noEmit
-      - name: Lint
-        run: cd repo && pnpm lint
-      - name: Build
-        run: cd repo && pnpm build
+        run: pnpm typecheck
+      - name: Fresh PostgreSQL baseline
+        run: pnpm db:migrate --through=0000_baseline.sql
+      - name: Catalog seed
+        run: pnpm db:seed
+      - name: PostgreSQL safeguards
+        run: pnpm db:migrate
+      - name: API and migration integration tests
+        run: pnpm test:integration
+      - name: Frontend and backend build
+        run: pnpm build
+      - name: Web and API proxy smoke
+        run: pnpm test:e2e
+      - name: ESLint
+        run: pnpm lint

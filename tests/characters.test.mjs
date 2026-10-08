@@ -10,7 +10,7 @@ import {
  versionById,
  versionsForCharacter,
  validateBattleVersionSelection
-} from '../lib/characters.ts';
+} from '../packages/domain/src/characters.ts';
 
 test('supports characters with one and many ordered versions',()=>{
  const sakura=versionsForCharacter('sakura');

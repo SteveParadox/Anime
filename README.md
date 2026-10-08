@@ -1,67 +1,46 @@
 # Anime Clash
 
-Anime Clash is a public anime community for evidence-backed character matchups, weekly tournaments, squad strategy challenges, and episode-safe club discussions.
+Anime Clash is an anime community with evidence-backed battles, version-aware daily squad challenges, episode-safe clubs, profiles, tournaments, and watchlists.
 
-## Features
+## Applications
 
-- Public browsing with email/password, Google, or hosted ChatGPT/platform sign-in for owned contributions.
-- Public fan profiles with favourite anime and characters, battle activity, squads, and club progress.
-- Searchable curated character records with stable version IDs, version-scoped abilities, story/source boundaries, aliases, and database-backed feat libraries.
-- Weekly UTC tournament brackets with advancing entrants and a live leaderboard.
-- Version-locked Battle Arena matchups with immutable display snapshots, plus arguments, replies, reactions, reports, legacy source references, and reusable version-scoped Anime/Manga evidence.
-- Five-character, 20-point reusable saved squads and squad-versus-squad community votes.
-- Version-aware Daily Squad Challenges with 100-point server-authoritative budgets, exact-version pricing, historical snapshots, shareable entries, and YES/NO community verdicts. The curated challenge roster includes Madara, Gojo, Itachi, Aizen, Saitama, and Megumi alongside the existing catalog.
-- Episode-filtered clubs with edit/delete, reporting, rules, spoiler-tag corrections, and an owner moderation queue.
-- Notifications for replies, squad challenges, tournament rounds, and newly unlocked club discussions.
-- Taste matching, seasonal recommendations, and personal watchlist states.
+- `apps/web`: native Next.js 16/React frontend. Browsers call same-origin `/api/*`; the server proxy forwards requests to the configured API origin.
+- `apps/api`: Fastify/Node.js backend. It owns authentication, authorization, game rules, and writes.
+- `packages/domain`: existing character, battle, evidence, squad, and authentication rules.
+- `packages/contracts`: types shared by the web app and API.
+- `packages/database`: PostgreSQL Drizzle schema, migrations, and catalog seed.
+- `drizzle/`: retained historical D1/SQLite migrations for source audit and export preparation. These SQL files are never applied to PostgreSQL.
 
-## Runtime and trust boundaries
+## Local setup
 
-Vinext / React runs on Cloudflare Workers. D1 stores provider-independent user accounts, auth identities, hashed server-side sessions, profiles, battles, votes, replies, squads, challenges, viewing progress, discussions, reports, notifications, watchlists, and tournament votes. Email/password, Google OIDC, and hosted ChatGPT/platform identities resolve through one central auth layer to stable internal user IDs. Configure moderation with `ANIME_CLASH_ADMIN_USER_ID`; the legacy `ANIME_CLASH_ADMIN_ID` remains a temporary ChatGPT-provider fallback.
+Use Node.js 22.19 or newer, pnpm 11.25, Python 3, and Docker with Compose. Copy `apps/api/.env.example` to `apps/api/.env` and `apps/web/.env.example` to `apps/web/.env`. The local API requires `DATABASE_URL` and `APP_BASE_URL`; web requires `API_UPSTREAM_ORIGIN`.
 
-Club post bodies are filtered server-side against the signed-in viewer's saved episode. Correct author episode tags remain necessary. Arena, tournament, character, squad, and discovery pages can contain spoilers.
-
-The character directory is curated. A Character is identity; CharacterVersion is the authoritative combat profile. Legacy `forms` are derived compatibility labels and are not accepted as Battle Arena authority. Abilities are reusable records explicitly linked to versions, and reusable feat/evidence records are scoped to a version. Citation records store metadata only (episode/timestamp or chapter/page), never copies of anime clips, manga scans, or pages.
-
-## Character version architecture
-
-Combat relationships follow:
-
-```text
-Character → CharacterVersion → Ability / Feat → Evidence
+```sh
+pnpm install --frozen-lockfile
+docker compose up -d postgres
+pnpm db:migrate --through=0000_baseline.sql
+pnpm db:seed
+pnpm db:migrate
+pnpm dev
 ```
 
-Battle payloads store stable `fighterAVersionId` / `fighterBVersionId` values plus immutable character/version display snapshots so historical debates remain readable after catalog wording changes. Existing string-version battles are normalized as legacy records and are not rewritten.
+Open <http://localhost:3000>. API readiness is <http://localhost:4000/health/ready>. `pnpm dev:web` and `pnpm dev:api` start either app independently. For production, run `pnpm build`, then `pnpm --filter @anime/api start` and `pnpm --filter @anime/web start` in separate processes.
 
-The curated TypeScript catalog is mirrored by append-only D1 seed data in `character_versions`, `abilities`, and `version_abilities`, including the squad roster expansion in `0007_expand_squad_roster.sql`. New evidence uses `version_id` and optional `ability_id`; pre-version evidence remains readable with a null version.
-
-Profiles, favourite characters, reusable saved squads, tournament seeds, discovery, and recommendations remain character-level for backward compatibility. Daily Squad Challenge submissions are version-aware snapshots stored separately, so exact combat versions and historical prices are enforced without destructively rewriting legacy saved squads.
-
-## Authentication
-
-Authentication architecture, security policy, migration behavior, Google/Resend configuration, and deployment variables are documented in [`docs/authentication.md`](docs/authentication.md). Existing community ownership is migrated to stable internal user IDs by append-only migration `0005_auth_accounts.sql`.
-
-Daily Squad Challenge architecture, pricing, snapshots, lifecycle, voting, moderation, and legacy-squad compatibility are documented in [`docs/squad-challenges.md`](docs/squad-challenges.md).
-
-## Development
-
-Use the Sites configure, install, build, and managed preview helpers. Database schema is in `db/schema.ts`; append-only migrations are in `drizzle/`. Apply pending migrations to preview D1 before testing persistent behavior. Sites applies production migrations during publication.
+`pnpm db:generate` produces a Drizzle candidate SQL migration. Review and move it to `packages/database/migrations/` before `pnpm db:migrate`; never regenerate or rerun the baseline over existing data. The migrations are controlled, transactional, and tracked in `app_migrations`.
 
 ## Validation
 
-- Run `pnpm test:domain` for evidence and character-version domain tests.
-- Run `pnpm test:auth` for auth crypto and legacy ownership-migration tests.
-- Run `pnpm test:squads` for daily squad policy, security contracts, UI/share contracts, migration compatibility, snapshots, and vote-lock persistence.
-- Run TypeScript, lint, and the production build before release.
-- Expanded desktop views were inspected in managed browser preview.
-- Character search, weekly bracket calculation, public squad challenge state, and club rules were checked through the rendered interface.
-- Fresh SQLite migrations and key ownership/query constraints are checked before release.
-- Authenticated production write flows require a real signed-in account and should be smoke-tested after deployment.
-- WebMCP navigation is feature-detected; browsers without `modelContext` ignore it safely.
+```sh
+pnpm test:syntax
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm test:integration:local
+pnpm test:import:local
+pnpm build
+pnpm test:e2e
+```
 
-## Artwork
+`pnpm test:integration` runs source export/schema checks and a real PostgreSQL API test if `TEST_DATABASE_URL` points at a freshly migrated and seeded disposable database. The `:local` variant starts an ephemeral PostgreSQL-compatible PGlite socket and performs those setup steps automatically. The import rehearsal makes a fixture D1 database and verifies preserved IDs, ownership, nullable squad snapshots, and password hashes. Never point integration tests at production data.
 
-Ichigo artwork: https://bleach-anime.com/assets/img/character/chara_01.png
-Source: https://bleach-anime.com/character/
-
-Copyright belongs to the respective rights holders; no redistribution license was identified. No official affiliation is claimed.
+Deployment and cutover instructions: [architecture](docs/architecture.md), [authentication](docs/authentication.md), [migration](docs/migration.md), [deployment](docs/deployment.md), and [rollback](docs/rollback.md).

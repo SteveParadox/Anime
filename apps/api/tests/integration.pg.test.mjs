@@ -1,0 +1,114 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoiler gate',
+ {skip:!process.env.TEST_DATABASE_URL&&'Requires TEST_DATABASE_URL and an initialized fresh PostgreSQL database'},async()=>{
+  process.env.NODE_ENV='development';
+  process.env.DATABASE_URL=process.env.TEST_DATABASE_URL;
+  process.env.APP_BASE_URL='http://localhost:3000';
+  process.env.LOG_LEVEL='fatal';
+  process.env.RESEND_API_KEY='fixture-key';
+  process.env.EMAIL_FROM='Anime Clash <test@example.com>';
+  const sent=[];
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=async(url,options)=>{
+   if(String(url)==='https://api.resend.com/emails'){
+    sent.push(JSON.parse(options.body));
+    return Response.json({id:'fixture-email'});
+   }
+   throw new Error(`Unexpected external request: ${url}`);
+  };
+  const {createApp}=await import('../src/app.ts');
+  const {clubs}=await import('@anime/domain/catalog');
+  const {closePool}=await import('@anime/database/client');
+  const app=createApp(),origin='http://localhost:3000';
+  const mutation=(url,body,cookie)=>app.inject({method:'POST',url,headers:{origin,'content-type':'application/json',...(cookie?{cookie}:{})},payload:JSON.stringify(body)});
+  const get=(url,cookie)=>app.inject({method:'GET',url,headers:cookie?{cookie}:{}});
+  async function account(tag){
+   const email=`${tag}-${crypto.randomUUID().slice(0,8)}@example.com`,username=`${tag}_${crypto.randomUUID().slice(0,8)}`;
+   const response=await mutation('/api/auth/register',{email,username,displayName:tag,password:'SafePassword123!'});
+   assert.equal(response.statusCode,201,response.payload);
+   const cookie=String(response.headers['set-cookie']).split(';')[0];
+   assert.match(cookie,/anime_clash_session=/);
+   const html=sent.at(-1).html;
+   const token=decodeURIComponent(html.match(/#token=([^"<]+)/)?.[1]||'');
+   assert.ok(token.length>20);
+   const verified=await mutation('/api/auth/verify-email',{token},cookie);
+   assert.equal(verified.statusCode,200,verified.payload);
+   const login=await mutation('/api/auth/login',{email,password:'SafePassword123!'});
+   assert.equal(login.statusCode,200,login.payload);
+   return {cookie:String(login.headers['set-cookie']).split(';')[0],user:response.json().user};
+  }
+  try{
+   const owner=await account('owner'),voter=await account('voter');
+   const me=await get('/api/auth/me',owner.cookie);
+   assert.equal(me.json().user.id,owner.user.id);
+   const catalog=await get('/api/characters?version=naruto-six-paths');
+   assert.equal(catalog.statusCode,200,catalog.payload);
+   assert.equal(catalog.json().version.characterId,'naruto');
+   const evidence=await mutation('/api/evidence',{action:'create_evidence',evidence:{characterId:'naruto',versionId:'naruto-six-paths',sourceType:'manga',category:'ability',title:'Fixture feat',description:'A documented fixture feat for the battle.',chapter:670}},owner.cookie);
+   assert.equal(evidence.statusCode,201,evidence.payload);
+   const evidenceId=evidence.json().record.id;
+   assert.equal((await get('/api/evidence?version=naruto-six-paths')).json().records.some(record=>record.id===evidenceId),true);
+   const battle=await mutation('/api/community',{action:'battle',fighterAId:'naruto',fighterBId:'goku',fighterAVersionId:'naruto-six-paths',fighterBVersionId:'goku-saiyan-saga',battleType:'knockout',location:'neutral_arena',speed:'equalized',knowledge:'none',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:''},owner.cookie);
+   assert.equal(battle.statusCode,200,battle.payload);
+   const vote=await mutation('/api/community',{action:'vote',battle:battle.json().id,side:'a',difficulty:'mid',reason:'Naruto wins with sustained pressure.',evidence:'Naruto chapter 670'},voter.cookie);
+   assert.equal(vote.statusCode,200,vote.payload);
+   const debate=await get('/api/community?battle='+battle.json().id,owner.cookie);
+   assert.equal(debate.statusCode,200,debate.payload);
+   const argument=debate.json().debate.find(item=>item.side==='a');
+   assert.ok(argument?.argumentId>0,'battle vote keeps a stable argument ID');
+   const linked=await mutation('/api/evidence',{action:'link_evidence',battle:battle.json().id,argumentId:argument.argumentId,evidenceId},owner.cookie);
+   assert.equal(linked.statusCode,200,linked.payload);
+   const comment=await mutation('/api/community',{action:'comment',battle:battle.json().id,argumentId:argument.argumentId,body:'A documented counterpoint.'},owner.cookie);
+   assert.equal(comment.statusCode,200,comment.payload);
+   assert.equal((await mutation('/api/community',{action:'reaction',argumentId:argument.argumentId,reaction:'upvote'},owner.cookie)).statusCode,200);
+   const debateAfter=await get('/api/community?battle='+battle.json().id,owner.cookie);
+   assert.equal(debateAfter.statusCode,200,debateAfter.payload);
+   assert.equal(debateAfter.json().debate.find(item=>item.argumentId===argument.argumentId).comments.length,1);
+   const challenge=await get('/api/squad-challenges',owner.cookie);
+   assert.equal(challenge.statusCode,200,challenge.payload);
+   const daily=challenge.json().challenge;
+   const fighter=daily.fighters.find(item=>item.cost<=daily.budget);
+   assert.ok(fighter,'challenge should expose an affordable version');
+   const submission=await mutation('/api/squad-submissions',{action:'submit',challengeId:daily.id,name:'Test Squad',strategy:'Control the battlefield and avoid damage.',members:[{characterId:fighter.characterId,versionId:fighter.versionId}]},owner.cookie);
+   assert.equal(submission.statusCode,200,submission.payload);
+   const submissionId=submission.json().id;
+   const selfVote=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes'},owner.cookie);
+   assert.equal(selfVote.statusCode,403);
+   const publicVote=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes'},voter.cookie);
+   assert.equal(publicVote.statusCode,200,publicVote.payload);
+   const locked=await mutation('/api/squad-submissions',{action:'submit',challengeId:daily.id,name:'Changed Squad',strategy:'This edit should fail after voting.',members:[{characterId:fighter.characterId,versionId:fighter.versionId}]},owner.cookie);
+   assert.equal(locked.statusCode,409);
+   const club=clubs[0];
+   const premature=await mutation('/api/community',{action:'post',club:club.id,episode:2,body:'A spoiler-safe discussion for episode two.'},owner.cookie);
+   assert.equal(premature.statusCode,400);
+   assert.equal((await mutation('/api/community',{action:'progress',club:club.id,episode:2},owner.cookie)).statusCode,200);
+   assert.equal((await mutation('/api/community',{action:'post',club:club.id,episode:2,body:'A spoiler-safe discussion for episode two.'},owner.cookie)).statusCode,200);
+   const hidden=await get('/api/community?club='+club.id,voter.cookie);
+   assert.equal(hidden.statusCode,200,hidden.payload);
+   assert.equal(hidden.json().posts.some(post=>post.episode===2),false);
+   assert.ok(hidden.json().locked>=1);
+   const visible=await get('/api/community?club='+club.id,owner.cookie);
+   const tagBypass=await mutation('/api/community',{action:'correct_spoiler',post:visible.json().posts[0].id,episode:3},owner.cookie);
+   assert.equal(tagBypass.statusCode,403);
+   const report=await mutation('/api/community',{action:'report',subjectType:'post',subjectId:visible.json().posts[0].id,reason:'Fixture moderation review.'},voter.cookie);
+   assert.equal(report.statusCode,200,report.payload);
+   const missingReport=await mutation('/api/community',{action:'report',subjectType:'post',subjectId:'missing-post',reason:'Invalid target must fail.'},voter.cookie);
+   assert.equal(missingReport.statusCode,404);
+   assert.equal((await get('/api/community?mode=moderation',voter.cookie)).statusCode,403);
+   assert.equal((await get('/api/community?mode=tournaments',owner.cookie)).statusCode,200);
+   assert.equal((await get('/api/community?mode=notifications',owner.cookie)).statusCode,200);
+   assert.equal((await get('/api/community?mode=discover',owner.cookie)).statusCode,200);
+   const logout=await mutation('/api/auth/logout',{},owner.cookie);
+   assert.equal(logout.statusCode,200);
+   const revoked=await get('/api/auth/me',owner.cookie);
+   assert.equal(revoked.json().authenticated,false);
+   const {createSession}=await import('../src/lib/auth.ts');
+   const {withHttpContext}=await import('../src/lib/http-context.ts');
+   const {getPool}=await import('@anime/database/client');
+   await Promise.all(Array.from({length:20},()=>withHttpContext({request:new Request(origin+'/api/auth/me'),outgoingCookies:[]},()=>createSession(owner.user.id))));
+   const active=await getPool(process.env.TEST_DATABASE_URL,Number(process.env.DB_POOL_MAX||10)).query('SELECT COUNT(*)::int AS n FROM auth_sessions WHERE user_id=$1',[owner.user.id]);
+   assert.equal(active.rows[0].n,12,'concurrent logins must respect the session cap');
+  }finally{await app.close();await closePool();globalThis.fetch=originalFetch;}
+ });

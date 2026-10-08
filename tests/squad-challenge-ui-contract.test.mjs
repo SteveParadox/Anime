@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const page=readFileSync('app/page.tsx','utf8');
-const ui=readFileSync('components/daily-squad-challenge.tsx','utf8');
+const page=readFileSync('apps/web/app/page.tsx','utf8');
+const ui=readFileSync('apps/web/components/daily-squad-challenge.tsx','utf8');
 
 test('direct challenge squad links mount the squad view',()=>{
  assert.match(page,/challengeSquad=q\.get\('challengeSquad'\)/);

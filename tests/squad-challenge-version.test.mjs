@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {characterVersions,versionBelongsToCharacter} from '../lib/characters.ts';
+import {characterVersions,versionBelongsToCharacter} from '../packages/domain/src/characters.ts';
 
 test('forged character and version pairings are rejected by canonical version ownership',()=>{
  assert.equal(versionBelongsToCharacter('goku-mastered-ultra-instinct','naruto'),false);

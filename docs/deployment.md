@@ -1,0 +1,19 @@
+# Deploying web and API independently
+
+Deploy staging first, with its own Railway PostgreSQL database, API service, Vercel preview project, Google OAuth client configuration, Resend sender, and domains. Merge only after CI and staging validation. The committed configuration does not deploy services by itself.
+
+## Railway API
+
+Create a PostgreSQL service and a GitHub-connected API service. Keep the service root at the monorepo root so pnpm can resolve `packages/*`; `railway.json` documents the build/start/health commands, or set Build Command `pnpm --filter @anime/api build`, Start Command `pnpm --filter @anime/api start`, and health path `/health/ready` in Railway. Set Node.js 22.19+ and pnpm 11.25. Set `DATABASE_URL` as a reference to the PostgreSQL service's `DATABASE_URL`, not a copied credential. Configure `NODE_ENV=production`, `APP_BASE_URL=https://your-web-domain`, `PORT` from Railway, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI=https://your-web-domain/api/auth/google/callback`, `RESEND_API_KEY`, `EMAIL_FROM`, `ANIME_CLASH_ADMIN_USER_ID`, and `LOG_LEVEL=info`. Optional `DB_POOL_MAX` caps connections (default 10). The server binds `0.0.0.0`, validates configuration at startup, and exposes `/health/live` and database-backed `/health/ready`.
+
+Run migrations as a controlled one-time release operation from the monorepo root with the target environment's `DATABASE_URL`; import historical D1 first as described in [migration](migration.md). Do not put destructive migrations in the API start command. Apply compatible migrations before activating the new API version. Keep staging and production service/database variables separate. Attach a custom domain to the API if required for upstream TLS and set its URL only in Vercel's server-side variable.
+
+## Vercel web
+
+Import the same GitHub repository as a Next.js project. Set Root Directory to `apps/web`; retain access to the workspace root and packages for monorepo builds. Use pnpm install with the checked-in lockfile, the web build script (`next build --webpack`), and standard Next.js output. Do not select static export. Set server-only `API_UPSTREAM_ORIGIN=https://your-railway-api-domain` per Preview and Production environment, plus `NODE_ENV=production`. No `NEXT_PUBLIC_` secret is needed. Add the public domain and configure the exact origin in the corresponding API's `APP_BASE_URL`. Preview deployments should point only to staging API/database, and the API's allowed web origin must match the actual preview hostname used for OAuth; random per-commit URLs need a dedicated stable staging domain.
+
+The native catch-all Next route forwards `/api/*` methods/bodies/cookies/status/headers to the fixed upstream. It strips caller identity/forwarded headers, limits bodies and timeout, and permits redirects only back to the web origin or Google authorization endpoint. Browser cookies are host-scoped to the frontend. Check domain HTTPS and Vercel function behavior before cutover.
+
+## Release verification
+
+Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm test:integration` against a fresh disposable database, and `pnpm build` in CI. After staging deploy, navigate directly to a public battle and club link, check catalog and squad metadata, register/verify/login/logout through the web proxy, inspect Secure/HttpOnly/SameSite cookies, complete Google OAuth and account linking, submit and vote on a daily squad, test spoiler-gated club posts, evidence links, report/moderation, and Resend delivery. Inspect both services' request IDs/logs and `/health/ready`. Production cutover requires the source-write freeze, final export/reconciliation and rollback checkpoint in [migration](migration.md).

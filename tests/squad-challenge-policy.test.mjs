@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {dailyChallengeRotationIndex,resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '../lib/squad-challenge-policy.ts';
+import {dailyChallengeRotationIndex,resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '../packages/domain/src/squad-challenge-policy.ts';
 
 test('squad identity policy allows one through challenge maximum members',()=>{
  const selections=[
