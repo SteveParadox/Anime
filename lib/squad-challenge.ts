@@ -176,8 +176,8 @@ export function effectiveChallengeStatus(challenge:Pick<SquadChallengeRecord,'st
 export function parseRules(raw:unknown):SquadChallengeRules{
  if(typeof raw!=='string')return {};
  let parsed:unknown;
- try{parsed=JSON.parse(raw);}catch{throw new Error('Invalid challenge rules JSON.');}
- if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Invalid challenge rules JSON.');
+ try{parsed=JSON.parse(raw);}catch{return {};}
+ if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return {};
  const value=parsed as Record<string,unknown>,rules:SquadChallengeRules={};
  for(const key of ['battleType','location','speed','knowledge','prepTime','notes'] as const){
   if(typeof value[key]==='string')rules[key]=value[key] as string;

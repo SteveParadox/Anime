@@ -28,7 +28,7 @@ test('shared squad cards include challenge, target version, members, strategy, a
 });
 
 test('locked owner views use historical member snapshots after repricing',()=>{
- assert.match(ui,/mine\.submission\.locked\?\{\.\.\.current,characterName:member\.characterName,versionName:member\.versionName,cost:member\.cost\}:current/);
+ assert.match(ui,/mine\.submission\.locked\?\{\.\.\.current,characterName:member\.characterName,versionName:member\.versionName,cost:member\.cost,roles:member\.roles\|\|\[\],traits:member\.traits\|\|\[\]\}:current/);
 });
 
 test('fighter browser supports search, series, role, tag, cost, and deterministic sorting',()=>{

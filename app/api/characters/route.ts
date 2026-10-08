@@ -61,7 +61,7 @@ export async function GET(req:Request){try{
   for(const row of counts){const current=byVersion.get(row.versionId)||{};current[row.category]=Number(row.n||0);byVersion.set(row.versionId,current);}
   return json({
    character:{id:character.id,name:character.name,series:character.series,role:character.role,description:character.description,color:character.color,tags:character.tags,sourceLabel:character.sourceLabel,sourceUrl:character.sourceUrl},
-   versions:versions.map(version=>{const publicData=publicVersion(version,strategies.get(version.id))!;const featCounts=byVersion.get(version.id)||{};return {...publicData.version,abilities:publicData.abilities,abilityCount:publicData.abilities.length,featCounts,featTotal:Object.values(featCounts).reduce((n,v)=>n+v,0)};})
+   versions:versions.map(version=>{const publicData=publicVersion(version,strategies.get(version.id))!;const featCounts=byVersion.get(version.id)||{};return {...publicData.version,roles:publicData.roles,traits:publicData.traits,abilities:publicData.abilities,abilityCount:publicData.abilities.length,featCounts,featTotal:Object.values(featCounts).reduce((n,v)=>n+v,0)};})
   });
  }
 
