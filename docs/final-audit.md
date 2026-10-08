@@ -6,6 +6,10 @@ Native Next.js web app and same-origin API proxy; Fastify server with all 19 ori
 
 Verified fixes: report targets must exist; an author cannot retag a club post beyond saved progress; API startup checks the database connection before listening; mutation paths do not retry in the browser client. Regression assertions cover the first two and the same-origin session proxy.
 
+## Subsequent audit fixes (2026-10-08)
+
+New commits on this branch add an HMAC-authenticated Vercel-to-Railway proxy IP boundary, fail-closed production API secret configuration, migration-aware PostgreSQL readiness/startup, a quoted-identifier-safe legacy SQL translator, and verified-email recovery for previously hosted-only accounts. Regression tests were added for proxy signing, production gateway enforcement, migration readiness, SQL translation, and historical account recovery. **These new commits have not yet been run through the complete CI/build/integration pipeline. The PASS table below refers to the earlier baseline commit and must be rerun.** No staging or production services/data were modified.
+
 ## Executed validation
 
 | Result | Command | Observation |
@@ -25,7 +29,7 @@ Verified fixes: report targets must exist; an author cannot retag a club post be
 ## Blocking risks before a pull request or cutover
 
 1. Fix the existing ESLint failures without weakening rules or TypeScript strictness, then run the full CI workflow on GitHub. CI is defined but unverified on a hosted runner.
-2. Existing accounts with **only** a historical hosted-platform identity have no independent verified login method. Their IDs/content remain preserved, but the new public API intentionally rejects spoofable hosted-auth headers. A verified account-claim or trusted upstream identity handoff must be designed and tested before promising uninterrupted access to those users. Do not map accounts by unverified email or raw provider headers.
+2. Historically hosted-only accounts with verified, reachable email can use a one-time password recovery link to create a local password identity; this new path needs real PostgreSQL 17 + Resend staging verification. Hosted-only users **without** an accessible verified email still have no independent verified login method. Their IDs/content remain preserved and the public API rejects spoofable hosted-auth headers. A separate verified identity handoff or claim process is still required for those without mailbox access before promising uninterrupted access to every legacy user. Do not map accounts by unverified email or raw provider headers.
 3. Review and reconcile the actual production D1 export. Fixture counts and references cannot prove production compatibility. A real PostgreSQL 17 staging database, complete OAuth/email checks, and browser-level flows remain necessary.
 4. The moved `community` and `evidence` handlers still carry broad legacy logic and explicit `any` types. Their Fastify routing and data boundary work in rehearsals, but the requested granular route/service/repository split and exhaustive concurrency/security coverage remain incomplete. More tests are needed for Google linking, password resets, moderation transactions, tournament voting, and database races.
 5. No production/staging deployment, final write freeze, backup restore, or rollback drill has occurred. Do not merge or activate this branch yet.
