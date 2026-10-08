@@ -43,6 +43,8 @@ test('legacy SQL translator preserves real PostgreSQL identifiers and protected 
   'SELECT \'rowid user ?\' AS sample, "user" FROM votes WHERE "user"=$1');
  assert.equal(translateSql('SELECT "role" FROM version_combat_roles WHERE "role"=?').sql,
   'SELECT "role" FROM version_combat_roles WHERE "role"=$1');
+ assert.equal(translateSql("SELECT 'AS internalLabel' AS userLabel").sql,
+  'SELECT \'AS internalLabel\' AS "userLabel"');
  assert.equal(translateSql('SELECT "some""column" FROM sample').sql,
   'SELECT "some""column" FROM sample');
  assert.throws(()=>translateSql('SELECT "unfinished'),/Unterminated quoted/);
