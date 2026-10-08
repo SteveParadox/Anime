@@ -20,7 +20,7 @@ async function proxy(request:NextRequest,context:{params:Promise<{path:string[]}
  const target=new URL('/api/'+path.map(encodeURIComponent).join('/'),upstreamOrigin());
  target.search=request.nextUrl.search;
  const headers=new Headers(request.headers);
- for(const name of ['host','connection','content-length','x-forwarded-host','x-forwarded-for','x-forwarded-proto','x-anime-verified-ip'])headers.delete(name);
+ for(const name of ['host','connection','content-length','x-forwarded-host','x-forwarded-for','x-forwarded-proto','x-real-ip','x-vercel-forwarded-for','x-anime-verified-ip'])headers.delete(name);
  for(const name of [...headers.keys()])if(name.startsWith('oai-authenticated-user-')||name.startsWith('x-anime-proxy-'))headers.delete(name);
  // Vercel overwrites x-real-ip at its edge; never use a browser-supplied X-Forwarded-For.
  // Local Next.js development has no trusted edge, so use a stable loopback identity.
