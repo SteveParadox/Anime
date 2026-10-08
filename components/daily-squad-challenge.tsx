@@ -154,7 +154,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     setSelected(mine.submission.members.map(member=>{
      const current=byVersion.get(member.versionId);
      if(!current)return null;
-     return mine.submission.locked?{...current,characterName:member.characterName,versionName:member.versionName,cost:member.cost}:current;
+     return mine.submission.locked?{...current,characterName:member.characterName,versionName:member.versionName,cost:member.cost,roles:member.roles||[],traits:member.traits||[]}:current;
     }).filter((item):item is SquadChallengeFighter=>Boolean(item)));
     setName(mine.submission.name);
     setStrategy(mine.submission.strategy);
