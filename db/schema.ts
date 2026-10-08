@@ -1,4 +1,5 @@
-import {sqliteTable,text,integer,primaryKey,index,uniqueIndex} from 'drizzle-orm/sqlite-core';
+import {sqliteTable,text,integer,primaryKey,index,uniqueIndex,check} from 'drizzle-orm/sqlite-core';
+import {sql} from 'drizzle-orm';
 export const battles=sqliteTable('battles',{id:text('id').primaryKey(),owner:text('owner').notNull(),payload:text('payload').notNull(),created:integer('created').notNull()});
 export const votes=sqliteTable('votes',{battle:text('battle').notNull(),user:text('user').notNull(),side:text('side').notNull(),difficulty:text('difficulty'),reason:text('reason').notNull(),evidence:text('evidence').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.battle,t.user]})]);
 export const argumentEvidence=sqliteTable('argument_evidence',{id:text('id').primaryKey(),battle:text('battle').notNull(),argumentUser:text('argument_user').notNull(),contributor:text('contributor').notNull(),reference:text('reference').notNull(),context:text('context').notNull().default(''),created:integer('created').notNull()},t=>[index('idx_argument_evidence_battle_user').on(t.battle,t.argumentUser),index('idx_argument_evidence_created').on(t.created)]);
@@ -168,12 +169,12 @@ export const versionCombatRoles=sqliteTable('version_combat_roles',{
  role:text('role').notNull(),
  priority:text('priority').notNull(),
  notes:text('notes').notNull().default('')
-},t=>[primaryKey({columns:[t.versionId,t.role]}),index('idx_version_combat_roles_role').on(t.role,t.versionId)]);
+},t=>[primaryKey({columns:[t.versionId,t.role]}),index('idx_version_combat_roles_role').on(t.role,t.versionId),check('version_combat_roles_role_valid',sql`${t.role} IN ('dps','tank','support','healer','controller','strategist','assassin','speedster','summoner','reality_manipulator','defense')`),check('version_combat_roles_priority_valid',sql`${t.priority} IN ('primary','secondary')`)]);
 
 export const versionStrategicTraits=sqliteTable('version_strategic_traits',{
  versionId:text('version_id').notNull().references(()=>characterVersions.id,{onDelete:'cascade'}),
  trait:text('trait').notNull()
-},t=>[primaryKey({columns:[t.versionId,t.trait]}),index('idx_version_strategic_traits_trait').on(t.trait,t.versionId)]);
+},t=>[primaryKey({columns:[t.versionId,t.trait]}),index('idx_version_strategic_traits_trait').on(t.trait,t.versionId),check('version_strategic_traits_trait_valid',sql`${t.trait} IN ('healing','barrier','crowd_control','mobility','teleportation','information','buff','debuff','sealing','summoning','illusion','stealth','long_range','close_range','area_damage','single_target','adaptation','prediction','anti_regeneration')`)]);
 
 export const users=sqliteTable('users',{
  id:text('id').primaryKey(),

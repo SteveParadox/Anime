@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-const files=readdirSync('drizzle').filter(name=>/^00\\d\\d.*\\.sql$/.test(name)).sort();
+const files=readdirSync('drizzle').filter(name=>/^00\d\d.*\.sql$/.test(name)).sort();
 function apply(db,path){
  for(const sql of readFileSync(path,'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))db.exec(sql);
 }
@@ -33,7 +33,8 @@ test('version-role mappings are constrained to valid versions, unique and suppor
   assert.throws(()=>db.exec("INSERT INTO version_combat_roles (version_id,role,priority) VALUES ('aizen-tybw','controller','primary')"));
   assert.throws(()=>db.exec("INSERT INTO version_combat_roles (version_id,role,priority) VALUES ('aizen-tybw','omnipotent','primary')"));
   assert.throws(()=>db.exec("INSERT INTO version_combat_roles (version_id,role,priority) VALUES ('missing-version','tank','primary')"));
-  const insert=db.prepare('UPDATE squad_submission_members SET roles_snapshot=? WHERE submission_id=?');
-  // Existing historical records remain unchanged unless an explicit edit updates the squad.
+  // An old snapshot stays absent even if the current catalog assignment changes.
+  db.exec("UPDATE version_combat_roles SET priority='secondary' WHERE version_id='aizen-tybw' AND role='controller'");
+  assert.equal(db.prepare("SELECT role FROM version_combat_roles WHERE version_id='aizen-tybw' AND priority='secondary'").get().role,'controller');
  }finally{db.close()}
 });
