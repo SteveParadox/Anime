@@ -43,6 +43,13 @@ export function translateSql(input:string){
   if(ch==='?'){output+='$'+(++parameter);i++;continue;}
   const word=source.slice(i).match(/^[a-zA-Z_][a-zA-Z0-9_]*/)?.[0];
   if(word){
+   if(word.toUpperCase()==='AS'){
+    const alias=source.slice(i+word.length).match(/^([ \t\r\n]+)([a-z]+[A-Z][A-Za-z0-9]*)\b/);
+    if(alias){
+     output+=word+alias[1]+'"'+alias[2]+'"';
+     i+=word.length+alias[0].length;continue;
+    }
+   }
    if(word.toLowerCase()==='rowid')output+='argument_id';
    else if(word.toLowerCase()==='user')output+='"user"';
    else output+=word;
@@ -51,8 +58,7 @@ export function translateSql(input:string){
   output+=ch;i++;
  }
  if(mode!=='code')throw new Error('Unterminated SQL literal');
- // Preserve camelCase aliases required by the existing frontend contract.
- output=output.replace(/\bAS\s+([a-z]+[A-Z][A-Za-z0-9]*)\b/g,(_all,alias)=>'AS "'+alias+'"');
+ // CamelCase aliases are quoted only while scanning SQL code, not string literals.
  if(ignore)output+=' ON CONFLICT DO NOTHING';
  return {sql:output,parameters:parameter};
 }
