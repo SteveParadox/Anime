@@ -41,6 +41,26 @@ test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoil
   }
   try{
    const owner=await account('owner'),voter=await account('voter');
+   // A legacy ChatGPT-only account must be able to prove mailbox ownership and
+   // establish a local credential without replacing its historical user ID.
+   const {getPool:legacyPool}=await import('@anime/database/client');
+   const poolForLegacy=legacyPool(process.env.TEST_DATABASE_URL);
+   const legacyId='usr_'+crypto.randomUUID(),legacyEmail='hosted-'+crypto.randomUUID().slice(0,12)+'@example.com',now=Date.now();
+   await poolForLegacy.query('INSERT INTO users (id,email,email_normalized,email_verified,profile_completed,created,updated) VALUES ($1,$2,$3,1,1,$4,$4)',[legacyId,legacyEmail,legacyEmail,now]);
+   await poolForLegacy.query("INSERT INTO auth_identities (id,user_id,provider,provider_user_id,provider_email,credential_hash,created) VALUES ($1,$2,'chatgpt',$3,$4,NULL,$5)",[crypto.randomUUID(),legacyId,'hosted_'+legacyId,legacyEmail,now]);
+   await poolForLegacy.query("INSERT INTO profiles (\"user\",handle,display_name,avatar_url,bio,favorite_anime,favorite_characters,created,updated) VALUES ($1,$2,'Legacy Fan',NULL,'','[]','[]',$3,$3)",[legacyId,'legacy_'+crypto.randomUUID().replace(/-/g,'').slice(0,8),now]);
+   const beforeLegacyEmail=sent.length;
+   const recovery=await mutation('/api/auth/forgot-password',{email:legacyEmail});
+   assert.equal(recovery.statusCode,200,recovery.payload);
+   assert.equal(sent.length,beforeLegacyEmail+1,'Legacy verified owner receives a recovery email');
+   const resetToken=decodeURIComponent(sent.at(-1).html.match(/#token=([^"<]+)/)?.[1]||'');
+   assert.ok(resetToken.length>20);
+   const reset=await mutation('/api/auth/reset-password',{token:resetToken,password:'RecoveredPassword123!'});
+   assert.equal(reset.statusCode,200,reset.payload);
+   const legacyLogin=await mutation('/api/auth/login',{email:legacyEmail,password:'RecoveredPassword123!'});
+   assert.equal(legacyLogin.statusCode,200,legacyLogin.payload);
+   assert.equal(legacyLogin.json().user.id,legacyId);
+
    const me=await get('/api/auth/me',owner.cookie);
    assert.equal(me.json().user.id,owner.user.id);
    const catalog=await get('/api/characters?version=naruto-six-paths');
