@@ -5,45 +5,55 @@ import type {PoolClient,QueryResult} from 'pg';
 // Temporary query boundary for the existing route/service code. SQL is
 // parameterized and batch() uses an actual PostgreSQL transaction. The only
 // SQLite syntax accepted here is the small, tested legacy subset below.
+// The old D1 handlers used double quotes for *literal values*. Convert only
+// known legacy values. Preserve real PostgreSQL quoted identifiers untouched.
+const LEGACY_DOUBLE_QUOTED_VALUES=new Set([
+ 'a','b','draw','open','tournament','[removed]','[removed by moderator]'
+]);
 export function translateSql(input:string){
- const sql=input.replace(/\browid\b/gi,'argument_id').replace(/INSERT\s+OR\s+IGNORE\s+INTO/gi,'INSERT INTO');
- let output='',mode:'code'|'single'|'double'='code',parameter=0;
- for(let i=0;i<sql.length;i++){
-  const char=sql[i];
+ const ignore=/^\s*INSERT\s+OR\s+IGNORE\s+INTO\b/i.test(input);
+ const source=ignore?input.replace(/INSERT\s+OR\s+IGNORE\s+INTO/i,'INSERT INTO'):input;
+ let output='',parameter=0,mode:'code'|'single'='code';
+ for(let i=0;i<source.length;){
+  const ch=source[i];
   if(mode==='single'){
-   output+=char;
-   if(char==="'"&&sql[i+1]==="'"){output+=sql[++i];continue;}
-   if(char==="'")mode='code';
-  }else if(mode==='double'){
-   output+=char==='"'?"'":char;
-   if(char==='"')mode='code';
-  }else if(char==="'"){output+=char;mode='single';}
-  else if(char==='"'){output+="'";mode='double';}
-  else if(char==='?')output+='$'+(++parameter);
-  else output+=char;
- }
- if(mode!=='code')throw new Error('Unterminated SQL literal');
- // PostgreSQL folds bare camelCase aliases. Preserve the existing API keys.
- output=output.replace(/\bAS\s+([a-z]+[A-Z][A-Za-z0-9]*)\b/g,(_all,alias)=>`AS "${alias}"`);
- // SQLite permitted the legacy `user` column unquoted; PostgreSQL reserves it.
- let escaped='',state:'code'|'literal'|'identifier'='code';
- for(let i=0;i<output.length;){
-  const character=output[i];
-  if(state==='code'&&character==="'"){escaped+=character;state='literal';i++;continue;}
-  if(state==='code'&&character==='"'){escaped+=character;state='identifier';i++;continue;}
-  if(state!=='code'){
-   escaped+=character;i++;
-   if(state==='literal'&&character==="'"&&output[i]==="'"){escaped+=output[i++];continue;}
-   if(state==='literal'&&character==="'"||state==='identifier'&&character==='"')state='code';
+   output+=ch;i++;
+   if(ch==="'"&&source[i]==="'"){output+=source[i++];continue;}
+   if(ch==="'")mode='code';
    continue;
   }
-  if(output.slice(i,i+4).toLowerCase()==='user'&&!/[\w]/.test(output[i-1]||'')&&!/[\w]/.test(output[i+4]||'')){
-   escaped+='"user"';i+=4;continue;
+  if(ch==="'"){mode='single';output+=ch;i++;continue;}
+  if(ch==='"'){
+   const initial=i;
+   i++;
+   let value='',closed=false;
+   while(i<source.length){
+    if(source[i]==='"'){
+     if(source[i+1]==='"'){value+='"';i+=2;continue;}
+     i++;closed=true;break;
+    }
+    value+=source[i++];
+   }
+   if(!closed)throw new Error('Unterminated quoted SQL identifier');
+   output+=LEGACY_DOUBLE_QUOTED_VALUES.has(value)
+    ?"'"+value.replace(/'/g,"''")+"'"
+    :source.slice(initial,i);
+   continue;
   }
-  escaped+=character;i++;
+  if(ch==='?'){output+='$'+(++parameter);i++;continue;}
+  const word=source.slice(i).match(/^[a-zA-Z_][a-zA-Z0-9_]*/)?.[0];
+  if(word){
+   if(word.toLowerCase()==='rowid')output+='argument_id';
+   else if(word.toLowerCase()==='user')output+='"user"';
+   else output+=word;
+   i+=word.length;continue;
+  }
+  output+=ch;i++;
  }
- output=escaped;
- if(/INSERT\s+OR\s+IGNORE\s+INTO/i.test(input))output+=' ON CONFLICT DO NOTHING';
+ if(mode!=='code')throw new Error('Unterminated SQL literal');
+ // Preserve camelCase aliases required by the existing frontend contract.
+ output=output.replace(/\bAS\s+([a-z]+[A-Z][A-Za-z0-9]*)\b/g,(_all,alias)=>'AS "'+alias+'"');
+ if(ignore)output+=' ON CONFLICT DO NOTHING';
  return {sql:output,parameters:parameter};
 }
 
