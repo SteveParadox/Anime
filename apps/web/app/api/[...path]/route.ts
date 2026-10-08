@@ -10,7 +10,7 @@ function upstreamOrigin(){
  const configured=process.env.API_UPSTREAM_ORIGIN;
  if(!configured)throw new Error('API_UPSTREAM_ORIGIN is required');
  const url=new URL(configured);
- if(!['http:','https:'].includes(url.protocol)||url.username||url.password||url.pathname!=='/'||url.search||url.hash)
+ if(!['http:','https:'].includes(url.protocol)||process.env.VERCEL&&url.protocol!=='https:'||url.username||url.password||url.pathname!=='/'||url.search||url.hash)
   throw new Error('API_UPSTREAM_ORIGIN must be an HTTP(S) origin');
  return url.origin;
 }
