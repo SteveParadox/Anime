@@ -71,6 +71,13 @@
       "when": 1791403200000,
       "tag": "0009_guard_squad_challenge_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1791446400000,
+      "tag": "0010_strategic_squad_roles",
+      "breakpoints": true
     }
   ]
 }

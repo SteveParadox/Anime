@@ -5,6 +5,8 @@ import {Check,Copy,Flag,History,Plus,Search,Target,Trophy,X} from 'lucide-react'
 import {Progress} from '@/components/ui/progress';
 import {toast} from 'sonner';
 import type {SquadChallengeFighter,SquadChallengeRules} from '@/lib/squad-challenge';
+import {COMBAT_ROLES,ROLE_DEFINITIONS,roleRequirementProgress,type VersionRole,type StrategicTrait} from '@/lib/squad-synergy';
+import {RoleBadges,RoleGlossary,SquadInsights,SubmissionInsights} from '@/components/squad-insights';
 
 type ChallengeView={
  id:string;
@@ -40,6 +42,8 @@ type SubmissionMember={
  versionId:string;
  versionName:string;
  cost:number;
+ roles:VersionRole[]|null;
+ traits:StrategicTrait[]|null;
 };
 
 type VoteSummary=
@@ -150,7 +154,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     setSelected(mine.submission.members.map(member=>{
      const current=byVersion.get(member.versionId);
      if(!current)return null;
-     return mine.submission.locked?{...current,characterName:member.characterName,versionName:member.versionName,cost:member.cost}:current;
+     return mine.submission.locked?{...current,characterName:member.characterName,versionName:member.versionName,cost:member.cost,roles:member.roles||[],traits:member.traits||[]}:current;
     }).filter((item):item is SquadChallengeFighter=>Boolean(item)));
     setName(mine.submission.name);
     setStrategy(mine.submission.strategy);
@@ -182,14 +186,14 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  },[sort,challengeId]);
 
  const seriesOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.series))].sort():[],[challenge]);
- const roleOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.map(f=>f.role))].sort():[],[challenge]);
+ const roleOptions=COMBAT_ROLES;
  const tagOptions=useMemo(()=>challenge?[...new Set(challenge.fighters.flatMap(f=>f.tags))].sort():[],[challenge]);
  const filtered=useMemo(()=>{
   if(!challenge)return [];
   const q=query.trim().toLowerCase();
   const rows=challenge.fighters.filter(f=>{
-   const haystack=`${f.characterName} ${f.versionName} ${f.aliases.join(' ')} ${f.series} ${f.role} ${f.tags.join(' ')}`.toLowerCase();
-   return (!q||haystack.includes(q))&&(series==='all'||f.series===series)&&(role==='all'||f.role===role)&&(tag==='all'||f.tags.includes(tag))&&f.cost<=maxCost;
+   const haystack=`${f.characterName} ${f.versionName} ${f.aliases.join(' ')} ${f.series} ${f.roles.map(r=>ROLE_DEFINITIONS[r.role].label).join(' ')} ${f.tags.join(' ')}`.toLowerCase();
+   return (!q||haystack.includes(q))&&(series==='all'||f.series===series)&&(role==='all'||f.roles.some(r=>r.role===role))&&(tag==='all'||f.tags.includes(tag))&&f.cost<=maxCost;
   });
   return rows.sort((a,b)=>{
    if(order==='cost-desc')return b.cost-a.cost||a.versionName.localeCompare(b.versionName);
@@ -286,14 +290,17 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
 
  const selectedCharacterIds=new Set(selected.map(item=>item.characterId));
  const rules=rulesList(challenge.rules);
- const submitReady=active&&!viewer?.submissionLocked&&selected.length>=challenge.minMembers&&selected.length<=challenge.maxMembers&&!overBudget&&name.trim().length>=3&&strategy.trim().length>=10;
+ const tacticalMembers=selected.map(f=>({versionId:f.versionId,characterName:f.characterName,roles:f.roles,traits:f.traits}));
+ const requirements=roleRequirementProgress(tacticalMembers,challenge.rules.roleRequirements||[]);
+ const affordableHealers=selected.some(f=>f.roles.some(r=>r.role==='healer'))?[]:challenge.fighters.filter(f=>f.roles.some(r=>r.role==='healer')&&f.cost<=remaining&&!selectedCharacterIds.has(f.characterId)).slice(0,3);
+ const submitReady=active&&!viewer?.submissionLocked&&selected.length>=challenge.minMembers&&selected.length<=challenge.maxMembers&&!overBudget&&requirements.every(r=>r.valid)&&name.trim().length>=3&&strategy.trim().length>=10;
 
  return <div className="daily-squad-system">
   {shared&&<section className="panel challenge-shared">
    <div className="section-heading"><div><span className="eyebrow">SHARED CHALLENGE SQUAD</span><h2>{shared.name}</h2></div><button className="secondary" onClick={()=>setShared(null)}><X size={15}/>Close</button></div>
    <p className="challenge-owner">{shared.challenge.title} · {shared.challenge.target?.versionName||shared.challenge.target?.characterName||'Open build'}</p>
    <p className="challenge-owner">@{shared.owner.username} · {shared.totalCost}/{shared.challenge.budget} pts</p>
-   <div className="submission-members">{shared.members.map(member=><span key={member.versionId}><strong>{member.characterName}</strong><small>{member.versionName} · {member.cost} pts</small></span>)}</div>
+   <div className="submission-members">{shared.members.map(member=><span key={member.versionId}><strong>{member.characterName}</strong><small>{member.versionName} · {member.cost} pts</small><RoleBadges roles={member.roles} historical/></span>)}</div><SubmissionInsights members={shared.members}/>
    <p className="strategy-copy">{shared.strategy}</p>
    <VoteBlock submission={shared} authenticated={authenticated} busy={busy} vote={vote}/>
   </section>}
@@ -312,6 +319,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
    <div><span className="eyebrow">TARGET</span><h2>{challenge.target?.characterName||'Open build'}</h2><strong>{challenge.target?.versionName||'No fixed target'}</strong><small>{challenge.target?.series}</small></div>
    <div className="challenge-rule-grid">{rules.map(item=><span key={item.label}><small>{item.label}</small><b>{item.value}</b></span>)}</div>
    {challenge.rules.notes&&<p>{challenge.rules.notes}</p>}
+   {requirements.length>0&&<div className="squad-requirements"><strong>Role requirements</strong>{requirements.map(item=><span key={item.description} className={item.valid?'met':'unmet'}>{item.valid?'✓':'○'} {item.description} · {item.count} matched</span>)}</div>
   </div>
 
   {challenge.status==='active'?<div className="daily-builder-layout">
@@ -320,11 +328,12 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
      <label className="daily-search"><Search size={17}/><input aria-label="Search challenge fighters" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search character, version, alias, role…"/></label>
      <div className="daily-filters">
       <label>Series<select value={series} onChange={event=>setSeries(event.target.value)}><option value="all">All series</option>{seriesOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
-      <label>Role<select value={role} onChange={event=>setRole(event.target.value)}><option value="all">All roles</option>{roleOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+      <label>Role<select value={role} onChange={event=>setRole(event.target.value)}><option value="all">All roles</option>{roleOptions.map(value=><option key={value} value={value} title={ROLE_DEFINITIONS[value].description}>{ROLE_DEFINITIONS[value].label}</option>)}</select></label>
       <label>Tag<select value={tag} onChange={event=>setTag(event.target.value)}><option value="all">All tags</option>{tagOptions.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
       <label>Max cost<input type="number" min={1} max={challenge.budget} value={maxCost} onChange={event=>setMaxCost(Math.max(1,Math.min(challenge.budget,Number(event.target.value)||challenge.budget)))}/></label>
       <label>Sort<select value={order} onChange={event=>setOrder(event.target.value as typeof order)}><option value="cost-asc">Cost: low → high</option><option value="cost-desc">Cost: high → low</option><option value="name">Name</option><option value="series">Series</option></select></label>
      </div>
+     <RoleGlossary/>
     </div>
     <div className="daily-fighter-grid">
      {filtered.map(fighter=>{
@@ -334,8 +343,8 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
       const full=!selectedVersion&&selected.length>=challenge.maxMembers;
       const disabled=Boolean(viewer?.submissionLocked||characterAlreadySelected||unaffordable||full);
       return <article className={'daily-fighter-card '+(selectedVersion?'selected':'')} key={fighterKey(fighter)}>
-       <div className="daily-fighter-head"><div><strong>{fighter.characterName}</strong><small>{fighter.series} · {fighter.role}</small></div><b>{fighter.cost} pts</b></div>
-       <h3>{fighter.versionName}</h3>
+       <div className="daily-fighter-head"><div><strong>{fighter.characterName}</strong><small>{fighter.series}</small></div><b>{fighter.cost} pts</b></div>
+       <h3>{fighter.versionName}</h3><RoleBadges roles={fighter.roles}/>
        {fighter.keyAbilities.length>0&&<p>{fighter.keyAbilities.map(item=>item.name).join(' · ')}</p>}
        <button type="button" className={selectedVersion?'secondary':'primary'} disabled={disabled} onClick={()=>toggle(fighter)} aria-label={selectedVersion?`Remove ${fighter.versionName}`:`Add ${fighter.versionName}`}>
         {selectedVersion?<><Check size={15}/>Selected</>:unaffordable?'Not enough budget':characterAlreadySelected?'Character already selected':<><Plus size={15}/>Add</>}
@@ -352,11 +361,13 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
     <Progress value={Math.min(100,totalCost/challenge.budget*100)}/>
     <p className="remaining-budget">{remaining} point{remaining===1?'':'s'} remaining</p>
     <div className="daily-selected-list">
-     {selected.map(item=><div key={item.versionId}><div><strong>{item.characterName}</strong><small>{item.versionName} · {item.cost} pts</small></div><button type="button" onClick={()=>toggle(item)} aria-label={`Remove ${item.versionName}`} disabled={Boolean(viewer?.submissionLocked)}><X size={15}/></button></div>)}
+     {selected.map(item=><div key={item.versionId}><div><strong>{item.characterName}</strong><small>{item.versionName} · {item.cost} pts</small><RoleBadges roles={item.roles}/></div><button type="button" onClick={()=>toggle(item)} aria-label={`Remove ${item.versionName}`} disabled={Boolean(viewer?.submissionLocked)}><X size={15}/></button></div>)}
      {!selected.length&&<div className="empty-squad">Choose 1–{challenge.maxMembers} fighters. You do not have to fill every slot.</div>}
     </div>
-    <label>Squad name<input value={name} maxLength={60} onChange={event=>setName(event.target.value)} placeholder="The Counter Squad" disabled={Boolean(viewer?.submissionLocked)}/><small>{name.trim().length}/60</small></label>
-    <label>Explain your strategy<textarea value={strategy} minLength={10} maxLength={1500} onChange={event=>setStrategy(event.target.value)} placeholder="Explain how the exact selected versions work together…" disabled={Boolean(viewer?.submissionLocked)}/><small>{strategy.length}/1500</small></label>
+    <SquadInsights members={tacticalMembers}/>
+     {affordableHealers.length>0&&<div className="squad-affordable-tip"><b>Affordable healers</b><p>{affordableHealers.map(f=>`${f.characterName} · ${f.cost} pts`).join(', ')}</p><button className="secondary" type="button" onClick={()=>{setRole('healer');setMaxCost(Math.max(1,remaining));}}>Browse affordable healers</button></div>}
+     <label>Squad name<input value={name} maxLength={60} onChange={event=>setName(event.target.value)} placeholder="The Counter Squad" disabled={Boolean(viewer?.submissionLocked)}/><small>{name.trim().length}/60</small></label>
+    <label>Explain your strategy<textarea value={strategy} minLength={10} maxLength={1500} onChange={event=>setStrategy(event.target.value)} placeholder="Explain how each version's roles, abilities, and feats work together…" disabled={Boolean(viewer?.submissionLocked)}/><small>{strategy.length}/1500</small></label>
     <div className="submission-preview"><small>SUBMISSION PREVIEW</small>{selected.map(item=><span key={item.versionId}>{item.characterName}<b>{item.cost}</b></span>)}<span className="submission-total">TOTAL<b>{totalCost} / {challenge.budget}</b></span>{strategy.trim()&&<p>{strategy.trim()}</p>}</div>
     {viewer?.submissionRemoved?<p className="locked-entry">This challenge entry was removed by moderation and cannot be resubmitted.</p>:viewer?.submissionLocked&&<p className="locked-entry">This entry is locked because community voting has started.</p>}
     <button className="primary full" disabled={busy||!submitReady} onClick={submit}>{editingId?'Update challenge squad':'Submit squad'}</button>
@@ -381,7 +392,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
 function SubmissionCard({submission,authenticated,busy,vote,share,report}:{submission:Submission;authenticated:boolean;busy:boolean;vote:(submission:Submission,verdict:'yes'|'no')=>Promise<void>;share:(id:string)=>Promise<void>;report:(id:string)=>Promise<void>}){
  return <article className="panel daily-submission-card">
   <div className="submission-card-head"><div>{submission.rank&&<span className="rank"><Trophy size={13}/>#{submission.rank}</span>}<h3>{submission.name}</h3><small>@{submission.owner.username}</small></div><strong>{submission.totalCost}/{submission.challenge.budget}</strong></div>
-  <div className="submission-members">{submission.members.map(member=><span key={member.versionId}><strong>{member.characterName}</strong><small>{member.versionName} · {member.cost} pts</small></span>)}</div>
+  <div className="submission-members">{submission.members.map(member=><span key={member.versionId}><strong>{member.characterName}</strong><small>{member.versionName} · {member.cost} pts</small><RoleBadges roles={member.roles} historical/></span>)}</div><SubmissionInsights members={submission.members}/>
   <p className="strategy-copy">{submission.strategy}</p>
   <VoteBlock submission={submission} authenticated={authenticated} busy={busy} vote={vote}/>
   <div className="submission-actions"><button onClick={()=>share(submission.id)}><Copy size={13}/>Share</button>{!submission.owned&&<button onClick={()=>report(submission.id)}><Flag size={13}/>Report</button>}</div>

@@ -1,4 +1,6 @@
 import {fighters} from '@/lib/catalog';
+import {loadVersionStrategies} from '@/lib/version-strategy';
+import {parseRoleRequirements,validateRoleRequirements,type RoleRequirement,type VersionRole,type StrategicTrait} from '@/lib/squad-synergy';
 import {abilitiesForVersion,versionById} from '@/lib/characters';
 import {dailyChallengeRotationIndex,resolveSquadChallengeStatus,validateSquadBudget,validateSquadIdentities} from '@/lib/squad-challenge-policy';
 
@@ -19,6 +21,7 @@ export type SquadChallengeRules={
  transformationsAllowed?:boolean;
  standardEquipment?:boolean;
  notes?:string;
+ roleRequirements?:RoleRequirement[];
 };
 
 export type SquadChallengeRecord={
@@ -46,7 +49,9 @@ export type SquadChallengeFighter={
  versionShortName:string|null;
  cost:number;
  series:string;
- role:string;
+ role:string; // Legacy catalog label; do not use for version composition.
+ roles:VersionRole[];
+ traits:StrategicTrait[];
  tags:string[];
  aliases:string[];
  keyAbilities:{id:string;name:string;status:string}[];
@@ -60,6 +65,8 @@ export type SquadMemberSnapshot={
  versionId:string;
  versionName:string;
  cost:number;
+ roles:VersionRole[];
+ traits:StrategicTrait[];
 };
 
 type SquadChallengeDbRow={
@@ -168,17 +175,17 @@ export function effectiveChallengeStatus(challenge:Pick<SquadChallengeRecord,'st
 
 export function parseRules(raw:unknown):SquadChallengeRules{
  if(typeof raw!=='string')return {};
- try{
-  const parsed=JSON.parse(raw);
-  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return {};
-  const value=parsed as Record<string,unknown>,rules:SquadChallengeRules={};
-  for(const key of ['battleType','location','speed','knowledge','prepTime','notes'] as const){
-   if(typeof value[key]==='string')rules[key]=value[key] as string;
-  }
-  if(typeof value.transformationsAllowed==='boolean')rules.transformationsAllowed=value.transformationsAllowed;
-  if(typeof value.standardEquipment==='boolean')rules.standardEquipment=value.standardEquipment;
-  return rules;
- }catch{return {}}
+ let parsed:unknown;
+ try{parsed=JSON.parse(raw);}catch{return {};}
+ if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return {};
+ const value=parsed as Record<string,unknown>,rules:SquadChallengeRules={};
+ for(const key of ['battleType','location','speed','knowledge','prepTime','notes'] as const){
+  if(typeof value[key]==='string')rules[key]=value[key] as string;
+ }
+ if(typeof value.transformationsAllowed==='boolean')rules.transformationsAllowed=value.transformationsAllowed;
+ if(typeof value.standardEquipment==='boolean')rules.standardEquipment=value.standardEquipment;
+ if(value.roleRequirements!==undefined)rules.roleRequirements=parseRoleRequirements(value.roleRequirements);
+ return rules;
 }
 
 export function publicTarget(characterId:string|null,versionId:string|null){
@@ -242,6 +249,7 @@ export async function ensureDailyChallenge(db:D1Database,now=Date.now()){
 
 export async function challengeFighters(db:D1Database,challengeId:string):Promise<SquadChallengeFighter[]>{
  const rows=(await db.prepare('SELECT character_id AS characterId,version_id AS versionId,cost FROM daily_squad_challenge_costs WHERE challenge_id=? ORDER BY cost ASC,version_id ASC').bind(challengeId).all<SquadVersionCostDbRow>()).results;
+ const strategies=await loadVersionStrategies(db,rows.map(row=>row.versionId));
  return rows.flatMap(row=>{
   const character=fighters.find(f=>f.id===row.characterId),version=versionById(row.versionId);
   if(!character||!version||!version.canonical||version.characterId!==character.id)return [];
@@ -254,6 +262,8 @@ export async function challengeFighters(db:D1Database,challengeId:string):Promis
    cost:Number(row.cost),
    series:character.series,
    role:character.role,
+   roles:strategies.get(version.id)?.roles||[],
+   traits:strategies.get(version.id)?.traits||[],
    tags:character.tags,
    aliases:version.aliases,
    keyAbilities:abilitiesForVersion(version.id).slice(0,4).map(({ability,link})=>({id:ability.id,name:ability.name,status:link.status}))
@@ -275,11 +285,13 @@ export async function resolveSubmissionMembers(db:D1Database,challenge:SquadChal
  const priceByVersion=new Map(rows.map(row=>[String(row.versionId),{characterId:String(row.characterId),cost:Number(row.cost)}]));
  if(priceByVersion.size!==selections.length)throw Object.assign(new Error('One or more fighters are not available in this challenge.'),{status:400});
 
+ const strategies=await loadVersionStrategies(db,versionIds);
  const snapshots:SquadMemberSnapshot[]=selections.map((selection,position)=>{
   const price=priceByVersion.get(selection.versionId),character=fighters.find(f=>f.id===selection.characterId)!,version=versionById(selection.versionId)!;
   if(!price||price.characterId!==selection.characterId)throw Object.assign(new Error('A selected version does not belong to the submitted character.'),{status:400});
-  return {position,characterId:character.id,characterName:character.name,versionId:version.id,versionName:version.name,cost:price.cost};
+  return {position,characterId:character.id,characterName:character.name,versionId:version.id,versionName:version.name,cost:price.cost,roles:strategies.get(version.id)?.roles||[],traits:strategies.get(version.id)?.traits||[]};
  });
  const totalCost=validateSquadBudget(snapshots,challenge.budget);
+ validateRoleRequirements(snapshots,challenge.rules.roleRequirements||[]);
  return {snapshots,totalCost};
 }
