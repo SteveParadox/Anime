@@ -57,7 +57,7 @@ export function createApp(){
    app.route({method:method as 'GET'|'POST',url:route.path,handler:async(request,reply)=>{
     const headers=new Headers();
     for(const [name,value] of Object.entries(request.headers)){
-     if(name==='host'||name==='x-anime-verified-ip'||name.startsWith('x-anime-proxy-')||name.startsWith('oai-authenticated-user-')||name.startsWith('x-forwarded-'))continue;
+     if(name==='host'||name==='x-real-ip'||name==='x-vercel-forwarded-for'||name==='x-anime-verified-ip'||name.startsWith('x-anime-proxy-')||name.startsWith('oai-authenticated-user-')||name.startsWith('x-forwarded-'))continue;
      if(value!==undefined)headers.set(name,Array.isArray(value)?value.join(','):value);
     }
     const verified=verifyProxySignature(
