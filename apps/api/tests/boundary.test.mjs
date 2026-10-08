@@ -33,3 +33,17 @@ test('legacy D1 query syntax is translated with positional binds and stable API 
  assert.equal(translateSql("SELECT user FROM votes WHERE user=? AND reason='user' ").sql,
   "SELECT \"user\" FROM votes WHERE \"user\"=$1 AND reason='user' ");
 });
+
+test('legacy SQL translator preserves real PostgreSQL identifiers and protected string literals',()=>{
+ assert.equal(
+  translateSql('SELECT "user", v.rowid AS argumentId FROM votes v WHERE v.side="a"').sql,
+  'SELECT "user", v.argument_id AS "argumentId" FROM votes v WHERE v.side=\'a\''
+ );
+ assert.equal(translateSql("SELECT 'rowid user ?' AS sample, user FROM votes WHERE user=?").sql,
+  'SELECT \'rowid user ?\' AS sample, "user" FROM votes WHERE "user"=$1');
+ assert.equal(translateSql('SELECT "role" FROM version_combat_roles WHERE "role"=?').sql,
+  'SELECT "role" FROM version_combat_roles WHERE "role"=$1');
+ assert.equal(translateSql('SELECT "some""column" FROM sample').sql,
+  'SELECT "some""column" FROM sample');
+ assert.throws(()=>translateSql('SELECT "unfinished'),/Unterminated quoted/);
+});
