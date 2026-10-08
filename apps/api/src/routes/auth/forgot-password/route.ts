@@ -16,7 +16,11 @@ export async function POST(request:Request){
   if(!parsed.success)return authJson({ok:true,message:publicMessage});
   const email=normalizeEmail(parsed.data.email),limit=await enforceAuthRateLimits(request,'forgot-password',email,{ipLimit:10,identityLimit:4,windowMs:30*60_000});
   if(!limit.allowed)return authJson({ok:true,message:publicMessage});
-  const row=await database().prepare(`SELECT u.id FROM users u JOIN auth_identities i ON i.user_id=u.id AND i.provider='email' WHERE u.email_normalized=? LIMIT 1`).bind(email).first<any>();
+  const row=await database().prepare(`SELECT u.id FROM users u
+   WHERE u.email_normalized=?
+    AND (EXISTS (SELECT 1 FROM auth_identities i WHERE i.user_id=u.id AND i.provider='email')
+     OR (u.email_verified=1 AND EXISTS (SELECT 1 FROM auth_identities i WHERE i.user_id=u.id AND i.provider IN ('chatgpt','google'))))
+   LIMIT 1`).bind(email).first<any>();
   if(row){
    const baseUrl=appBaseUrl(request),token=await createPasswordResetToken(row.id);
    await sendPasswordResetEmail(email,`${baseUrl}/reset-password#token=${encodeURIComponent(token.raw)}`,RESET_TTL_MINUTES);
