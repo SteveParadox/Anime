@@ -26,7 +26,7 @@ export function isStrategicTrait(value:unknown):value is StrategicTrait{return t
 export function parseRoleRequirements(value:unknown):RoleRequirement[]{
  if(value==null)return [];
  if(!Array.isArray(value)||value.length>20)throw new Error('Invalid challenge role requirements.');
- return value.map(item=>{
+ return value.map((item):RoleRequirement=>{
   if(!item||typeof item!=='object'||Array.isArray(item))throw new Error('Invalid challenge role requirement.');
   const v=item as Record<string,unknown>;
   if(v.type==='role'&&isCombatRole(v.role)&&Object.keys(v).every(k=>['type','role','min','max'].includes(k))){
