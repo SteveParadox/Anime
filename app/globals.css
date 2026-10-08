@@ -172,3 +172,5 @@ button.profile{width:100%;background:transparent;border:0;text-align:left}.nav-c
 .squad-affordable-tip{padding:12px;border:1px solid color-mix(in srgb,currentColor 20%,transparent);border-radius:10px;margin:12px 0;font-size:.8rem}
 .squad-affordable-tip p{margin:5px 0 10px}.squad-affordable-tip button{font-size:.75rem}
 @media(max-width:680px){.squad-insights-columns{grid-template-columns:minmax(0,1fr)}.squad-role-badge{font-size:.68rem}.squad-coverage-row{font-size:.76rem}}
+
+.squad-role-glossary{margin-top:12px;font-size:.77rem}.squad-role-glossary summary{cursor:pointer;font-weight:650}.squad-role-glossary dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px;margin:10px 0}.squad-role-glossary dt{font-weight:650}.squad-role-glossary dd{margin:2px 0 0;opacity:.77;line-height:1.45}@media(max-width:680px){.squad-role-glossary dl{grid-template-columns:1fr}}

@@ -7,6 +7,11 @@ export function RoleBadges({roles,historical=false}:{roles:VersionRole[]|null|un
  return <div className="squad-role-badges" aria-label="Version combat roles">{sorted.map(({role,priority,notes})=><abbr key={role} className={'squad-role-badge '+(priority==='secondary'?'secondary':'')} title={ROLE_DEFINITIONS[role].description+(notes?' '+notes:'')}>{ROLE_DEFINITIONS[role].label}</abbr>)}</div>;
 }
 
+/** Native disclosure remains usable on touch screens and via keyboard. */
+export function RoleGlossary(){
+ return <details className="squad-role-glossary"><summary>What do combat roles mean?</summary><dl>{Object.entries(ROLE_DEFINITIONS).map(([id,item])=><div key={id}><dt>{item.label}</dt><dd>{item.description}</dd></div>)}</dl></details>;
+}
+
 export function SquadInsights({members,legacyCount=0}:{members:StrategicMember[];legacyCount?:number}){
  if(!members.length)return legacyCount?<p className="squad-roles-unavailable">{legacyCount} historical member(s) have no recorded combat roles. No current roles have been substituted.</p>:null;
  const insight=analyzeSquadComposition(members);

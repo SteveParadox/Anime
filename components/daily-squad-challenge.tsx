@@ -6,7 +6,7 @@ import {Progress} from '@/components/ui/progress';
 import {toast} from 'sonner';
 import type {SquadChallengeFighter,SquadChallengeRules} from '@/lib/squad-challenge';
 import {COMBAT_ROLES,ROLE_DEFINITIONS,roleRequirementProgress,type VersionRole,type StrategicTrait} from '@/lib/squad-synergy';
-import {RoleBadges,SquadInsights,SubmissionInsights} from '@/components/squad-insights';
+import {RoleBadges,RoleGlossary,SquadInsights,SubmissionInsights} from '@/components/squad-insights';
 
 type ChallengeView={
  id:string;
@@ -333,6 +333,7 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
       <label>Max cost<input type="number" min={1} max={challenge.budget} value={maxCost} onChange={event=>setMaxCost(Math.max(1,Math.min(challenge.budget,Number(event.target.value)||challenge.budget)))}/></label>
       <label>Sort<select value={order} onChange={event=>setOrder(event.target.value as typeof order)}><option value="cost-asc">Cost: low → high</option><option value="cost-desc">Cost: high → low</option><option value="name">Name</option><option value="series">Series</option></select></label>
      </div>
+     <RoleGlossary/>
     </div>
     <div className="daily-fighter-grid">
      {filtered.map(fighter=>{
