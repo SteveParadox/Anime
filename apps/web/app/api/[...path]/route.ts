@@ -1,6 +1,9 @@
 import type {NextRequest} from 'next/server';
+import {isIP} from 'node:net';
+import {proxySignature} from '@anime/contracts/proxy-auth';
 
 export const dynamic='force-dynamic';
+export const runtime='nodejs';
 const permitted=new Set(['GET','POST','PUT','PATCH','DELETE']);
 
 function upstreamOrigin(){
@@ -18,7 +21,21 @@ async function proxy(request:NextRequest,context:{params:Promise<{path:string[]}
  target.search=request.nextUrl.search;
  const headers=new Headers(request.headers);
  for(const name of ['host','connection','content-length','x-forwarded-host','x-forwarded-for','x-forwarded-proto','x-anime-verified-ip'])headers.delete(name);
- for(const name of [...headers.keys()])if(name.startsWith('oai-authenticated-user-'))headers.delete(name);
+ for(const name of [...headers.keys()])if(name.startsWith('oai-authenticated-user-')||name.startsWith('x-anime-proxy-'))headers.delete(name);
+ // Vercel overwrites x-real-ip at its edge; never use a browser-supplied X-Forwarded-For.
+ // Local Next.js development has no trusted edge, so use a stable loopback identity.
+ const edgeIp=request.headers.get('x-real-ip');
+ if(process.env.VERCEL&&!isIP(edgeIp||''))return Response.json({error:'Client IP unavailable.'},{status:503});
+ const clientIp=process.env.VERCEL?edgeIp!:'127.0.0.1';
+ const secret=process.env.API_PROXY_SHARED_SECRET;
+ if(process.env.VERCEL&&(!secret||secret.length<32))
+  return Response.json({error:'API proxy is not configured.'},{status:503});
+ if(secret){
+  const issuedAt=String(Date.now());
+  headers.set('x-anime-proxy-ip',clientIp);
+  headers.set('x-anime-proxy-timestamp',issuedAt);
+  headers.set('x-anime-proxy-signature',proxySignature(secret,issuedAt,clientIp,request.method,target.pathname+target.search));
+ }
  if(!['GET','HEAD'].includes(request.method)&&!headers.has('origin'))headers.set('origin',request.nextUrl.origin);
  try{
   const body=['GET','HEAD'].includes(request.method)?undefined:await request.arrayBuffer();
