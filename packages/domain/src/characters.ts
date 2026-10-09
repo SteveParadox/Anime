@@ -115,7 +115,7 @@ export const characterVersions:CharacterVersion[]=[
  {id:'saitama-hero-association',characterId:'saitama',name:'Hero Association Saitama',shortName:'Hero Association',aliases:['Caped Baldy','Saitama'],description:'Saitama at the current anime Hero Association combat endpoint.',era:'One-Punch Man',sortOrder:10,canonical:true,sourceEndpoint:'One-Punch Man anime',parentVersionId:null},
 
  {id:'megumi-season-1',characterId:'megumi',name:'Season 1 Megumi',shortName:'Season 1',aliases:['Season 1'],description:'Megumi at the first-season anime combat endpoint.',era:'Jujutsu Kaisen',sortOrder:10,canonical:true,sourceEndpoint:'Jujutsu Kaisen anime season 1',parentVersionId:null},
- {id:'megumi-shibuya',characterId:'megumi',name:'Shibuya Incident Megumi',shortName:'Shibuya',aliases:['Shibuya Megumi'],description:'Megumi at the Shibuya Incident anime endpoint.',era:'Jujutsu Kaisen',arc:'Shibuya Incident',sortOrder:20,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Shibuya Incident',parentVersionId:'megumi-season-1'}
+ {id:'megumi-shibuya',characterId:'megumi',name:'Shibuya Incident Megumi',shortName:'Shibuya',aliases:['Shibuya Megumi'],description:'Megumi at the Shibuya Incident anime endpoint.',era:'Jujutsu Kaisen',arc:'Shibuya Incident',sortOrder:20,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Shibuya Incident',parentVersionId:'megumi-season-1'},
 
  {id:"vegeta-saiyan-saga",characterId:"vegeta",name:"Saiyan Saga Vegeta",shortName:"Saiyan Saga",aliases:["Saiyan Prince"],description:"Vegeta during his early confrontation with Earth defenders.",era:"Dragon Ball Z",arc:"Saiyan Saga",sortOrder:10,canonical:true,sourceEndpoint:"Dragon Ball Z · Saiyan Saga",parentVersionId:null},
  {id:"vegeta-super-saiyan-blue",characterId:"vegeta",name:"Super Saiyan Blue Vegeta",shortName:"SSB",aliases:["Super Saiyan Blue","SSB Vegeta"],description:"Vegeta with Super Saiyan Blue as shown in Dragon Ball Super.",era:"Dragon Ball Super",arc:undefined,sortOrder:20,canonical:true,sourceEndpoint:"Dragon Ball Super",parentVersionId:"vegeta-saiyan-saga"},
@@ -192,7 +192,7 @@ export const abilities:Ability[]=[
  {id:'saitama-serious-punch',characterId:'saitama',name:'Serious Punch',description:'A named high-output punch from Saitama serious-series attacks.',category:'technique'},
 
  {id:'megumi-ten-shadows',characterId:'megumi',name:'Ten Shadows Technique',description:'Shikigami-based inherited cursed technique.',category:'summoning'},
- {id:'megumi-chimera-shadow-garden',characterId:'megumi',name:'Chimera Shadow Garden',description:'Megumi incomplete domain expansion.',category:'hax'}
+ {id:'megumi-chimera-shadow-garden',characterId:'megumi',name:'Chimera Shadow Garden',description:'Megumi incomplete domain expansion.',category:'hax'},
 
  {id:"vegeta-ki",characterId:"vegeta",name:"Saiyan Ki Combat",description:"Ki blasts and martial arts with Saiyan combat strength.",category:"energy"},
  {id:"vegeta-galick-gun",characterId:"vegeta",name:"Galick Gun",description:"Directed ki-beam attack.",category:"technique"},
