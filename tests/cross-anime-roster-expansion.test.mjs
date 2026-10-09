@@ -42,3 +42,12 @@ test('ability links are unique and never cross character ownership',()=>{
   for(const {ability} of abilitiesForVersion(version.id))assert.equal(ability.characterId,version.characterId,version.id);
  }
 });
+
+test('unreviewed source links are not exposed as broken external URLs',()=>{
+ const pending=fighters.filter(f=>!f.sourceUrl);
+ assert.ok(pending.length>0,'Starter-only entries must remain explicitly provisional');
+ for(const fighter of fighters)if(fighter.sourceUrl)assert.match(fighter.sourceUrl,/^https:\/\//,fighter.id);
+ const page=readFileSync('apps/web/app/page.tsx','utf8');
+ assert.match(page,/character\.sourceUrl\?<a href=\{character\.sourceUrl\}/);
+ assert.match(page,/Source reference pending review/);
+});
