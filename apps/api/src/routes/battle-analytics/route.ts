@@ -3,10 +3,11 @@ import {database,type DatabaseClient} from '@/db/raw';
 import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
 import {getCurrentUser,isAdminUser,canContribute} from '@/lib/auth';
 import {checkRateLimit} from '@/lib/auth-rate-limit';
+import {finalizeBattle} from '@/lib/battle-finalization';
 import {fighters} from '@anime/domain/catalog';
 import {versionById,validateBattleVersionSelection} from '@anime/domain/characters';
 import {normalizeBattle} from '@anime/domain/battle';
-import {BATTLE_POLICY_VERSION,MIN_OFFICIAL_VOTES,battleVotingEndsAt,resolveCommunityVerdict,communityWinRate,communityVoteMargin,communityControversy} from '@anime/domain/battle-analytics';
+import {BATTLE_POLICY_VERSION,MIN_OFFICIAL_VOTES,battleVotingEndsAt,communityWinRate,communityVoteMargin,communityControversy} from '@anime/domain/battle-analytics';
 
 const id=z.string().trim().min(1).max(180);
 const schema=z.discriminatedUnion('action',[
@@ -142,28 +143,7 @@ export async function POST(request:Request){
   if(!limited.allowed)return authJson({error:'Too many requests.'},429,{'Retry-After':String(limited.retryAfterSeconds)});
   if(input.action==='finalize'){
    if(!isAdminUser(user))return authJson({error:'Admin access required.'},403);
-   const result=await db.transaction(async tx=>{
-    const row=await tx.prepare('SELECT id,payload,created FROM battles WHERE id=? FOR UPDATE').bind(input.battleId).first<StoredBattle>();
-    if(!row)throw fail('Only persisted battles may be finalized.',404);
-    if(now<battleVotingEndsAt(number(row.created)))throw fail('Voting is still open.');
-    if(await tx.prepare('SELECT 1 FROM battle_results WHERE battle_id=?').bind(input.battleId).first())throw fail('Battle already finalized.');
-    const b=publicBattle(row);
-    if(b.isLegacy||b.isLegacyVersion||b.fighterAId===b.fighterBId||!fighter(b.fighterAId)||!fighter(b.fighterBId)||!validateBattleVersionSelection(b.fighterAId,b.fighterAVersionId,b.fighterBId,b.fighterBVersionId))throw fail('Battle has invalid or legacy fighter versions.');
-    const voteRows=(await tx.prepare('SELECT side,difficulty FROM votes WHERE battle=? AND created<=?').bind(row.id,battleVotingEndsAt(number(row.created))).all<{side:string;difficulty:string|null}>()).results;
-    const counts={a:0,b:0,draw:0},difficulty:Record<string,number>={};
-    for(const vote of voteRows){
-     if(vote.side!=='a'&&vote.side!=='b'&&vote.side!=='draw')continue;
-     counts[vote.side]++;
-     if(vote.difficulty){const key=vote.side+':'+vote.difficulty;difficulty[key]=(difficulty[key]||0)+1;}
-    }
-    const outcome=resolveCommunityVerdict(counts),status=outcome==='no_contest'?'NO_CONTEST':'FINALIZED';
-    const conditionsJson=JSON.stringify(b),difficultyJson=JSON.stringify(difficulty);
-    await tx.prepare(`INSERT INTO battle_results(battle_id,fighter_a_id,fighter_a_version_id,fighter_b_id,fighter_b_version_id,conditions_json,outcome,status,source_type,votes_a,votes_b,votes_draw,difficulty_json,scoring_version,finalized_at,finalized_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-     .bind(row.id,b.fighterAId,b.fighterAVersionId,b.fighterBId,b.fighterBVersionId,conditionsJson,outcome,status,'COMMUNITY_VERDICT',counts.a,counts.b,counts.draw,difficultyJson,BATTLE_POLICY_VERSION,now,user.userId).run();
-    await tx.prepare('INSERT INTO battle_result_audit(id,battle_id,action,actor_user_id,reason,snapshot_json,created_at) VALUES (?,?,?,?,?,?,?)')
-     .bind(crypto.randomUUID(),row.id,'FINALIZE',user.userId,'Voting deadline passed',JSON.stringify({outcome,status,counts,policyVersion:BATTLE_POLICY_VERSION}),now).run();
-    return {battleId:row.id,outcome,status,counts};
-   });
+   const result=await finalizeBattle(db,input.battleId,user.userId,now);
    return authJson({ok:true,result},201);
   }
   if(input.action==='void'){
