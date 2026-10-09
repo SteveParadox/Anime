@@ -7,7 +7,7 @@ import {filterCharacterCatalog} from '../packages/domain/src/character-discovery
 import {COMBAT_ROLES,STRATEGIC_TRAITS} from '../packages/domain/src/squad-synergy.ts';
 
 const newIds=['vegeta','sasuke','kakashi','zoro','sanji','sukuna','yuta','nezuko'];
-const seed=readFileSync('packages/database/seeds/catalog.jsonl','utf8').trim().split('\\n').map(row=>JSON.parse(row));
+const seed=readFileSync('packages/database/seeds/catalog.jsonl','utf8').trim().split('\n').map(row=>JSON.parse(row));
 const records=table=>seed.filter(row=>row.table===table).map(row=>row.values);
 
 test('eight new fighters have canonical, distinct, documented versions',()=>{
