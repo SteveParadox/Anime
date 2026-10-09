@@ -40,9 +40,9 @@ test('official challenge publication, restrictions, community votes and auditabl
    assert.deepEqual(eligible.find(f=>f.versionId==='megumi-season-1')?.traits,[],'Disabled abilities conservatively suppress tactical metadata for affected versions');
    // Mastered abilities are still present on the exact combat version and
    // cannot bypass an administrator's bans or disabled-technique rules.
-   const blueBanned=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,bannedAbilities:['goku-blue-ability']}}));
+   const blueBanned=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,bannedCharacters:[],bannedAbilities:['goku-blue-ability']}}));
    assert.ok(!blueBanned.some(f=>f.versionId==='goku-super-saiyan-blue'),'Banned mastered ability must reject the version');
-   const blueDisabled=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,disabledAbilities:['goku-blue-ability']}}));
+   const blueDisabled=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,bannedCharacters:[],disabledAbilities:['goku-blue-ability']}}));
    assert.deepEqual(blueDisabled.find(f=>f.versionId==='goku-super-saiyan-blue')?.roles,[],'Disabled mastered ability suppresses tactical role credit');
    for(const alignment of ['hero','villain']){
     const aligned=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,alignment}}));
