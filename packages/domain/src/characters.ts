@@ -35,6 +35,13 @@ export type VersionAbility={
 };
 
 export const characterVersions:CharacterVersion[]=[
+ {id:'yoruichi-standard',characterId:'yoruichi',name:'Standard Yoruichi',shortName:'Standard Yoruichi',aliases:[],description:'Flash Step, Hakuda and Shunko high-speed close combat',sortOrder:10,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'yoruichi-shunko',characterId:'yoruichi',name:'Shunko Yoruichi',shortName:'Shunko Yoruichi',aliases:[],description:'Flash Step, Hakuda and Shunko high-speed close combat',sortOrder:20,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'orihime-arrancar',characterId:'orihime',name:'Arrancar Arc Orihime',shortName:'Arrancar Arc Orihime',aliases:[],description:'Shun Shun Rikka healing and defensive rejection techniques',sortOrder:10,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'orihime-tybw',characterId:'orihime',name:'TYBW Orihime',shortName:'TYBW Orihime',aliases:[],description:'Shun Shun Rikka healing and defensive rejection techniques',sortOrder:20,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'kenpachi-early',characterId:'kenpachi',name:'Early Kenpachi',shortName:'Early Kenpachi',aliases:[],description:'High-endurance sword combat and Nozarashi offensive pressure',sortOrder:10,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'kenpachi-shikai',characterId:'kenpachi',name:'Shikai Kenpachi',shortName:'Shikai Kenpachi',aliases:[],description:'High-endurance sword combat and Nozarashi offensive pressure',sortOrder:20,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
+ {id:'kenpachi-bankai',characterId:'kenpachi',name:'Bankai Kenpachi',shortName:'Bankai Kenpachi',aliases:[],description:'High-endurance sword combat and Nozarashi offensive pressure',sortOrder:30,canonical:true,sourceEndpoint:'Bleach manga / anime',parentVersionId:null},
  {id:'goku-saiyan-saga',characterId:'goku',name:'Saiyan Saga Goku',shortName:'Saiyan Saga',aliases:['Saiyan Saga'],description:'Goku combat profile during the Saiyan Saga.',era:'Dragon Ball Z',arc:'Saiyan Saga',sortOrder:10,canonical:true,sourceEndpoint:'Dragon Ball Z · Saiyan Saga',parentVersionId:null},
  {id:'goku-namek-saga',characterId:'goku',name:'Namek Saga Goku',shortName:'Namek Saga',aliases:['Namek'],description:'Goku combat profile during the Namek conflict before later Super Saiyan-era states.',era:'Dragon Ball Z',arc:'Namek Saga',sortOrder:20,canonical:true,sourceEndpoint:'Dragon Ball Z · Namek Saga',parentVersionId:'goku-saiyan-saga'},
  {id:'goku-super-saiyan',characterId:'goku',name:'Super Saiyan Goku',shortName:'Super Saiyan',aliases:['SSJ','Super Saiyan 1'],description:'Goku using the Super Saiyan state.',era:'Dragon Ball Z',sortOrder:30,canonical:true,sourceEndpoint:'Dragon Ball Z',parentVersionId:'goku-namek-saga'},
@@ -136,6 +143,15 @@ export const characterVersions:CharacterVersion[]=[
 ];
 
 export const abilities:Ability[]=[
+ {id:'yoruichi-flash-step',characterId:'yoruichi',name:'Flash Step',description:'Flash Step as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'mobility'},
+ {id:'yoruichi-hakuda',characterId:'yoruichi',name:'Hakuda',description:'Hakuda as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'physical'},
+ {id:'yoruichi-shunko',characterId:'yoruichi',name:'Shunko',description:'Shunko as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'technique'},
+ {id:'orihime-santen',characterId:'orihime',name:'Santen Kesshun',description:'Santen Kesshun as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'defensive'},
+ {id:'orihime-soten',characterId:'orihime',name:'Soten Kisshun',description:'Soten Kisshun as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'technique'},
+ {id:'orihime-koten',characterId:'orihime',name:'Koten Zanshun',description:'Koten Zanshun as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'technique'},
+ {id:'kenpachi-sword',characterId:'kenpachi',name:'Zanpakuto Swordsmanship',description:'Zanpakuto Swordsmanship as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'physical'},
+ {id:'kenpachi-nozarashi',characterId:'kenpachi',name:'Nozarashi Shikai',description:'Nozarashi Shikai as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'weapon'},
+ {id:'kenpachi-bankai',characterId:'kenpachi',name:'Bankai',description:'Bankai as shown in the associated Bleach continuity; only available to explicitly linked versions.',category:'transformation'},
  {id:'goku-martial-arts',characterId:'goku',name:'Martial Arts',description:'Close-range martial arts skill from the existing catalog profile.',category:'physical'},
  {id:'goku-ki-control',characterId:'goku',name:'Ki Control',description:'Energy manipulation and combat reinforcement.',category:'energy'},
  {id:'goku-kamehameha',characterId:'goku',name:'Kamehameha',description:'Signature ki-wave technique.',category:'technique'},
@@ -221,6 +237,23 @@ export const abilities:Ability[]=[
 ];
 
 export const versionAbilities:VersionAbility[]=[
+ {versionId:'yoruichi-standard',abilityId:'yoruichi-flash-step',status:'available'},
+ {versionId:'yoruichi-standard',abilityId:'yoruichi-hakuda',status:'available'},
+ {versionId:'yoruichi-shunko',abilityId:'yoruichi-flash-step',status:'available'},
+ {versionId:'yoruichi-shunko',abilityId:'yoruichi-hakuda',status:'available'},
+ {versionId:'yoruichi-shunko',abilityId:'yoruichi-shunko',status:'available'},
+ {versionId:'orihime-arrancar',abilityId:'orihime-santen',status:'available'},
+ {versionId:'orihime-arrancar',abilityId:'orihime-soten',status:'available'},
+ {versionId:'orihime-arrancar',abilityId:'orihime-koten',status:'available'},
+ {versionId:'orihime-tybw',abilityId:'orihime-santen',status:'available'},
+ {versionId:'orihime-tybw',abilityId:'orihime-soten',status:'available'},
+ {versionId:'orihime-tybw',abilityId:'orihime-koten',status:'available'},
+ {versionId:'kenpachi-early',abilityId:'kenpachi-sword',status:'available'},
+ {versionId:'kenpachi-shikai',abilityId:'kenpachi-sword',status:'available'},
+ {versionId:'kenpachi-shikai',abilityId:'kenpachi-nozarashi',status:'available'},
+ {versionId:'kenpachi-bankai',abilityId:'kenpachi-sword',status:'available'},
+ {versionId:'kenpachi-bankai',abilityId:'kenpachi-nozarashi',status:'available'},
+ {versionId:'kenpachi-bankai',abilityId:'kenpachi-bankai',status:'available'},
  ...['goku-saiyan-saga','goku-namek-saga','goku-super-saiyan','goku-super-saiyan-2','goku-super-saiyan-3','goku-end-z','goku-super-saiyan-god','goku-super-saiyan-blue','goku-ui-sign','goku-mastered-ultra-instinct'].flatMap(versionId=>[
   {versionId,abilityId:'goku-martial-arts',status:'available' as const},
   {versionId,abilityId:'goku-ki-control',status:'available' as const},
