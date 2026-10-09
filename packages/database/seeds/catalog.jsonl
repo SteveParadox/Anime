@@ -622,3 +622,73 @@
 {"table":"version_abilities","values":{"ability_id":"nezuko-regeneration","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
 {"table":"version_abilities","values":{"ability_id":"nezuko-kicks","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
 {"table":"version_abilities","values":{"ability_id":"nezuko-exploding-blood","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
+{"table":"character_versions","values":{"id":"yoruichi-standard","character_id":"yoruichi","name":"Standard Yoruichi","short_name":"Standard Yoruichi","aliases":"[]","description":"Flash Step, Hakuda and Shunko high-speed close combat","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"yoruichi-standard","character_id":"yoruichi","cost":36,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"yoruichi-standard","role":"speedster","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"yoruichi-standard","role":"assassin","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-standard","trait":"mobility"}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-standard","trait":"close_range"}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-standard","trait":"stealth"}}
+{"table":"character_versions","values":{"id":"yoruichi-shunko","character_id":"yoruichi","name":"Shunko Yoruichi","short_name":"Shunko Yoruichi","aliases":"[]","description":"Flash Step, Hakuda and Shunko high-speed close combat","era":"Bleach","arc":null,"sort_order":20,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"yoruichi-shunko","character_id":"yoruichi","cost":47,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"yoruichi-shunko","role":"speedster","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"yoruichi-shunko","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-shunko","trait":"mobility"}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-shunko","trait":"close_range"}}
+{"table":"version_strategic_traits","values":{"version_id":"yoruichi-shunko","trait":"area_damage"}}
+{"table":"abilities","values":{"id":"yoruichi-flash-step","character_id":"yoruichi","name":"Flash Step","description":"Flash Step; version availability is explicitly linked.","category":"mobility","created":1791398520000}}
+{"table":"abilities","values":{"id":"yoruichi-hakuda","character_id":"yoruichi","name":"Hakuda","description":"Hakuda; version availability is explicitly linked.","category":"physical","created":1791398520000}}
+{"table":"abilities","values":{"id":"yoruichi-shunko","character_id":"yoruichi","name":"Shunko","description":"Shunko; version availability is explicitly linked.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"yoruichi-standard","ability_id":"yoruichi-flash-step","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"yoruichi-standard","ability_id":"yoruichi-hakuda","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"yoruichi-shunko","ability_id":"yoruichi-flash-step","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"yoruichi-shunko","ability_id":"yoruichi-hakuda","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"yoruichi-shunko","ability_id":"yoruichi-shunko","status":"available","notes":""}}
+{"table":"character_versions","values":{"id":"orihime-arrancar","character_id":"orihime","name":"Arrancar Arc Orihime","short_name":"Arrancar Arc Orihime","aliases":"[]","description":"Shun Shun Rikka healing and defensive rejection techniques","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"orihime-arrancar","character_id":"orihime","cost":23,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"orihime-arrancar","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"orihime-arrancar","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"orihime-arrancar","trait":"healing"}}
+{"table":"version_strategic_traits","values":{"version_id":"orihime-arrancar","trait":"barrier"}}
+{"table":"character_versions","values":{"id":"orihime-tybw","character_id":"orihime","name":"TYBW Orihime","short_name":"TYBW Orihime","aliases":"[]","description":"Shun Shun Rikka healing and defensive rejection techniques","era":"Bleach","arc":null,"sort_order":20,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"orihime-tybw","character_id":"orihime","cost":29,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"orihime-tybw","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"orihime-tybw","role":"defense","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"orihime-tybw","trait":"healing"}}
+{"table":"version_strategic_traits","values":{"version_id":"orihime-tybw","trait":"barrier"}}
+{"table":"abilities","values":{"id":"orihime-santen","character_id":"orihime","name":"Santen Kesshun","description":"Santen Kesshun; version availability is explicitly linked.","category":"defensive","created":1791398520000}}
+{"table":"abilities","values":{"id":"orihime-soten","character_id":"orihime","name":"Soten Kisshun","description":"Soten Kisshun; version availability is explicitly linked.","category":"technique","created":1791398520000}}
+{"table":"abilities","values":{"id":"orihime-koten","character_id":"orihime","name":"Koten Zanshun","description":"Koten Zanshun; version availability is explicitly linked.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"orihime-arrancar","ability_id":"orihime-santen","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"orihime-arrancar","ability_id":"orihime-soten","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"orihime-arrancar","ability_id":"orihime-koten","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"orihime-tybw","ability_id":"orihime-santen","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"orihime-tybw","ability_id":"orihime-soten","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"orihime-tybw","ability_id":"orihime-koten","status":"available","notes":""}}
+{"table":"character_versions","values":{"id":"kenpachi-early","character_id":"kenpachi","name":"Early Kenpachi","short_name":"Early Kenpachi","aliases":"[]","description":"High-endurance sword combat and Nozarashi offensive pressure","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"kenpachi-early","character_id":"kenpachi","cost":44,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-early","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-early","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-early","trait":"close_range"}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-early","trait":"single_target"}}
+{"table":"character_versions","values":{"id":"kenpachi-shikai","character_id":"kenpachi","name":"Shikai Kenpachi","short_name":"Shikai Kenpachi","aliases":"[]","description":"High-endurance sword combat and Nozarashi offensive pressure","era":"Bleach","arc":null,"sort_order":20,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"kenpachi-shikai","character_id":"kenpachi","cost":63,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-shikai","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-shikai","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-shikai","trait":"close_range"}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-shikai","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"kenpachi-bankai","character_id":"kenpachi","name":"Bankai Kenpachi","short_name":"Bankai Kenpachi","aliases":"[]","description":"High-endurance sword combat and Nozarashi offensive pressure","era":"Bleach","arc":null,"sort_order":30,"canonical":1,"source_endpoint":"Bleach manga / anime","parent_version_id":null,"created":1791398520000}}
+{"table":"squad_version_costs","values":{"version_id":"kenpachi-bankai","character_id":"kenpachi","cost":78,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-bankai","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kenpachi-bankai","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-bankai","trait":"close_range"}}
+{"table":"version_strategic_traits","values":{"version_id":"kenpachi-bankai","trait":"area_damage"}}
+{"table":"abilities","values":{"id":"kenpachi-sword","character_id":"kenpachi","name":"Zanpakuto Swordsmanship","description":"Zanpakuto Swordsmanship; version availability is explicitly linked.","category":"physical","created":1791398520000}}
+{"table":"abilities","values":{"id":"kenpachi-nozarashi","character_id":"kenpachi","name":"Nozarashi Shikai","description":"Nozarashi Shikai; version availability is explicitly linked.","category":"weapon","created":1791398520000}}
+{"table":"abilities","values":{"id":"kenpachi-bankai","character_id":"kenpachi","name":"Bankai","description":"Bankai; version availability is explicitly linked.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-early","ability_id":"kenpachi-sword","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-shikai","ability_id":"kenpachi-sword","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-shikai","ability_id":"kenpachi-nozarashi","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-sword","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-nozarashi","status":"available","notes":""}}
+{"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-bankai","status":"available","notes":""}}
