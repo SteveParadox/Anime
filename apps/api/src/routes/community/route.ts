@@ -2,6 +2,7 @@ import type {DatabaseClient, PreparedStatement} from '@/db/raw';
 import {database} from '@/db/raw';
 import {clubs,fighters,starterBattles,dailyChallenge,seasonalAnime,tournamentSeeds,weekKey,tournamentPhase} from '@anime/domain/catalog';
 import {BATTLE_TYPES,BATTLE_LOCATIONS,SPEED_RULES,KNOWLEDGE_RULES,PREP_TIMES,VOTE_DIFFICULTIES,normalizeBattle} from '@anime/domain/battle';
+import {battleVotingEndsAt} from '@anime/domain/battle-analytics';
 import {abilityById,validateBattleVersionSelection,versionById} from '@anime/domain/characters';
 import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
 import {sameOrigin} from '@/lib/auth-request';
@@ -109,25 +110,37 @@ export async function POST(req:Request){try{
   await db.prepare('INSERT INTO battles (id,owner,payload,created) VALUES (?,?,?,?)').bind(id,user.userId,JSON.stringify(payload),now).run();
  }
  if(d.action==='vote'){
-  const battleRecord=await battleForEvidence(db,d.battle);if(!battleRecord)return json({error:'Battle not found'},404);
-  if((d.side==='draw')!==(d.difficulty==='inconclusive'))return json({error:'Draw votes must use Inconclusive; fighter votes require a difficulty.'},400);
+  // Lock the persisted battle while validating and saving a vote. Official
+  // finalization takes the same row lock, preventing post-verdict vote races.
   const structuredIds=d.structuredEvidenceIds?[...new Set(d.structuredEvidenceIds)]:undefined;
+  if((d.side==='draw')!==(d.difficulty==='inconclusive'))return json({error:'Draw votes must use Inconclusive; fighter votes require a difficulty.'},400);
   if(d.evidence.trim().length<3&&(!structuredIds||!structuredIds.length))return json({error:'Add a source reference or choose at least one feat from the library.'},400);
-  if(structuredIds?.length){
-   const placeholders=structuredIds.map(()=>'?').join(',');
-   const rows=(await db.prepare(`SELECT id,character_id AS characterId,version_id AS versionId FROM evidence_records WHERE deleted=0 AND id IN (${placeholders})`).bind(...structuredIds).all<any>()).results;
-   if(rows.length!==structuredIds.length)return json({error:'One or more selected feats are unavailable.'},400);
-   const allowedCharacters=[String((battleRecord as any).fighterAId||''),String((battleRecord as any).fighterBId||'')].filter(Boolean);
-   const allowedVersions=[String((battleRecord as any).fighterAVersionId||''),String((battleRecord as any).fighterBVersionId||'')].filter(Boolean);
-   if(!allowedCharacters.length||rows.some((row:any)=>!allowedCharacters.includes(row.characterId)))return json({error:'Choose feats for the fighters in this battle.'},400);
-   if(allowedVersions.length===2&&rows.some((row:any)=>!row.versionId||!allowedVersions.includes(row.versionId)))return json({error:'Choose feats for the exact versions selected in this battle.'},400);
-   if(allowedVersions.length!==2&&rows.some((row:any)=>row.versionId))return json({error:'Battles without two trustworthy stable version IDs cannot accept new version-scoped feats. Use manual evidence.'},400);
-  }
-  await db.prepare('INSERT INTO votes (battle,user,side,difficulty,reason,evidence,created) VALUES (?,?,?,?,?,?,?) ON CONFLICT(battle,user) DO UPDATE SET side=excluded.side,difficulty=excluded.difficulty,reason=excluded.reason,evidence=excluded.evidence,created=excluded.created').bind(d.battle,user.userId,d.side,d.difficulty,d.reason,d.evidence,now).run();
-  if(structuredIds){
-   await db.prepare('DELETE FROM argument_evidence_links WHERE battle=? AND argument_user=? AND linked_by=?').bind(d.battle,user.userId,user.userId).run();
-   for(const evidenceId of structuredIds)await db.prepare('INSERT OR IGNORE INTO argument_evidence_links (battle,argument_user,evidence_id,linked_by,created) VALUES (?,?,?,?,?)').bind(d.battle,user.userId,evidenceId,user.userId,now).run();
-  }
+  await db.transaction(async tx=>{
+   const persisted=await tx.prepare('SELECT id,payload,created FROM battles WHERE id=? FOR UPDATE').bind(d.battle).first<{id:string;payload:string;created:number}>();
+   const starter=persisted?null:starterBattles.find(b=>b.id===d.battle);
+   if(!persisted&&!starter)throw Object.assign(new Error('Battle not found.'),{status:404});
+   if(persisted){
+    const deadline=battleVotingEndsAt(Number(persisted.created));
+    if(now>=deadline)throw Object.assign(new Error('Voting has closed for this battle.'),{status:409});
+    if(await tx.prepare('SELECT 1 FROM battle_results WHERE battle_id=?').bind(d.battle).first())throw Object.assign(new Error('Battle verdict is already recorded.'),{status:409});
+   }
+   const battleRecord=persisted?JSON.parse(persisted.payload):starter!;
+   if(structuredIds?.length){
+    const placeholders=structuredIds.map(()=>'?').join(',');
+    const rows=(await tx.prepare(`SELECT id,character_id AS characterId,version_id AS versionId FROM evidence_records WHERE deleted=0 AND id IN (${placeholders})`).bind(...structuredIds).all<any>()).results;
+    if(rows.length!==structuredIds.length)throw Object.assign(new Error('Selected feats are unavailable.'),{status:400});
+    const allowedCharacters=[String(battleRecord.fighterAId||''),String(battleRecord.fighterBId||'')].filter(Boolean);
+    const allowedVersions=[String(battleRecord.fighterAVersionId||''),String(battleRecord.fighterBVersionId||'')].filter(Boolean);
+    if(!allowedCharacters.length||rows.some((row:any)=>!allowedCharacters.includes(row.characterId)))throw Object.assign(new Error('Choose feats for this battle.'),{status:400});
+    if(allowedVersions.length===2&&rows.some((row:any)=>!row.versionId||!allowedVersions.includes(row.versionId)))throw Object.assign(new Error('Choose feats for the exact fighter versions.'),{status:400});
+    if(allowedVersions.length!==2&&rows.some((row:any)=>row.versionId))throw Object.assign(new Error('Unversioned battles cannot accept version-scoped feats.'),{status:400});
+   }
+   await tx.prepare('INSERT INTO votes (battle,user,side,difficulty,reason,evidence,created) VALUES (?,?,?,?,?,?,?) ON CONFLICT(battle,user) DO UPDATE SET side=excluded.side,difficulty=excluded.difficulty,reason=excluded.reason,evidence=excluded.evidence,created=excluded.created').bind(d.battle,user.userId,d.side,d.difficulty,d.reason,d.evidence,now).run();
+   if(structuredIds){
+    await tx.prepare('DELETE FROM argument_evidence_links WHERE battle=? AND argument_user=? AND linked_by=?').bind(d.battle,user.userId,user.userId).run();
+    for(const evidenceId of structuredIds)await tx.prepare('INSERT OR IGNORE INTO argument_evidence_links (battle,argument_user,evidence_id,linked_by,created) VALUES (?,?,?,?,?)').bind(d.battle,user.userId,evidenceId,user.userId,now).run();
+   }
+  });
   id=d.battle;
  }
  if(d.action==='progress'||d.action==='post'){const c=clubs.find(c=>c.id===d.club);if(!c||d.episode>c.episodes)return json({error:'Episode is outside this club’s season.'},400);if(d.action==='progress'){const old=await db.prepare('SELECT episode FROM progress WHERE user=? AND club=?').bind(user.userId,d.club).first<{episode:number}>();await db.prepare('INSERT INTO progress (user,club,episode) VALUES (?,?,?) ON CONFLICT(user,club) DO UPDATE SET episode=excluded.episode').bind(user.userId,d.club,d.episode).run();const unlocked=await db.prepare('SELECT COUNT(*) AS n FROM posts WHERE club=? AND episode>? AND episode<=? AND deleted=0').bind(d.club,old?.episode||0,d.episode).first<{n:number}>();if((unlocked?.n||0)>0)await notify(db,user.userId,'club',`${unlocked!.n} ${c.name} discussions are now unlocked.`,`/?view=clubs&club=${d.club}`);}else{const p=await db.prepare('SELECT episode FROM progress WHERE user=? AND club=?').bind(user.userId,d.club).first<{episode:number}>();if(d.episode>(p?.episode??0))return json({error:'Set your viewing progress before discussing that episode.'},400);await db.prepare('INSERT INTO posts (id,user,club,episode,body,edited,deleted,created) VALUES (?,?,?,?,?,0,0,?)').bind(id,user.userId,d.club,d.episode,d.body,now).run();}}
@@ -160,4 +173,4 @@ export async function POST(req:Request){try{
  if(d.action==='notification_read'){if(d.id==='all')await db.prepare('UPDATE notifications SET read=1 WHERE user=?').bind(user.userId).run();else await db.prepare('UPDATE notifications SET read=1 WHERE id=? AND user=?').bind(d.id,user.userId).run();}
  if(d.action==='moderation'){if(!admin(user))return json({error:'Admin access required.'},403);const report=await db.prepare('SELECT * FROM reports WHERE id=? AND status="open"').bind(d.report).first<any>();if(!report)return json({error:'Report not found.'},404);if(d.deleteContent&&report.subject_type==='post')await db.prepare('UPDATE posts SET deleted=1,body="[removed by moderator]" WHERE id=?').bind(report.subject_id).run();if(d.deleteContent&&report.subject_type==='comment')await db.prepare('DELETE FROM comments WHERE id=?').bind(report.subject_id).run();if(d.deleteContent&&report.subject_type==='evidence'){const structured=await db.prepare('SELECT id FROM evidence_records WHERE id=?').bind(report.subject_id).first();if(structured)await db.prepare('UPDATE evidence_records SET deleted=1,deleted_at=?,updated=? WHERE id=?').bind(now,now,report.subject_id).run();else await db.prepare('DELETE FROM argument_evidence WHERE id=?').bind(report.subject_id).run();}if(d.deleteContent&&report.subject_type==='squad_submission')await db.prepare('UPDATE squad_submissions SET removed=1,locked_at=COALESCE(locked_at,?),updated=? WHERE id=?').bind(now,now,report.subject_id).run();await db.prepare('UPDATE reports SET status=? WHERE id=?').bind(d.decision,d.report).run();}
  return json({ok:true,id});
- }catch(e){console.error('Community save failed',e);return json({error:'Could not save. Your draft is still here; please try again.'},503);}}
+ }catch(e){const status=(e as {status?:number}).status;if(status&&status>=400&&status<500)return json({error:(e as Error).message},status);console.error('Community save failed',e);return json({error:'Could not save. Your draft is still here; please try again.'},503);}}
