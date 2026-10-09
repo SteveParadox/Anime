@@ -24,14 +24,16 @@ function legal(member:EligibleMember,rules:ChallengeRestrictions){
  if(rules.franchise!=='any'&&rules.franchise!=='same'&&member.franchiseId!==rules.franchise)return false;
  if(rules.alignment!=='any'&&member.alignment!==rules.alignment)return false;
  if(member.roles.some(r=>rules.bannedRoles.includes(r.role as typeof rules.bannedRoles[number])))return false;
- const abilities=abilitiesForVersion(member.versionId).filter(x=>x.link.status==='available');
+ // Mastered, limited and conditional abilities still exist on that version;
+ // only explicitly lost powers may be ignored by ban/transform restrictions.
+ const abilities=abilitiesForVersion(member.versionId).filter(x=>x.link.status!=='lost');
  if(abilities.some(x=>rules.bannedAbilities.includes(x.ability.id)||rules.bannedAbilityCategories.includes(x.ability.category)))return false;
  if(!rules.transformationsAllowed&&abilities.some(x=>x.ability.category==='transformation'))return false;
  return true;
 }
 
 function disabledFor(versionId:string,rules:ChallengeRestrictions){
- return abilitiesForVersion(versionId).some(x=>x.link.status==='available'&&(rules.disabledAbilities.includes(x.ability.id)||rules.disabledAbilityCategories.includes(x.ability.category)));
+ return abilitiesForVersion(versionId).some(x=>x.link.status!=='lost'&&(rules.disabledAbilities.includes(x.ability.id)||rules.disabledAbilityCategories.includes(x.ability.category)));
 }
 
 export async function enforceAdvancedRestrictions(db:DatabaseClient,rules:ChallengeRestrictions,members:TacticalMember[]){
