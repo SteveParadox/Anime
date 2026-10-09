@@ -15,6 +15,7 @@ import {abilitiesForVersion,characterVersionSearchText,versionById,versionsForCh
 import {filterCharacterCatalog} from '@anime/domain/character-discovery';
 import {DailySquadChallenge,DailySquadChallengeTeaser} from '@/components/daily-squad-challenge';
 import {RoleBadges} from '@/components/squad-insights';
+import {MatchupLab} from '@/components/matchup-lab';
 import type {VersionRole} from '@anime/domain/squad-synergy';
 
 type Squad={id:string,name:string,members:string[],strategy:string,challenge?:string,handle?:string};
@@ -89,20 +90,11 @@ function Characters({query,setQuery,results,open,createBattle,createBattlePair}:
  const [series,setSeries]=useState('all');
  const [role,setRole]=useState('all');
  const [order,setOrder]=useState<'name'|'cost-asc'|'cost-desc'|'versions-desc'>('name');
- const [compareA,setCompareA]=useState('');
- const [compareB,setCompareB]=useState('');
  const seriesOptions=useMemo(()=>[...new Set(fighters.map(f=>f.series))].sort(),[]);
  const roleOptions=useMemo(()=>[...new Set(fighters.map(f=>f.role))].sort(),[]);
  const shown=useMemo(()=>filterCharacterCatalog(results,{query,series,role,sort:order}),[results,query,series,role,order]);
- const first=fighters.find(f=>f.id===compareA),second=fighters.find(f=>f.id===compareB);
  const reset=()=>{setQuery('');setSeries('all');setRole('all');setOrder('name')};
- const surprise=()=>{
-  if(fighters.length<2)return;
-  const a=Math.floor(Math.random()*fighters.length);
-  const offset=1+Math.floor(Math.random()*(fighters.length-1));
-  const b=(a+offset)%fighters.length;
-  createBattlePair(fighters[a].id,fighters[b].id);
- };
+
  return <>
   <Header eyebrow="CANON NOTES. VERSION-LOCKED COMBAT." title="Character database" copy="Explore versions and abilities, compare two characters, or create your next matchup."/>
   <section className="panel character-discovery-panel" aria-label="Character catalog filters">
@@ -114,16 +106,7 @@ function Characters({query,setQuery,results,open,createBattle,createBattlePair}:
    </div>
    <div className="character-discovery-actions"><span role="status">Showing {shown.length} of {fighters.length} characters</span><button type="button" className="secondary" onClick={reset}>Clear filters</button></div>
   </section>
-  <section className="panel character-compare" aria-label="Compare characters">
-   <div className="section-heading"><div><span className="eyebrow">MATCHUP LAB</span><h2>Character comparison</h2></div><button type="button" className="secondary" disabled={fighters.length<2} onClick={surprise}><GitCompareArrows size={16}/>Surprise matchup</button></div>
-   <div className="character-compare-picks">
-    <label>Fighter A<select aria-label="Comparison fighter A" value={compareA} onChange={e=>setCompareA(e.target.value)}><option value="">Choose a fighter</option>{fighters.map(f=><option key={f.id} value={f.id} disabled={f.id===compareB}>{f.name} · {f.series}</option>)}</select></label>
-    <label>Fighter B<select aria-label="Comparison fighter B" value={compareB} onChange={e=>setCompareB(e.target.value)}><option value="">Choose a fighter</option>{fighters.map(f=><option key={f.id} value={f.id} disabled={f.id===compareA}>{f.name} · {f.series}</option>)}</select></label>
-   </div>
-   {first&&second&&<div className="character-compare-result"><div><strong>{first.name}</strong><small>{first.series} · {first.role} · {first.cost} reusable squad pts · {versionsForCharacter(first.id).length} versions</small></div><span>VS</span><div><strong>{second.name}</strong><small>{second.series} · {second.role} · {second.cost} reusable squad pts · {versionsForCharacter(second.id).length} versions</small></div></div>}
-   <p className="muted small">These are roster attributes, not a prediction of who wins. Select exact combat versions in the battle builder.</p>
-   <button type="button" className="primary" disabled={!first||!second||first.id===second.id} onClick={()=>createBattlePair(first!.id,second!.id)}>Create this matchup</button>
-  </section>
+  <MatchupLab onCreateMatchup={createBattlePair}/>
   <div className="character-grid">{shown.map(f=>{const versions=versionsForCharacter(f.id);return <article className="panel character-card" key={f.id}><div className="character-head"><Avatar name={f.name} color={f.color}/><div><h2>{f.name}</h2><p>{f.series}</p></div><span className="cost">{f.cost}<small> PTS</small></span></div><div className="role">{f.role}</div><p>{f.ability}</p><div className="chips">{versions.slice(0,3).map(v=><span key={v.id}>{v.shortName||v.name}</span>)}</div><small className="endpoint">{versions.length} version{versions.length===1?'':'s'} · Endpoint: {f.endpoint}</small><div className="card-actions"><button className="secondary" onClick={()=>open(f)}>View versions</button><button className="primary" onClick={()=>createBattle(f.id)}>Use in battle</button></div></article>})}</div>
   {!shown.length&&<div className="panel empty-state">No characters match. Try clearing the filters.</div>}
  </>;
