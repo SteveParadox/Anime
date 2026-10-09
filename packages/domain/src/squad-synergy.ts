@@ -86,6 +86,7 @@ export function analyzeSquadComposition(members:StrategicMember[]){
   if(left<0||right<0)return [];
   return [{id:rule.id,label:rule.label,description:rule.description,fighters:[members[left].characterName||members[left].versionId,members[right].characterName||members[right].versionId]}];
  });
+ const traitInteractions=analyzeTraitInteractions(members);
  const strengths=[
   ...(counts.controller>=2?['Multiple battlefield controllers']:[]),
   ...(counts.healer>0?['Dedicated healing']:[]),
@@ -101,5 +102,28 @@ export function analyzeSquadComposition(members:StrategicMember[]){
   ...(counts.support===0?['No dedicated support']:[]),
   ...(traitCounts.long_range===0?['No documented long-range trait']:[])
  ]:[];
- return {roleCounts,roleDiversity:roleCounts.length,concentrations:roleCounts.filter(x=>x.count>=2),traitCounts,coverage,synergies:pairs,strengths,gaps,unclassified:members.length-known.length};
+ return {roleCounts,roleDiversity:roleCounts.length,concentrations:roleCounts.filter(x=>x.count>=2),traitCounts,coverage,synergies:pairs,traitInteractions,strengths,gaps,unclassified:members.length-known.length};
+}
+
+/** Curated tactical hypotheses. These are not canon claims or win predictions. */
+export const TRAIT_INTERACTION_RULES=[
+ {id:'healing-frontline',left:'healing',right:'close_range',kind:'synergy',label:'Frontline Sustain',description:'Healing may help a close-range ally sustain pressure.'},
+ {id:'barrier-ranged',left:'barrier',right:'long_range',kind:'synergy',label:'Protected Ranged Pressure',description:'A barrier may protect an allied ranged attacker.'},
+ {id:'information-stealth',left:'information',right:'stealth',kind:'synergy',label:'Informed Ambush',description:'Reconnaissance may improve an ally’s stealth engagement.'},
+ {id:'control-area',left:'crowd_control',right:'area_damage',kind:'synergy',label:'Control and Area Damage',description:'Restraining opponents may create openings for allied area attacks.'}
+] as const satisfies readonly {id:string;left:StrategicTrait;right:StrategicTrait;kind:'synergy'|'conflict';label:string;description:string}[];
+
+/** Each rule can fire at most once; both traits must belong to different members. */
+export function analyzeTraitInteractions(members:StrategicMember[]){
+ return TRAIT_INTERACTION_RULES.flatMap(rule=>{
+  for(let i=0;i<members.length;i++){
+   if(!members[i].traits.includes(rule.left))continue;
+   for(let j=0;j<members.length;j++){
+    if(i===j||!members[j].traits.includes(rule.right))continue;
+    return [{id:rule.id,kind:rule.kind,label:rule.label,description:rule.description,
+     memberVersionIds:[members[i].versionId,members[j].versionId],traits:[rule.left,rule.right]}];
+   }
+  }
+  return [];
+ });
 }
