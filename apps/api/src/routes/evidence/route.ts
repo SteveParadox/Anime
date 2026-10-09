@@ -18,7 +18,7 @@ import {
  versionById
 } from '@anime/domain/characters';
 import {z} from 'zod';
-import {idText,evidenceInput} from '@/lib/evidence-input';
+import {idText,evidenceInput,matchesOfficialWebsiteDomain} from '@/lib/evidence-input';
 
 const mutationSchema=z.discriminatedUnion('action',[
  z.object({action:z.literal('create_evidence'),evidence:evidenceInput}).strict(),
@@ -93,11 +93,7 @@ function extendedSource(evidence:z.infer<typeof evidenceInput>){
  };
 }
 function canonicalValues(evidence:z.infer<typeof evidenceInput>){
- if(evidence.sourceType==='official_website'){
-  const domain=evidence.sourceDetails.officialDomain.toLowerCase().replace(/^www\\./,'');
-  const host=new URL(evidence.sourceUrl).hostname.toLowerCase().replace(/^www\\./,'');
-  if(!/^[a-z0-9-]+(\\.[a-z0-9-]+)+$/.test(domain)||!(host===domain||host.endsWith('.'+domain)))return null;
- }
+ if(evidence.sourceType==='official_website'&&!matchesOfficialWebsiteDomain(evidence.sourceUrl,evidence.sourceDetails.officialDomain))return null;
  const character=fighters.find(f=>f.id===evidence.characterId);
  const version=versionById(evidence.versionId);
  if(!character||!version||!version.canonical||version.characterId!==character.id)return null;
