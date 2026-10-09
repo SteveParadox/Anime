@@ -41,3 +41,10 @@ test('legacy anime and manga inputs remain compatible',()=>{
  assert.equal(evidenceInput.safeParse({...common,sourceType:'manga',chapter:50,page:null}).success,true);
  assert.equal(evidenceInput.safeParse({...common,sourceType:'anime',episode:10,chapter:1}).success,false);
 });
+
+test('publication and access dates reject impossible calendar values',()=>{
+ const web=cases.find(item=>item.sourceType==='official_website');
+ assert.equal(evidenceInput.safeParse({...extended,...web,sourceDetails:{...web.sourceDetails,accessDate:'2026-02-30'}}).success,false);
+ const book=cases.find(item=>item.sourceType==='databook');
+ assert.equal(evidenceInput.safeParse({...extended,...book,sourceDetails:{...book.sourceDetails,publicationDate:'2026-13-01'}}).success,false);
+});
