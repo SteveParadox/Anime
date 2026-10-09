@@ -4,9 +4,12 @@ import {authJson,readJson,sameOrigin} from '@/lib/auth-request';
 import {effectiveChallengeStatus,type SquadChallengeStatus} from '@/lib/squad-challenge';
 import {z} from 'zod';
 
+// Difficulty describes the predicted winner (squad for YES, boss for NO).
 const voteSchema=z.object({
  submissionId:z.string().trim().min(1).max(180),
- verdict:z.enum(['yes','no'])
+ verdict:z.enum(['yes','no']),
+ explanation:z.string().trim().max(1500).optional().default(''),
+ difficulty:z.enum(['NO_DIFF','LOW_DIFF','MID_DIFF','HIGH_DIFF','EXTREME_DIFF']).nullable().optional().default(null)
 }).strict();
 
 type VoteSubmissionDbRow={id:string;owner:string;removed:number;status:SquadChallengeStatus;startsAt:number;endsAt:number};
@@ -31,12 +34,15 @@ export async function POST(request:Request){
 
   await db.batch([
    db.prepare('UPDATE squad_submissions SET locked_at=COALESCE(locked_at,?) WHERE id=?').bind(now,input.submissionId),
-   db.prepare(`INSERT INTO squad_submission_votes (submission_id,user,verdict,created,updated) VALUES (?,?,?,?,?) ON CONFLICT(submission_id,user) DO UPDATE SET verdict=excluded.verdict,updated=excluded.updated`).bind(input.submissionId,user.userId,input.verdict,now,now)
+   db.prepare(`INSERT INTO squad_submission_votes (submission_id,user,verdict,explanation,difficulty,created,updated) VALUES (?,?,?,?,?,?,?) ON CONFLICT(submission_id,user) DO UPDATE SET verdict=excluded.verdict,explanation=excluded.explanation,difficulty=excluded.difficulty,updated=excluded.updated`).bind(input.submissionId,user.userId,input.verdict,input.explanation,input.difficulty,now,now)
   ]);
 
   const counts=await db.prepare(`SELECT COALESCE(SUM(CASE WHEN verdict='yes' THEN 1 ELSE 0 END),0) AS yes,COALESCE(SUM(CASE WHEN verdict='no' THEN 1 ELSE 0 END),0) AS no,COUNT(*) AS total FROM squad_submission_votes WHERE submission_id=?`).bind(input.submissionId).first<VoteCountDbRow>();
   const yes=Number(counts?.yes||0),no=Number(counts?.no||0),total=Number(counts?.total||0),yesPercent=total?Math.round(yes/total*100):0;
-  return authJson({ok:true,vote:input.verdict,results:{yes,no,total,yesPercent,noPercent:total?100-yesPercent:0}});
+  const difficultyRows=(await db.prepare(`SELECT verdict,difficulty,COUNT(*) AS count FROM squad_submission_votes WHERE submission_id=? AND difficulty IS NOT NULL GROUP BY verdict,difficulty`).bind(input.submissionId).all<{verdict:'yes'|'no';difficulty:string;count:number}>()).results;
+  const difficultyByWinner={squad:{} as Record<string,number>,boss:{} as Record<string,number>};
+  for(const row of difficultyRows){difficultyByWinner[row.verdict==='yes'?'squad':'boss'][row.difficulty]=Number(row.count);}
+  return authJson({ok:true,vote:input.verdict,explanation:input.explanation,difficulty:input.difficulty,difficultyAppliesTo:input.verdict==='yes'?'squad':'boss',results:{yes,no,total,yesPercent,noPercent:total?100-yesPercent:0,difficultyByWinner}});
  }catch(error:unknown){
   if(error instanceof z.ZodError)return authJson({error:'Invalid vote.',issues:error.issues},400);
   const status=errorStatus(error),message=error instanceof Error?error.message:String(error);
