@@ -191,7 +191,7 @@ export async function GET(req:Request){try{
  if(category){conditions.push('er.category=?');params.push(category);}
  if(sourceType){conditions.push('er.source_type=?');params.push(sourceType);}
  if(q){
-  const like=`%${q.replace(/[\\%_]/g,'\\const like=`%${q}%`;')}%`;
+  const like=`%${q}%`;
   const qLower=q.toLowerCase();
   const versionMatches=characterVersions.filter(v=>[v.name,v.shortName||'',v.arc||'',v.era||'',...v.aliases].some(x=>x.toLowerCase().includes(qLower))).map(v=>v.id);
   const searchParts=['er.title ILIKE ?','er.description ILIKE ?','er.series ILIKE ?','er.category ILIKE ?','er.source_title ILIKE ?','er.source_location ILIKE ?'];
