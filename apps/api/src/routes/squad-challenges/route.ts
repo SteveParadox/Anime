@@ -29,6 +29,11 @@ function publicChallenge(challenge:Awaited<ReturnType<typeof findChallenge>>,now
   minMembers:challenge.minMembers,
   maxMembers:challenge.maxMembers,
   rules:challenge.rules,
+  objective:challenge.objective,
+  sourceType:challenge.sourceType,
+  scoringVersion:challenge.scoringVersion,
+  balanceVersion:challenge.balanceVersion,
+  tacticalAnalysisVersion:challenge.tacticalAnalysisVersion,
   startsAt:challenge.startsAt,
   endsAt:challenge.endsAt,
   status:effectiveChallengeStatus(challenge,now)

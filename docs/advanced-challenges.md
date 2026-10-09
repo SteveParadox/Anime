@@ -1,0 +1,38 @@
+# Advanced challenge audit and rollout
+
+The daily rotation uses the existing `daily_squad_challenges`, `daily_squad_challenge_costs`, `squad_submissions`, and `squad_submission_members` tables. UTC day keys and the original four target templates remain. The new definition lifecycle publishes into those same tables; there is one authoritative squad validator (`resolveSubmissionMembers`). An official publication takes precedence during its time window. The rotation remains available after a shorter override ends, but its submissions pause while the official event is active.
+
+| Feature | Before | After this branch | Primary implementation | Verification and remaining work |
+| --- | --- | --- | --- | --- |
+| 41 Daily rotation | Implemented, concurrency and publication snapshot gap | Atomic UTC rotation with advisory lock, frozen costs, override policy | `apps/api/src/lib/squad-challenge.ts`, `0002_advanced_challenges.sql` | PostgreSQL concurrent GET and override test; production multi-replica soak still needed |
+| 42 Admin challenges | Missing | Draft, edit, duplicate in UI, preview, approval, scheduling, publication, archive | `challenge-management/route.ts`, `challenge-hub.tsx`, `challenge_definitions` | Integration publish test; banner and richer wizard remain |
+| 43 Scheduler | Missing | Dedicated Railway worker, UTC due jobs, voting closure, missed-window recovery, publication audit | `challenge-lifecycle.ts`, `worker.ts`, `railway.worker.json` | Integration future tick; production worker deployment/soak remains |
+| 44 Role rules | Server role requirements partly present | Min/max, primary-only, multiple rules in editor and server enforcement | `advanced-challenge.ts`, `challenge-hub.tsx` | Unit rule test; more polished multi-role controls remain |
+| 45 Character bans | Missing | Base character and exact-version bans | `advanced-challenge.ts`, `challenge-hub.tsx` | Invalid selection integration; multi-select UX remains |
+| 46 Franchise bans | Missing | Canonical franchise relationship and bans | `character_franchises`, `advanced-challenge.ts` | Feasibility test; multi-franchise selector UX remains |
+| 47 Ability rules | Missing | Exact and category exclusion or disabled mode; disabled versions lose tactical role/trait credit conservatively | `advanced-challenge.ts`, `squad-challenge.ts` | Disabled trait test; per-ability role provenance remains |
+| 48 Survival | Description-only legacy type | Typed wave/duration objective and defensive suitability estimate | `advanced-challenge.ts` contract | Unit scoring test; no combat simulation |
+| 49 Protect | Description-only legacy type | Typed protected target outside player roster, attacker versions, defensive weighting | Contracts and roster eligibility | Target exclusion test; no combat simulation |
+| 50 Rescue | Missing | Typed extraction mission and mobility weighting | Contracts and eligibility | Unit scoring test; no combat simulation |
+| 51 Capture | Description-only legacy type | Typed control location, hold duration and area-control weighting | Contracts and evaluator | Unit scoring test; no combat simulation |
+| 52 Timed survival | Missing | Separate simulated duration and real submission deadline | Objective schema and evaluator | Short/long unit test |
+| 53 Limited teams | Min/max existed | Exact size via min=max and bounded feasibility | Contracts, shared validator | Feasibility integration |
+| 54 Villains | Missing | Curated version alignment, strict unknown exclusion | `version_challenge_alignment`, eligibility | Eligibility integration; broaden curation as roster grows |
+| 55 Heroes | Missing | Same version-aware strict policy | Alignment seed and eligibility | Eligibility integration; broaden curation as roster grows |
+| 56 Same series | Missing | Canonical franchise IDs and server rule | `character_franchises`, eligibility | Feasibility and selector tests |
+| 57 Generator | Missing | Seeded, bounded feasibility retries, recent-type/boss avoidance | `challenge-generator.ts` | Reproducibility integration; more target/restriction dimensions remain |
+| 58 Community creation | Missing | Authenticated draft, ownership, feasibility, review, reports and moderation | `challenge-management/route.ts`, UI, audit | End-to-end proposal integration; richer creator guidance remains |
+| 59 Voting | Missing | One vote per user/proposal, deadline, deterministic tie break, winner scheduling | `challenge_proposal_votes`, scheduler | Duplicate-vote and scheduled winner integration |
+| 60 Weekly tournaments | Legacy unrelated character popularity bracket | Configurable scheduled rounds, registration, shared squad validation, immutable strategic scores, persisted snapshots and standings | `challenge-tournaments/route.ts`, tournament tables, UI | Registration/result integration; configurable rewards, full round leaderboard and staging season run remain |
+
+## State and score policy
+
+Official definitions: `draft -> pending_review -> approved -> scheduled -> active -> completed -> archived`; community definitions pass through `voting -> selected` before scheduling. Rejection, cancellation and withdrawal are recorded in `challenge_lifecycle_audit`. One active vote per authenticated user per proposal is enforced by a composite primary key; a vote can be removed while voting remains open. Closing selects the highest vote count, then oldest creation time, then smallest ID. Zero-vote proposals are not selected. Publication rechecks roster feasibility and stores an immutable cost/role/trait snapshot. Published challenges carry a rules version, SHA-256 fingerprint of the balance/roster snapshot, tactical analysis version and scoring version. The score is an **estimated strategic suitability score**, never a claim that a fictional battle was simulated. Rankings sort by total score, completed rounds, best score, earliest scored result, then user ID.
+
+## Migration and operations
+
+Apply `0002_advanced_challenges.sql` after the baseline and `0001_squad_guards.sql`, then rerun `pnpm db:seed` to insert curated version alignments. This migration is additive; it backfills publication timestamps for existing daily rotations and adds triggers preventing later changes to published rules, costs and tournament results. Test rollback by restoring a database backup: rolling back the migration itself would discard new challenge records, so do not run destructive down SQL. Start the worker only after migration and seed. The worker shares PostgreSQL transaction advisory lock `88417421` with admin publication and daily generation. A single Railway worker service is intended; duplicate process delivery is also guarded by persisted statuses and the lock. Restart recovers due jobs. Inspect publication attempts in the admin dashboard. API readiness requires all three migrations. The Vercel web uses the existing `/api/*` proxy and needs no new browser secret.
+
+## Verification scope
+
+`pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm test:integration:local`, and `pnpm test:e2e` cover source contracts, compile, disposable PostgreSQL migration/seed and workflows, and Next.js proxy. Repository-wide `pnpm lint` currently fails on inherited `any` and hook lint violations in older API/web files. The changed challenge modules are linted separately. Do not merge this branch until CI is green and a staging worker exercises an actual scheduled weekly event.

@@ -17,6 +17,8 @@ import * as handler15 from './routes/evidence/route';
 import * as handler16 from './routes/squad-challenges/route';
 import * as handler17 from './routes/squad-submissions/route';
 import * as handler18 from './routes/squad-submissions/vote/route';
+import * as handler19 from './routes/challenge-management/route';
+import * as handler20 from './routes/challenge-tournaments/route';
 
 export const routeHandlers=[
  {path:'/api/auth/complete-profile',handlers:handler0},
@@ -37,5 +39,7 @@ export const routeHandlers=[
  {path:'/api/evidence',handlers:handler15},
  {path:'/api/squad-challenges',handlers:handler16},
  {path:'/api/squad-submissions',handlers:handler17},
- {path:'/api/squad-submissions/vote',handlers:handler18}
+ {path:'/api/squad-submissions/vote',handlers:handler18},
+ {path:'/api/challenge-management',handlers:handler19},
+ {path:'/api/challenge-tournaments',handlers:handler20}
 ] as const;

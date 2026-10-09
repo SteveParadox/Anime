@@ -35,6 +35,7 @@ try{
  await run(process.execPath,['scripts/database/migrate.mjs','--through=0000_baseline.sql'],env);
  await run(process.execPath,['scripts/database/seed.mjs'],env);
  await run(process.execPath,['scripts/database/migrate.mjs'],env);
+ await run(process.execPath,['scripts/database/seed.mjs'],env);
  start(process.execPath,['apps/api/dist/server.js'],env);
  await ready('http://localhost:4000/health/ready');
  start('pnpm',['--filter','@anime/web','start'],{...env,NODE_ENV:'production'});

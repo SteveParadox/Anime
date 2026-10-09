@@ -1,4 +1,4 @@
-import {pgTable,text,bigint,primaryKey,index,uniqueIndex,check} from 'drizzle-orm/pg-core';
+import {pgTable,text,bigint,integer,primaryKey,index,uniqueIndex,check} from 'drizzle-orm/pg-core';
 import {sql} from 'drizzle-orm';
 export const battles=pgTable('battles',{id:text('id').primaryKey(),owner:text('owner').notNull(),payload:text('payload').notNull(),created:bigint('created',{mode:'number'}).notNull()});
 export const votes=pgTable('votes',{argumentId:bigint('argument_id',{mode:'number'}).generatedByDefaultAsIdentity(),battle:text('battle').notNull(),user:text('user').notNull(),side:text('side').notNull(),difficulty:text('difficulty'),reason:text('reason').notNull(),evidence:text('evidence').notNull(),created:bigint('created',{mode:'number'}).notNull()},t=>[primaryKey({columns:[t.battle,t.user]}),uniqueIndex('idx_votes_argument_id').on(t.argumentId)]);
@@ -18,6 +18,12 @@ export const squadVersionCosts=pgTable('squad_version_costs',{
  cost:bigint('cost',{mode:'number'}).notNull(),
  updated:bigint('updated',{mode:'number'}).notNull()
 },t=>[index('idx_squad_version_costs_character').on(t.characterId),index('idx_squad_version_costs_cost').on(t.cost)]);
+export const characterFranchises=pgTable('character_franchises',{
+ characterId:text('character_id').primaryKey(),franchiseId:text('franchise_id').notNull()
+},t=>[index('idx_character_franchises_franchise').on(t.franchiseId,t.characterId)]);
+export const versionChallengeAlignment=pgTable('version_challenge_alignment',{
+ versionId:text('version_id').primaryKey().references(()=>characterVersions.id),alignment:text('alignment').notNull(),notes:text('notes').notNull().default('')
+},t=>[index('idx_version_challenge_alignment_value').on(t.alignment,t.versionId)]);
 
 export const dailySquadChallenges=pgTable('daily_squad_challenges',{
  id:text('id').primaryKey(),
@@ -33,7 +39,14 @@ export const dailySquadChallenges=pgTable('daily_squad_challenges',{
  startsAt:bigint('starts_at',{mode:'number'}).notNull(),
  endsAt:bigint('ends_at',{mode:'number'}).notNull(),
  status:text('status').notNull().default('scheduled'),
- created:bigint('created',{mode:'number'}).notNull()
+ created:bigint('created',{mode:'number'}).notNull(),
+ sourceType:text('source_type').notNull().default('rotation'),
+ definitionId:text('definition_id'),
+ objectiveJson:text('objective_json').notNull().default('{}'),
+ rulesVersion:bigint('rules_version',{mode:'number'}).notNull().default(1),
+ scoringVersion:bigint('scoring_version',{mode:'number'}).notNull().default(1),
+ publishedAt:bigint('published_at',{mode:'number'}),
+ balanceVersion:text('balance_version'),tacticalAnalysisVersion:integer('tactical_analysis_version').notNull().default(1)
 },t=>[
  index('idx_daily_squad_challenges_window').on(t.startsAt,t.endsAt),
  index('idx_daily_squad_challenges_status_window').on(t.status,t.startsAt,t.endsAt)
@@ -44,11 +57,37 @@ export const dailySquadChallengeCosts=pgTable('daily_squad_challenge_costs',{
  characterId:text('character_id').notNull(),
  versionId:text('version_id').notNull(),
  cost:bigint('cost',{mode:'number'}).notNull()
+ ,rolesSnapshot:text('roles_snapshot'),traitsSnapshot:text('traits_snapshot')
 },t=>[
  primaryKey({columns:[t.challengeId,t.versionId]}),
  index('idx_daily_squad_challenge_costs_challenge').on(t.challengeId),
  index('idx_daily_squad_challenge_costs_character').on(t.challengeId,t.characterId)
 ]);
+
+export const challengeDefinitions=pgTable('challenge_definitions',{
+ id:text('id').primaryKey(),creatorUserId:text('creator_user_id').notNull().references(()=>users.id),sourceType:text('source_type').notNull(),status:text('status').notNull(),title:text('title').notNull(),description:text('description').notNull(),difficulty:text('difficulty').notNull(),type:text('type').notNull(),targetCharacterId:text('target_character_id'),targetVersionId:text('target_version_id'),budget:bigint('budget',{mode:'number'}).notNull(),minMembers:bigint('min_members',{mode:'number'}).notNull(),maxMembers:bigint('max_members',{mode:'number'}).notNull(),rulesJson:text('rules_json').notNull(),objectiveJson:text('objective_json').notNull(),rulesVersion:bigint('rules_version',{mode:'number'}).notNull().default(1),startsAt:bigint('starts_at',{mode:'number'}),endsAt:bigint('ends_at',{mode:'number'}),votingEndsAt:bigint('voting_ends_at',{mode:'number'}),publishedChallengeId:text('published_challenge_id').references(()=>dailySquadChallenges.id),createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[index('idx_challenge_definitions_status_window').on(t.status,t.startsAt,t.endsAt),index('idx_challenge_definitions_creator').on(t.creatorUserId,t.createdAt),index('idx_challenge_definitions_vote_close').on(t.status,t.votingEndsAt)]);
+export const challengeProposalVotes=pgTable('challenge_proposal_votes',{
+ definitionId:text('definition_id').notNull().references(()=>challengeDefinitions.id),userId:text('user_id').notNull().references(()=>users.id),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.definitionId,t.userId]}),index('idx_challenge_proposal_votes_user').on(t.userId)]);
+export const challengePublicationAttempts=pgTable('challenge_publication_attempts',{
+ id:text('id').primaryKey(),definitionId:text('definition_id').notNull().references(()=>challengeDefinitions.id),attemptedAt:bigint('attempted_at',{mode:'number'}).notNull(),outcome:text('outcome').notNull(),detail:text('detail').notNull()
+},t=>[index('idx_challenge_publication_attempts_recent').on(t.attemptedAt)]);
+export const challengeLifecycleAudit=pgTable('challenge_lifecycle_audit',{
+ id:text('id').primaryKey(),definitionId:text('definition_id').notNull().references(()=>challengeDefinitions.id),actorUserId:text('actor_user_id').references(()=>users.id),fromStatus:text('from_status').notNull(),toStatus:text('to_status').notNull(),note:text('note').notNull(),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[index('idx_challenge_lifecycle_audit_definition').on(t.definitionId,t.createdAt)]);
+export const challengeTournaments=pgTable('challenge_tournaments',{
+ id:text('id').primaryKey(),title:text('title').notNull(),description:text('description').notNull(),status:text('status').notNull(),startsAt:bigint('starts_at',{mode:'number'}).notNull(),endsAt:bigint('ends_at',{mode:'number'}).notNull(),scoringVersion:bigint('scoring_version',{mode:'number'}).notNull().default(1),createdBy:text('created_by').notNull().references(()=>users.id),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[index('idx_challenge_tournaments_window').on(t.status,t.startsAt,t.endsAt)]);
+export const challengeTournamentRounds=pgTable('challenge_tournament_rounds',{
+ id:text('id').primaryKey(),tournamentId:text('tournament_id').notNull().references(()=>challengeTournaments.id),definitionId:text('definition_id').notNull().references(()=>challengeDefinitions.id),challengeId:text('challenge_id').references(()=>dailySquadChallenges.id),roundNumber:bigint('round_number',{mode:'number'}).notNull(),startsAt:bigint('starts_at',{mode:'number'}).notNull(),endsAt:bigint('ends_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_tournament_round_unique').on(t.tournamentId,t.roundNumber),uniqueIndex('idx_tournament_round_challenge_unique').on(t.tournamentId,t.challengeId),index('idx_tournament_rounds_window').on(t.startsAt,t.endsAt)]);
+export const challengeTournamentParticipants=pgTable('challenge_tournament_participants',{
+ tournamentId:text('tournament_id').notNull().references(()=>challengeTournaments.id),userId:text('user_id').notNull().references(()=>users.id),joinedAt:bigint('joined_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.tournamentId,t.userId]})]);
+export const challengeTournamentResults=pgTable('challenge_tournament_results',{
+ roundId:text('round_id').notNull().references(()=>challengeTournamentRounds.id),userId:text('user_id').notNull().references(()=>users.id),submissionId:text('submission_id').notNull().references(()=>squadSubmissions.id),score:bigint('score',{mode:'number'}).notNull(),scoringVersion:bigint('scoring_version',{mode:'number'}).notNull(),breakdownJson:text('breakdown_json').notNull(),rulesSnapshot:text('rules_snapshot').notNull(),squadSnapshot:text('squad_snapshot').notNull(),submittedAt:bigint('submitted_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.roundId,t.userId]}),uniqueIndex('idx_tournament_submission_unique').on(t.submissionId),index('idx_tournament_results_round_score').on(t.roundId,t.score,t.submittedAt,t.submissionId)]);
 
 export const squadSubmissions=pgTable('squad_submissions',{
  id:text('id').primaryKey(),

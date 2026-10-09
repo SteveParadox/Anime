@@ -39,16 +39,20 @@ jobs:
           node-version: '22.19.0'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Syntax, domain, authentication, and squad tests
-        run: pnpm test
-      - name: TypeScript
-        run: pnpm typecheck
+      # API tests include PostgreSQL-backed challenge tests and require
+      # a fully migrated/seeded schema before `pnpm test` starts.
       - name: Fresh PostgreSQL baseline
         run: pnpm db:migrate --through=0000_baseline.sql
       - name: Catalog seed
         run: pnpm db:seed
-      - name: PostgreSQL safeguards
+      - name: PostgreSQL safeguards and advanced challenge schema
         run: pnpm db:migrate
+      - name: Advanced challenge curation
+        run: pnpm db:seed
+      - name: Syntax, domain, authentication, and squad tests
+        run: pnpm test
+      - name: TypeScript
+        run: pnpm typecheck
       - name: API and migration integration tests
         run: pnpm test:integration
       - name: Frontend and backend build

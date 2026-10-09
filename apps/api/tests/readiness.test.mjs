@@ -8,9 +8,10 @@ const withRows=(migrations,tables={users:'users',sessions:'auth_sessions',votes:
 });
 
 test('readiness rejects missing, incomplete or failed PostgreSQL migrations',async()=>{
- assert.equal(await databaseReady(withRows(['0000_baseline.sql','0001_squad_guards.sql'])),true);
+ assert.equal(await databaseReady(withRows(['0000_baseline.sql','0001_squad_guards.sql','0002_advanced_challenges.sql'])),true);
+ assert.equal(await databaseReady(withRows(['0000_baseline.sql','0001_squad_guards.sql'])),false);
  assert.equal(await databaseReady(withRows(['0000_baseline.sql'])),false);
  assert.equal(await databaseReady(withRows([])),false);
- assert.equal(await databaseReady(withRows(['0000_baseline.sql','0001_squad_guards.sql'],{users:'users',sessions:null,votes:'squad_submission_votes'})),false);
+ assert.equal(await databaseReady(withRows(['0000_baseline.sql','0001_squad_guards.sql','0002_advanced_challenges.sql'],{users:'users',sessions:null,votes:'squad_submission_votes'})),false);
  assert.equal(await databaseReady({query:async()=>{throw new Error('relation app_migrations does not exist')}}),false);
 });

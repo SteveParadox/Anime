@@ -6,6 +6,7 @@ import {Check,Copy,Flag,History,Plus,Search,Target,Trophy,X} from 'lucide-react'
 import {Progress} from '@/components/ui/progress';
 import {toast} from 'sonner';
 import type {SquadChallengeFighter,SquadChallengeRules} from '@anime/contracts/squad-challenge';
+import type {ChallengeObjective} from '@anime/contracts/advanced-challenge';
 import {COMBAT_ROLES,ROLE_DEFINITIONS,roleRequirementProgress,type VersionRole,type StrategicTrait} from '@anime/domain/squad-synergy';
 import {RoleBadges,RoleGlossary,SquadInsights,SubmissionInsights} from '@/components/squad-insights';
 
@@ -19,6 +20,8 @@ type ChallengeView={
  minMembers:number;
  maxMembers:number;
  rules:SquadChallengeRules;
+ objective:ChallengeObjective;
+ sourceType:string;
  startsAt:number;
  endsAt:number;
  status:'scheduled'|'active'|'closed';
@@ -171,11 +174,14 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  },[]);
 
  useEffect(()=>{
-  const id=new URLSearchParams(location.search).get('challengeSquad');
-  if(!id){void load();return}
-  void api<{submission:Submission}>(`/api/squad-submissions?id=${encodeURIComponent(id)}`)
-   .then(async result=>{setShared(result.submission);await load(result.submission.challengeId)})
-   .catch(error=>{toast.error((error as Error).message);void load()});
+  const timer=setTimeout(()=>{
+   const id=new URLSearchParams(location.search).get('challengeSquad');
+   if(!id){void load();return}
+   void api<{submission:Submission}>(`/api/squad-submissions?id=${encodeURIComponent(id)}`)
+    .then(async result=>{setShared(result.submission);await load(result.submission.challengeId)})
+    .catch(error=>{toast.error((error as Error).message);void load()});
+  },0);
+  return ()=>clearTimeout(timer);
  },[load]);
 
  const challengeId=challenge?.id||'';
@@ -293,8 +299,11 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
  const rules=rulesList(challenge.rules);
  const tacticalMembers=selected.map(f=>({versionId:f.versionId,characterName:f.characterName,roles:f.roles,traits:f.traits}));
  const requirements=roleRequirementProgress(tacticalMembers,challenge.rules.roleRequirements||[]);
+ const restrictions=challenge.rules.restrictions;
+ const advancedRoles=restrictions?.roleRequirements.map(rule=>{const count=selected.filter(f=>f.roles.some(r=>r.role===rule.role&&(!rule.primaryOnly||r.priority==='primary'))).length;return {description:`${rule.role}: ${rule.min??0}–${rule.max??5}${rule.primaryOnly?' primary':''}`,count,valid:count>=(rule.min??0)&&count<=(rule.max??5)};})||[];
+ const sameSeriesValid=restrictions?.franchise!=='same'||new Set(selected.map(f=>f.series)).size<=1;
  const affordableHealers=selected.some(f=>f.roles.some(r=>r.role==='healer'))?[]:challenge.fighters.filter(f=>f.roles.some(r=>r.role==='healer')&&f.cost<=remaining&&!selectedCharacterIds.has(f.characterId)).slice(0,3);
- const submitReady=active&&!viewer?.submissionLocked&&selected.length>=challenge.minMembers&&selected.length<=challenge.maxMembers&&!overBudget&&requirements.every(r=>r.valid)&&name.trim().length>=3&&strategy.trim().length>=10;
+ const submitReady=active&&!viewer?.submissionLocked&&selected.length>=challenge.minMembers&&selected.length<=challenge.maxMembers&&!overBudget&&requirements.every(r=>r.valid)&&advancedRoles.every(r=>r.valid)&&sameSeriesValid&&name.trim().length>=3&&strategy.trim().length>=10;
 
  return <div className="daily-squad-system">
   {shared&&<section className="panel challenge-shared">
@@ -308,19 +317,23 @@ export function DailySquadChallenge({authenticated}:{authenticated:boolean}){
 
   <section className="daily-challenge-hero">
    <div>
-    <span className="eyebrow">{challenge.status==='active'?'DAILY CHALLENGE':challenge.status.toUpperCase()}</span>
+    <span className="eyebrow">{challenge.status==='active'?'DAILY CHALLENGE':challenge.status.toUpperCase()} · {challenge.objective.type.replaceAll('_',' ')}</span>
     <h2>{challenge.title}</h2>
     <p>{challenge.description}</p>
-    <div className="daily-challenge-meta"><span><b>{challenge.budget}</b> point budget</span><span><b>{challenge.maxMembers}</b> fighters max</span><span>Ends {new Date(challenge.endsAt).toLocaleString()}</span></div>
+    <div className="daily-challenge-meta"><span><b>{challenge.budget}</b> point budget</span><span><b>{challenge.minMembers===challenge.maxMembers?challenge.maxMembers:`${challenge.minMembers}–${challenge.maxMembers}`}</b> fighters</span><span>Ends {new Date(challenge.endsAt).toLocaleString()}</span></div>
    </div>
    <Target size={52}/>
   </section>
 
   <div className="daily-target panel">
-   <div><span className="eyebrow">TARGET</span><h2>{challenge.target?.characterName||'Open build'}</h2><strong>{challenge.target?.versionName||'No fixed target'}</strong><small>{challenge.target?.series}</small></div>
+   <div><span className="eyebrow">{challenge.objective.type==='defend'?'PROTECTED TARGET':challenge.objective.type==='rescue'?'RESCUE TARGET':challenge.objective.type==='defeat_target'?'BOSS':'OBJECTIVE'}</span><h2>{challenge.target?.characterName||challenge.objective.type.replaceAll('_',' ')}</h2><strong>{challenge.target?.versionName||'No fixed target'}</strong><small>{challenge.target?.series}</small></div>
    <div className="challenge-rule-grid">{rules.map(item=><span key={item.label}><small>{item.label}</small><b>{item.value}</b></span>)}</div>
    {challenge.rules.notes&&<p>{challenge.rules.notes}</p>}
    {requirements.length>0&&<div className="squad-requirements"><strong>Role requirements</strong>{requirements.map(item=><span key={item.description} className={item.valid?'met':'unmet'}>{item.valid?'✓':'○'} {item.description} · {item.count} matched</span>)}</div>}
+   <div className="squad-requirements"><strong>Mission conditions</strong>{challenge.objective.type==='survive'&&<span>{challenge.objective.waves} waves · {challenge.objective.durationSeconds} simulated seconds</span>}{challenge.objective.type==='defend'&&<span>{challenge.objective.condition} · {challenge.objective.attackerVersions.length} attackers</span>}{challenge.objective.type==='rescue'&&<span>Extract at {challenge.objective.extractionZone}{challenge.objective.timeLimitSeconds?` within ${challenge.objective.timeLimitSeconds} simulated seconds`:''}</span>}{challenge.objective.type==='capture'&&<span>Hold {challenge.objective.location} for {challenge.objective.holdSeconds} simulated seconds</span>}{restrictions?.alignment&&restrictions.alignment!=='any'&&<span>{restrictions.alignment} only</span>}{restrictions?.franchise&&restrictions.franchise!=='any'&&<span>{restrictions.franchise==='same'?'Same series only':`${restrictions.franchise} only`}</span>}{restrictions?.bannedCharacters.map(id=><span key={id}>No {id}</span>)}{restrictions?.bannedFranchises.map(id=><span key={id}>No {id}</span>)}{restrictions?.bannedAbilityCategories.map(id=><span key={id}>No {id} abilities</span>)}{restrictions?.disabledAbilityCategories.map(id=><span key={id}>{id} abilities disabled</span>)}</div>
+   {advancedRoles.length>0&&<div className="squad-requirements"><strong>Role requirements</strong>{advancedRoles.map((item,index)=><span key={index} className={item.valid?'met':'unmet'}>{item.valid?'✓':'○'} {item.description} · {item.count} matched</span>)}</div>}
+   {!sameSeriesValid&&<p role="alert">Selected fighters must be from the same series.</p>}
+   {challenge.objective.type!=='open_build'&&<p>Strategic scores estimate squad suitability. They do not establish a simulated battle outcome.</p>}
   </div>
 
   {challenge.status==='active'?<div className="daily-builder-layout">

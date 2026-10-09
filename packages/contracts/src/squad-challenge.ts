@@ -1,5 +1,6 @@
 import type {RoleRequirement,VersionRole,StrategicTrait} from '@anime/domain/squad-synergy';
-export const SQUAD_CHALLENGE_TYPES=['defeat_target','survive','defend','capture','open_build'] as const;
+import type {ChallengeObjective,ChallengeRestrictions} from './advanced-challenge';
+export const SQUAD_CHALLENGE_TYPES=['defeat_target','survive','defend','rescue','capture','open_build'] as const;
 export const SQUAD_CHALLENGE_STATUSES=['scheduled','active','closed'] as const;
 export const SQUAD_VOTE_VERDICTS=['yes','no'] as const;
 
@@ -17,6 +18,7 @@ export type SquadChallengeRules={
  standardEquipment?:boolean;
  notes?:string;
  roleRequirements?:RoleRequirement[];
+ restrictions?:ChallengeRestrictions;
 };
 
 export type SquadChallengeRecord={
@@ -30,6 +32,12 @@ export type SquadChallengeRecord={
  minMembers:number;
  maxMembers:number;
  rules:SquadChallengeRules;
+ objective:ChallengeObjective;
+ sourceType?:string;
+ rulesVersion?:number;
+ scoringVersion?:number;
+ balanceVersion?:string|null;
+ tacticalAnalysisVersion?:number;
  startsAt:number;
  endsAt:number;
  status:SquadChallengeStatus;

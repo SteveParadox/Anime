@@ -173,6 +173,25 @@ button.profile{width:100%;background:transparent;border:0;text-align:left}.nav-c
 .squad-affordable-tip p{margin:5px 0 10px}.squad-affordable-tip button{font-size:.75rem}
 @media(max-width:680px){.squad-insights-columns{grid-template-columns:minmax(0,1fr)}.squad-role-badge{font-size:.68rem}.squad-coverage-row{font-size:.76rem}}
 
+.advanced-challenge-hub{margin:24px 0;padding:22px;min-width:0}
+.challenge-hub-tabs,.challenge-hub-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.challenge-hub-tabs button{border:1px solid color-mix(in srgb,currentColor 25%,transparent);border-radius:9px;padding:9px 12px;background:transparent;color:inherit;cursor:pointer}
+.challenge-hub-tabs button.selected{background:color-mix(in srgb,currentColor 12%,transparent);font-weight:700}
+.challenge-hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.challenge-hub-card,.challenge-hub-detail,.challenge-hub-form,.challenge-round-builder{padding:16px;border:1px solid color-mix(in srgb,currentColor 20%,transparent);border-radius:12px;min-width:0}
+.challenge-hub-card h3{margin:8px 0}.challenge-hub-card p{line-height:1.5}.challenge-hub-card small{opacity:.7}
+.challenge-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.challenge-form-grid .wide{grid-column:1/-1}.challenge-form-grid label,.challenge-round-builder label{display:flex;flex-direction:column;gap:5px;font-size:.82rem}
+.challenge-form-grid .checkbox{flex-direction:row;align-items:center}
+.challenge-form-grid input,.challenge-form-grid select,.challenge-form-grid textarea,.challenge-round-builder input,.challenge-round-builder textarea{width:100%;min-width:0;border:1px solid color-mix(in srgb,currentColor 27%,transparent);border-radius:8px;padding:9px;background:transparent;color:inherit}
+.challenge-form-grid textarea,.challenge-round-builder textarea{min-height:85px;resize:vertical}
+.challenge-role-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;align-items:end;gap:8px;padding:10px;border:1px solid color-mix(in srgb,currentColor 16%,transparent);border-radius:8px}
+.challenge-hub-error{color:#df7777}.challenge-hub-notice{color:#75bda8}
+.challenge-round,.challenge-standing{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid color-mix(in srgb,currentColor 16%,transparent)}
+.challenge-round small{display:block;opacity:.7}.challenge-fighter-list{max-height:320px;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:7px;margin:12px 0}
+.challenge-fighter-list label{flex-direction:row;align-items:center}.challenge-fighter-list input{width:auto}
+@media(max-width:680px){.advanced-challenge-hub{padding:15px}.challenge-form-grid{grid-template-columns:1fr}.challenge-role-row{grid-template-columns:1fr 1fr}.challenge-round,.challenge-standing{align-items:flex-start;flex-direction:column}}
+
 .squad-role-glossary{margin-top:12px;font-size:.77rem}.squad-role-glossary summary{cursor:pointer;font-weight:650}.squad-role-glossary dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px;margin:10px 0}.squad-role-glossary dt{font-weight:650}.squad-role-glossary dd{margin:2px 0 0;opacity:.77;line-height:1.45}@media(max-width:680px){.squad-role-glossary dl{grid-template-columns:1fr}}
 
 /* Character catalog discovery and version-safe matchup comparison */

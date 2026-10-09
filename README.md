@@ -30,6 +30,7 @@ docker compose up -d postgres
 pnpm db:migrate --through=0000_baseline.sql
 pnpm db:seed
 pnpm db:migrate
+pnpm db:seed
 pnpm dev
 ```
 
@@ -39,7 +40,7 @@ pnpm dev
 
 **Production:** On Railway, configure the API's `DATABASE_URL`, HTTPS `APP_BASE_URL`, `NODE_ENV=production`, and a strong `API_PROXY_SHARED_SECRET` (32+ characters). On Vercel, set server-only `API_UPSTREAM_ORIGIN` to the HTTPS Railway API origin and the **same** `API_PROXY_SHARED_SECRET`. The shared secret must never have a `NEXT_PUBLIC_` prefix. See [deployment](docs/deployment.md) for deployment details.
 
-Open <http://localhost:3000>. API readiness is <http://localhost:4000/health/ready>. `pnpm dev:web` and `pnpm dev:api` start either app independently. For production, run `pnpm build`, then `pnpm --filter @anime/api start` and `pnpm --filter @anime/web start` in separate processes.
+Open <http://localhost:3000>. API readiness is <http://localhost:4000/health/ready>. `pnpm dev:web` and `pnpm dev:api` start either app independently. For production, run `pnpm build`, then `pnpm --filter @anime/api start`, `pnpm --filter @anime/api start:worker`, and `pnpm --filter @anime/web start` in separate processes. The worker is required for scheduled challenge publication and tournament activation.
 
 `pnpm db:generate` produces a Drizzle candidate SQL migration. Review and move it to `packages/database/migrations/` before `pnpm db:migrate`; never regenerate or rerun the baseline over existing data. The migrations are controlled, transactional, and tracked in `app_migrations`.
 

@@ -20,5 +20,7 @@ try{
  await run(['scripts/database/migrate.mjs','--through=0000_baseline.sql'],root,env);
  await run(['scripts/database/seed.mjs'],root,env);
  await run(['scripts/database/migrate.mjs'],root,env);
+ await run(['scripts/database/seed.mjs'],root,env);
  await run(['--import','tsx','--test','tests/integration.pg.test.mjs'],resolve(root,'apps/api'),env);
+ await run(['--import','tsx','--test','tests/advanced-challenge.pg.test.mjs'],resolve(root,'apps/api'),env);
 }finally{await server.stop();await db.close();}
