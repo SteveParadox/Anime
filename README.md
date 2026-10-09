@@ -13,7 +13,16 @@ Anime Clash is an anime community with evidence-backed battles, version-aware da
 
 ## Local setup
 
-Use Node.js 22.19 or newer, pnpm 11.25, Python 3, and Docker with Compose. Copy `apps/api/.env.example` to `apps/api/.env` and `apps/web/.env.example` to `apps/web/.env`. The local API requires `DATABASE_URL` and `APP_BASE_URL`; web requires `API_UPSTREAM_ORIGIN`.
+Use Node.js 22.19 or newer, pnpm 11.25, Python 3, and Docker with Compose. Environment files are **per application**: the API loads `apps/api/.env`, the Next.js app loads `apps/web/.env`, and database scripts load `apps/api/.env`. A repository-root `.env` does not replace those files.
+
+On Windows Command Prompt, run from the repository root:
+
+```cmd
+copy apps\api\.env.example apps\api\.env
+copy apps\web\.env.example apps\web\.env
+```
+
+Edit both copied files before startup. The local API requires `DATABASE_URL` and `APP_BASE_URL`, and the web proxy requires `API_UPSTREAM_ORIGIN`. The checked-in API example uses the Docker Compose PostgreSQL credentials and `127.0.0.1:5432`. Do not commit your real `.env` files.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -23,6 +32,12 @@ pnpm db:seed
 pnpm db:migrate
 pnpm dev
 ```
+
+**PostgreSQL connectivity on Windows:** `docker compose ps` should show a published mapping such as `127.0.0.1:5432->5432/tcp`, not only `5432/tcp`. If the mapping is missing, check the `ports:` block in `docker-compose.yml` and run `docker compose up -d --force-recreate postgres`. Recreating without `-v` preserves the named database volume. If you are using an existing hosted PostgreSQL database, set its actual connection URL in `apps/api/.env` instead.
+
+**Optional integrations:** Google OAuth needs `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a registered `GOOGLE_REDIRECT_URI`. Sending email needs `RESEND_API_KEY` and `EMAIL_FROM`. For local testing without an email provider, `AUTH_DEV_EMAIL_LOG=true` writes verification/reset links to server logs; do not enable it in production or shared logs. `ANIME_CLASH_ADMIN_USER_ID` is only for an intentionally selected admin account.
+
+**Production:** On Railway, configure the API's `DATABASE_URL`, HTTPS `APP_BASE_URL`, `NODE_ENV=production`, and a strong `API_PROXY_SHARED_SECRET` (32+ characters). On Vercel, set server-only `API_UPSTREAM_ORIGIN` to the HTTPS Railway API origin and the **same** `API_PROXY_SHARED_SECRET`. The shared secret must never have a `NEXT_PUBLIC_` prefix. See [deployment](docs/deployment.md) for deployment details.
 
 Open <http://localhost:3000>. API readiness is <http://localhost:4000/health/ready>. `pnpm dev:web` and `pnpm dev:api` start either app independently. For production, run `pnpm build`, then `pnpm --filter @anime/api start` and `pnpm --filter @anime/web start` in separate processes.
 
