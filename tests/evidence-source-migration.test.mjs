@@ -12,7 +12,7 @@ test('source migration preserves legacy evidence and supports expanded official-
     VALUES ('legacy-1','naruto','anime','Naruto','speed','Legacy feat','Existing feat remains unchanged.',1,'contributor-1',1,1)`);
   await db.exec(await readFile('packages/database/migrations/0003_evidence_official_sources.sql','utf8'));
   const legacy=(await db.query("SELECT id,source_type,source_details,continuity_status FROM evidence_records WHERE id='legacy-1'")).rows[0];
-  assert.deepEqual(legacy,{id:'legacy-1',source_type:'anime',source_details:'{}',continuity_status:'unknown'});
+  assert.deepEqual(legacy,{id:'legacy-1',source_type:'anime',source_details:{},continuity_status:'unknown'});
   await db.query(`INSERT INTO evidence_records
     (id,character_id,source_type,series,category,title,description,submitted_by,created,updated,source_title,source_location,source_details,continuity_status)
     VALUES ('game-1','naruto','game','Naruto','ability','Game-only move','Gameplay balance does not establish manga abilities.','contributor-1',2,2,'Fictional demo game','Mission 2',$1,'game')`,
