@@ -94,6 +94,32 @@ export async function GET(request:Request){
    const collections=(await db.prepare(`SELECT id,owner_user_id AS ownerUserId,title,description,visibility,created_at AS createdAt,updated_at AS updatedAt FROM battle_collections WHERE visibility='public' OR owner_user_id=? ORDER BY updated_at DESC LIMIT 100`).bind(user?.userId||'').all()).results;
    return authJson({collections});
   }
+  if(mode==='most-debated'){
+   if(!characterId||!fighter(characterId))return authJson({error:'A valid characterId is required.'},400);
+   const [battles,voteRows,commentRows]=await Promise.all([
+    db.prepare('SELECT id,payload,created FROM battles ORDER BY created DESC LIMIT 2000').all<StoredBattle>(),
+    db.prepare('SELECT battle,COUNT(*) AS voteCount FROM votes GROUP BY battle').all<{battle:string;voteCount:number}>(),
+    db.prepare('SELECT battle,COUNT(*) AS commentCount,COUNT(DISTINCT "user") AS participants FROM comments GROUP BY battle').all<{battle:string;commentCount:number;participants:number}>()
+   ]);
+   const countByBattle=new Map(voteRows.results.map(v=>[v.battle,number(v.voteCount)]));
+   const commentsByBattle=new Map(commentRows.results.map(v=>[v.battle,{count:number(v.commentCount),participants:number(v.participants)}]));
+   const byOpponent=new Map<string,{opponentId:string;name:string;matchups:number;votes:number;comments:number;participants:number;score:number}>();
+   for(const row of battles.results){
+    let b:ReturnType<typeof publicBattle>;
+    try{b=publicBattle(row);}catch{continue;}
+    if(b.fighterAId!==characterId&&b.fighterBId!==characterId)continue;
+    const opponentId=b.fighterAId===characterId?b.fighterBId:b.fighterAId;
+    if(!fighter(opponentId))continue;
+    const current=byOpponent.get(opponentId)||{opponentId,name:fighter(opponentId)!.name,matchups:0,votes:0,comments:0,participants:0,score:0};
+    const discussion=commentsByBattle.get(row.id)||{count:0,participants:0};
+    current.matchups++;current.votes+=countByBattle.get(row.id)||0;
+    current.comments+=discussion.count;current.participants+=discussion.participants;
+    // Dampen spam: comments beyond ten per distinct participant do not increase ranking.
+    current.score+=Math.min(discussion.count,discussion.participants*10)+discussion.participants*3+Math.min(countByBattle.get(row.id)||0,100)*0.1;
+    byOpponent.set(opponentId,current);
+   }
+   return authJson({characterId,opponents:[...byOpponent.values()].sort((a,b)=>b.score-a.score||b.participants-a.participants).slice(0,30)});
+  }
   if(mode==='similar'){
    const original=await db.prepare('SELECT id,payload,created FROM battles WHERE id=?').bind(battleId).first<StoredBattle>();
    if(!original)return authJson({error:'Battle not found.'},404);
