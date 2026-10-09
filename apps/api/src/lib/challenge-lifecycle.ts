@@ -61,20 +61,21 @@ export async function schedulerTick(now=Date.now()){
     const row=await readDefinition(tx,item.id,true);if(!row||row.status!=='voting')continue;
     await auditTransition(tx,row,position===0&&Number(item.votes)>0?'selected':'approved',null,'Voting closed; deterministic vote count and creation-time tie-break',now);
    }
-   const winner=closed[0];
-   if(winner&&Number(winner.votes)>0){
-    const row=await readDefinition(tx,winner.id,true);
-    if(row?.status==='selected'){
-     const day=86_400_000,first=Math.floor(now/day)*day+day;
-     for(let i=0;i<14;i++){
-      const start=first+i*day,end=start+day;
-      const conflict=await tx.prepare(`SELECT id FROM challenge_definitions WHERE status IN ('scheduled','active') AND starts_at<? AND ends_at>? LIMIT 1`).bind(end,start).first();
-      if(conflict)continue;
-      await tx.prepare('UPDATE challenge_definitions SET starts_at=?,ends_at=? WHERE id=?').bind(start,end,row.id).run();
-      await auditTransition(tx,row,'scheduled',null,'Community vote winner assigned next free UTC day',now);
-      break;
-     }
-    }
+  }
+  // Scheduling is retryable: a winning proposal can remain selected when the
+  // next fourteen UTC days are fully booked. Reconsider it on every tick.
+  const selected=(await tx.prepare("SELECT id FROM challenge_definitions WHERE status='selected' ORDER BY created_at,id LIMIT 20").all<{id:string}>()).results;
+  const day=86_400_000,first=Math.floor(now/day)*day+day;
+  for(const item of selected){
+   const row=await readDefinition(tx,item.id,true);
+   if(!row||row.status!=='selected')continue;
+   for(let i=0;i<14;i++){
+    const start=first+i*day,end=start+day;
+    const conflict=await tx.prepare(`SELECT id FROM challenge_definitions WHERE status IN ('scheduled','active') AND starts_at<? AND ends_at>? LIMIT 1`).bind(end,start).first();
+    if(conflict)continue;
+    await tx.prepare('UPDATE challenge_definitions SET starts_at=?,ends_at=? WHERE id=?').bind(start,end,row.id).run();
+    await auditTransition(tx,row,'scheduled',null,'Community vote winner assigned next free UTC day',now);
+    break;
    }
   }
  });
