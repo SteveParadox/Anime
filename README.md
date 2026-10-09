@@ -43,6 +43,14 @@ Open <http://localhost:3000>. API readiness is <http://localhost:4000/health/rea
 
 `pnpm db:generate` produces a Drizzle candidate SQL migration. Review and move it to `packages/database/migrations/` before `pnpm db:migrate`; never regenerate or rerun the baseline over existing data. The migrations are controlled, transactional, and tracked in `app_migrations`.
 
+## Character catalog and squad discovery
+
+The curated fighter roster is defined in `packages/domain/src/catalog.ts`; canonical combat versions and allowed abilities are in `packages/domain/src/characters.ts`. The Characters page supports search by alias, series and ability, filters by series/role, sorting by cost or version count, and a head-to-head comparison that opens the existing version-locked battle builder. Comparison displays **catalog metadata**, not an invented win probability.
+
+New entries must be added consistently to the domain catalog, PostgreSQL seed file `packages/database/seeds/catalog.jsonl`, and (where needed for legacy SQLite migration history) append-only `drizzle/` migrations. Version-specific combat roles, strategic traits, and point costs are required for daily squad challenges. Preserve stable IDs and existing submissions.
+
+When pulling new characters into an **existing, already migrated PostgreSQL database**, run `pnpm db:seed` from the repository root before starting the API. The seed uses `ON CONFLICT DO NOTHING`, so it adds missing catalog rows without overwriting existing records. Do not rerun a database baseline or delete a volume to refresh the catalog. For a fresh database, use the full migration and seed sequence above.
+
 ## Validation
 
 ```sh

@@ -89,7 +89,8 @@ test('append-only migration history mirrors the curated version catalog',()=>{
  const migrationHistory=[
   readFileSync('drizzle/0004_character_versions.sql','utf8'),
   readFileSync('drizzle/0007_expand_squad_roster.sql','utf8'),
-  readFileSync('drizzle/0008_correct_roster_abilities.sql','utf8')
+  readFileSync('drizzle/0008_correct_roster_abilities.sql','utf8'),
+  readFileSync('drizzle/0011_add_more_combat_fighters.sql','utf8')
  ].join('\n');
  for(const version of characterVersions)assert.ok(migrationHistory.includes(`('${version.id}','${version.characterId}'`),version.id);
  for(const link of versionAbilities)assert.ok(migrationHistory.includes(`'${link.versionId}','${link.abilityId}'`),`${link.versionId} -> ${link.abilityId}`);

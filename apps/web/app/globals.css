@@ -174,3 +174,20 @@ button.profile{width:100%;background:transparent;border:0;text-align:left}.nav-c
 @media(max-width:680px){.squad-insights-columns{grid-template-columns:minmax(0,1fr)}.squad-role-badge{font-size:.68rem}.squad-coverage-row{font-size:.76rem}}
 
 .squad-role-glossary{margin-top:12px;font-size:.77rem}.squad-role-glossary summary{cursor:pointer;font-weight:650}.squad-role-glossary dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px;margin:10px 0}.squad-role-glossary dt{font-weight:650}.squad-role-glossary dd{margin:2px 0 0;opacity:.77;line-height:1.45}@media(max-width:680px){.squad-role-glossary dl{grid-template-columns:1fr}}
+
+/* Character catalog discovery and version-safe matchup comparison */
+.character-discovery-panel{margin-bottom:16px}
+.character-discovery-panel .searchbox{margin-bottom:14px}
+.character-discovery-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:2px}
+.character-discovery-actions span{font-size:13px;color:var(--muted-foreground)}
+.character-compare{margin-bottom:18px;display:flex;flex-direction:column;gap:13px}
+.character-compare .section-heading{margin:0;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.character-compare-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.character-compare-picks label{margin-bottom:0;min-width:0}
+.character-compare select,.character-discovery-panel select{background:#15151b;color:var(--foreground);border:1px solid var(--input);border-radius:8px;min-height:43px;padding:9px;max-width:100%}
+.character-compare-result{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;border:1px solid var(--border);background:var(--secondary);padding:13px;border-radius:10px}
+.character-compare-result strong,.character-compare-result small{display:block;overflow-wrap:anywhere}
+.character-compare-result small{color:var(--muted-foreground);font-size:12px;margin-top:4px}
+.character-compare-result>span{font-weight:800;color:var(--primary)}
+.character-compare>.primary{align-self:flex-start}
+@media(max-width:650px){.character-compare-picks{grid-template-columns:1fr}.character-compare-result{grid-template-columns:1fr;text-align:center}.character-compare>.primary{width:100%}}
