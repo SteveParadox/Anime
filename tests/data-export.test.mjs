@@ -14,7 +14,7 @@ test('D1 copy export keeps primary keys, vote rowids, and nullable historical sn
 import sqlite3,glob,sys
 c=sqlite3.connect(sys.argv[1])
 for f in sorted(glob.glob('drizzle/[0-9]*.sql')):
- for s in open(f).read().split('--> statement-breakpoint'):
+ for s in open(f, encoding='utf-8').read().split('--> statement-breakpoint'):
   if s.strip():c.executescript(s)
 c.execute("INSERT INTO users (id,email,email_normalized,created,updated) VALUES ('old-user','test@example.com','test@example.com',1,1)")
 c.execute("INSERT INTO battles (id,owner,payload,created) VALUES ('old-battle','old-user','{}',1)")
