@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
+import {abilities,characterVersions,versionAbilities} from '../packages/domain/src/characters.ts';
 
 test('PostgreSQL baseline preserves catalog, historical argument IDs, and squad guards',async()=>{
  const db=new PGlite();
@@ -14,7 +15,31 @@ test('PostgreSQL baseline preserves catalog, historical argument IDs, and squad 
    await db.query(`INSERT INTO "${table}" (${columns.map(name=>'"'+name+'"').join(',')}) VALUES (${columns.map((_,index)=>'$'+(index+1)).join(',')})`,columns.map(column=>values[column]));
    seeds++;
   }
-  assert.equal(seeds,465);
+  // Compare the actual migrated catalog with its canonical domain definitions.
+  // Hard-coded seed counts become stale whenever new fighters or combat versions are added.
+  const expected={
+   character_versions:characterVersions.length,
+   abilities:abilities.length,
+   version_abilities:versionAbilities.length,
+   squad_version_costs:characterVersions.length
+  };
+  for(const [table,count] of Object.entries(expected)){
+   const result=await db.query(`SELECT COUNT(*)::int AS n FROM "${table}"`);
+   assert.equal(result.rows[0].n,count,`Unexpected seeded rows for ${table}`);
+  }
+  const allowedTables=['character_versions','abilities','version_abilities','squad_version_costs','version_combat_roles','version_strategic_traits'];
+  let persistedSeedRows=0;
+  for(const table of allowedTables){
+   const result=await db.query(`SELECT COUNT(*)::int AS n FROM "${table}"`);
+   persistedSeedRows+=result.rows[0].n;
+  }
+  assert.equal(seeds,persistedSeedRows,'Every curated seed row must be persisted');
+  const unpriced=await db.query(`SELECT COUNT(*)::int AS n
+   FROM character_versions AS v
+   LEFT JOIN squad_version_costs AS p ON p.version_id=v.id
+   WHERE v.canonical=1 AND
+    (p.version_id IS NULL OR p.character_id<>v.character_id OR p.cost<1)`);
+  assert.equal(unpriced.rows[0].n,0,'Canonical versions need a valid owned price');
   assert.equal((await db.query("SELECT count(*)::int AS n FROM version_combat_roles WHERE version_id='gojo-shibuya'")).rows[0].n,3);
   for(const user of ['u1','u2'])await db.query('INSERT INTO users (id,created,updated) VALUES ($1,1,1)',[user]);
   await db.query("INSERT INTO battles (id,owner,payload,created) VALUES ('b1','u1','{}',1)");
