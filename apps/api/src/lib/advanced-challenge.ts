@@ -11,8 +11,12 @@ const invalid=(message:string)=>Object.assign(new Error(message),{status:400});
 async function loadMetadata(db:DatabaseClient,versionIds:string[]){
  if(!versionIds.length)return new Map<string,MetadataRow>();
  const placeholders=versionIds.map(()=>'?').join(',');
- const rows=(await db.prepare(`SELECT v.id AS versionId,v.character_id AS characterId,cf.franchise_id AS franchiseId,COALESCE(a.alignment,'unknown') AS alignment FROM character_versions v JOIN character_franchises cf ON cf.character_id=v.character_id LEFT JOIN version_challenge_alignment a ON a.version_id=v.id WHERE v.id IN (${placeholders})`).bind(...versionIds).all<MetadataRow>()).results;
- return new Map(rows.map(row=>[row.versionId,row]));
+ // Newly curated roster entries may be seeded after migration 0002 was applied.
+ // A missing franchise row must not silently exclude a canonical fighter from
+ // all advanced challenges. Use the same deterministic series slug as rule validation.
+ const rows=(await db.prepare(`SELECT v.id AS versionId,v.character_id AS characterId,cf.franchise_id AS franchiseId,COALESCE(a.alignment,'unknown') AS alignment FROM character_versions v LEFT JOIN character_franchises cf ON cf.character_id=v.character_id LEFT JOIN version_challenge_alignment a ON a.version_id=v.id WHERE v.id IN (${placeholders})`).bind(...versionIds).all<MetadataRow>()).results;
+ const franchises=new Map(fighters.map(f=>[f.id,f.series.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')]));
+ return new Map(rows.filter(row=>Boolean(row.franchiseId||franchises.get(row.characterId))).map(row=>[row.versionId,{...row,franchiseId:row.franchiseId||franchises.get(row.characterId)!}]));
 }
 
 function legal(member:EligibleMember,rules:ChallengeRestrictions){
