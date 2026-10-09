@@ -1,3 +1,4 @@
+import React from 'react';
 import {ROLE_DEFINITIONS,analyzeSquadComposition,type VersionRole,type StrategicTrait,type StrategicMember} from '@anime/domain/squad-synergy';
 
 export function RoleBadges({roles,historical=false}:{roles:VersionRole[]|null|undefined;historical?:boolean}){
@@ -21,6 +22,7 @@ export function SquadInsights({members,legacyCount=0}:{members:StrategicMember[]
    <div><h4>Team composition</h4>{insight.roleCounts.length?insight.roleCounts.map(item=><div className="squad-coverage-row" key={item.role}><span>{ROLE_DEFINITIONS[item.role].label}</span><b>{item.count}</b></div>):<small>No curated roles in this build.</small>}
     <h4>Team coverage</h4>{insight.coverage.map(item=><div className="squad-coverage-row" key={item.label}><span>{item.label}</span><b>{item.level}</b></div>)}</div>
    <div><h4>Potential synergies</h4>{insight.synergies.length?insight.synergies.map(pair=><p className="squad-synergy-item" key={pair.id}><strong>{pair.label}</strong> · {pair.fighters.join(' + ')}<small>{pair.description}</small></p>):<small>No curated cross-fighter combinations yet.</small>}
+    {insight.traitInteractions.length>0&&<><h4>Tactical trait combinations</h4>{insight.traitInteractions.map(interaction=><p className="squad-synergy-item" key={interaction.id} title={interaction.memberVersionIds.join(' + ')}><strong>{interaction.label}</strong> · {interaction.memberVersionIds.map(versionId=>members.find(member=>member.versionId===versionId)?.characterName||versionId).join(' + ')}<small>{interaction.description}</small></p>)}</>}
     {insight.strengths.length>0&&<><h4>Strengths</h4><ul>{insight.strengths.map(value=><li key={value}>{value}</li>)}</ul></>}
     {insight.gaps.length>0&&<><h4>Potential gaps</h4><ul>{insight.gaps.map(value=><li key={value}>{value}</li>)}</ul></>}
     {insight.concentrations.length>0&&<><h4>Role concentration</h4><p>{insight.concentrations.map(x=>`${ROLE_DEFINITIONS[x.role].label}: ${x.count}`).join(' · ')}</p></>}
