@@ -278,3 +278,49 @@ export const authRateLimits=pgTable('auth_rate_limits',{
  count:bigint('count',{mode:'number'}).notNull(),
  blockedUntil:bigint('blocked_until',{mode:'number'}).notNull().default(0)
 },t=>[index('idx_auth_rate_limits_window').on(t.windowStart)]);
+
+
+/** Community verdicts are frozen snapshots; all profile statistics derive from these rows. */
+export const battleResults=pgTable('battle_results',{
+ battleId:text('battle_id').primaryKey().references(()=>battles.id),
+ fighterAId:text('fighter_a_id').notNull(),
+ fighterAVersionId:text('fighter_a_version_id').notNull(),
+ fighterBId:text('fighter_b_id').notNull(),
+ fighterBVersionId:text('fighter_b_version_id').notNull(),
+ conditionsJson:text('conditions_json').notNull(),
+ outcome:text('outcome').notNull(),
+ status:text('status').notNull().default('FINALIZED'),
+ sourceType:text('source_type').notNull().default('COMMUNITY_VERDICT'),
+ votesA:integer('votes_a').notNull(),votesB:integer('votes_b').notNull(),
+ votesDraw:integer('votes_draw').notNull(),difficultyJson:text('difficulty_json').notNull(),
+ scoringVersion:integer('scoring_version').notNull(),
+ finalizedAt:bigint('finalized_at',{mode:'number'}).notNull(),
+ finalizedBy:text('finalized_by').notNull(),
+ voidedAt:bigint('voided_at',{mode:'number'}),voidReason:text('void_reason')
+},t=>[index('idx_battle_results_fighter_a').on(t.fighterAId,t.status,t.finalizedAt),index('idx_battle_results_fighter_b').on(t.fighterBId,t.status,t.finalizedAt),index('idx_battle_results_version_a').on(t.fighterAVersionId,t.status),index('idx_battle_results_version_b').on(t.fighterBVersionId,t.status)]);
+
+export const battleResultAudit=pgTable('battle_result_audit',{
+ id:text('id').primaryKey(),battleId:text('battle_id').notNull().references(()=>battleResults.battleId),
+ action:text('action').notNull(),actorUserId:text('actor_user_id').notNull(),
+ reason:text('reason').notNull(),snapshotJson:text('snapshot_json').notNull(),
+ createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[index('idx_battle_result_audit_battle').on(t.battleId,t.createdAt)]);
+
+export const battleRematches=pgTable('battle_rematches',{
+ originalBattleId:text('original_battle_id').notNull().references(()=>battles.id),
+ rematchBattleId:text('rematch_battle_id').primaryKey().references(()=>battles.id),
+ createdBy:text('created_by').notNull(),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[index('idx_battle_rematches_parent').on(t.originalBattleId)]);
+
+export const battleCollections=pgTable('battle_collections',{
+ id:text('id').primaryKey(),ownerUserId:text('owner_user_id').notNull().references(()=>users.id),
+ title:text('title').notNull(),description:text('description').notNull().default(''),
+ visibility:text('visibility').notNull().default('private'),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[index('idx_battle_collections_owner').on(t.ownerUserId,t.updatedAt)]);
+
+export const battleCollectionItems=pgTable('battle_collection_items',{
+ collectionId:text('collection_id').notNull().references(()=>battleCollections.id),
+ battleId:text('battle_id').notNull().references(()=>battles.id),
+ position:integer('position').notNull(),addedAt:bigint('added_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.collectionId,t.battleId]}),index('idx_battle_collection_items_position').on(t.collectionId,t.position,t.battleId)]);
