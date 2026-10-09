@@ -3,7 +3,7 @@
 ALTER TABLE evidence_records ADD COLUMN source_title text;
 ALTER TABLE evidence_records ADD COLUMN source_location text;
 ALTER TABLE evidence_records ADD COLUMN source_url text;
-ALTER TABLE evidence_records ADD COLUMN source_details text NOT NULL DEFAULT '{}';
+ALTER TABLE evidence_records ADD COLUMN source_details jsonb NOT NULL DEFAULT '{}'::jsonb;
 ALTER TABLE evidence_records ADD COLUMN continuity_status text NOT NULL DEFAULT 'unknown';
 ALTER TABLE evidence_records ADD COLUMN source_language text;
 ALTER TABLE evidence_records ADD COLUMN translation_provenance text;
