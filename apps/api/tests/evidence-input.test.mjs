@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {evidenceInput} from '../apps/api/src/lib/evidence-input.ts';
+import {evidenceInput,matchesOfficialWebsiteDomain} from '../apps/api/src/lib/evidence-input.ts';
 
 const common={characterId:'naruto',versionId:'naruto-six-paths',category:'ability',title:'Source-backed move',description:'A detailed description explaining a particular feat.'};
 const extended={...common,sourceTitle:'Official example publication',sourceLocation:'Page 42',sourceUrl:null,continuityStatus:'unknown'};
@@ -47,4 +47,13 @@ test('publication and access dates reject impossible calendar values',()=>{
  assert.equal(evidenceInput.safeParse({...extended,...web,sourceDetails:{...web.sourceDetails,accessDate:'2026-02-30'}}).success,false);
  const book=cases.find(item=>item.sourceType==='databook');
  assert.equal(evidenceInput.safeParse({...extended,...book,sourceDetails:{...book.sourceDetails,publicationDate:'2026-13-01'}}).success,false);
+});
+
+test('official website URL-domain correspondence rejects spoofed hosts',()=>{
+ assert.equal(matchesOfficialWebsiteDomain('https://example.org/article','example.org'),true);
+ assert.equal(matchesOfficialWebsiteDomain('https://news.example.org/article','example.org'),true);
+ assert.equal(matchesOfficialWebsiteDomain('https://example.org.attacker.test/article','example.org'),false);
+ assert.equal(matchesOfficialWebsiteDomain('https://attacker.test/article','example.org'),false);
+ assert.equal(matchesOfficialWebsiteDomain('ftp://example.org/article','example.org'),false);
+ assert.equal(matchesOfficialWebsiteDomain('http://127.0.0.1/','127.0.0.1'),false);
 });
