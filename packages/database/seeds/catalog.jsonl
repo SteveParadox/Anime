@@ -463,3 +463,162 @@
 {"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"saitama-hero-association"}}
 {"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"shinra-rapid"}}
 {"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"shinra-rapid"}}
+{"table":"abilities","values":{"id":"vegeta-ki","character_id":"vegeta","name":"Saiyan Ki Combat","description":"Ki blasts and martial arts with Saiyan combat strength.","category":"energy","created":1791504000000}}
+{"table":"abilities","values":{"id":"vegeta-galick-gun","character_id":"vegeta","name":"Galick Gun","description":"Directed ki-beam attack.","category":"technique","created":1791504000000}}
+{"table":"abilities","values":{"id":"vegeta-blue","character_id":"vegeta","name":"Super Saiyan Blue","description":"God-ki Super Saiyan transformation.","category":"transformation","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Saiyan Prince\"]","arc":"Saiyan Saga","canonical":1,"character_id":"vegeta","created":1791504000000,"description":"Vegeta during his early confrontation with Earth defenders.","era":"Dragon Ball Z","id":"vegeta-saiyan-saga","name":"Saiyan Saga Vegeta","parent_version_id":null,"short_name":"Saiyan Saga","sort_order":10,"source_endpoint":"Dragon Ball Super anime"}}
+{"table":"squad_version_costs","values":{"character_id":"vegeta","cost":44,"updated":1791504000000,"version_id":"vegeta-saiyan-saga"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"vegeta-saiyan-saga"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"tank","version_id":"vegeta-saiyan-saga"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"vegeta-saiyan-saga"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"vegeta-saiyan-saga"}}
+{"table":"version_abilities","values":{"ability_id":"vegeta-ki","notes":"","status":"available","version_id":"vegeta-saiyan-saga"}}
+{"table":"version_abilities","values":{"ability_id":"vegeta-galick-gun","notes":"","status":"available","version_id":"vegeta-saiyan-saga"}}
+{"table":"character_versions","values":{"aliases":"[\"Super Saiyan Blue\",\"SSB Vegeta\"]","arc":null,"canonical":1,"character_id":"vegeta","created":1791504000000,"description":"Vegeta with Super Saiyan Blue as shown in Dragon Ball Super.","era":"Dragon Ball Super","id":"vegeta-super-saiyan-blue","name":"Super Saiyan Blue Vegeta","parent_version_id":"vegeta-saiyan-saga","short_name":"SSB","sort_order":20,"source_endpoint":"Dragon Ball Super anime"}}
+{"table":"squad_version_costs","values":{"character_id":"vegeta","cost":88,"updated":1791504000000,"version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"speedster","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"vegeta-ki","notes":"","status":"available","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"vegeta-galick-gun","notes":"","status":"available","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"version_abilities","values":{"ability_id":"vegeta-blue","notes":"","status":"available","version_id":"vegeta-super-saiyan-blue"}}
+{"table":"abilities","values":{"id":"sasuke-chidori","character_id":"sasuke","name":"Chidori","description":"Lightning nature transformation concentrated in a close-range thrust.","category":"technique","created":1791504000000}}
+{"table":"abilities","values":{"id":"sasuke-sharingan","character_id":"sasuke","name":"Sharingan","description":"Uchiha visual perception and genjutsu.","category":"sensory","created":1791504000000}}
+{"table":"abilities","values":{"id":"sasuke-rinnegan-ability","character_id":"sasuke","name":"Rinnegan","description":"Six Paths ocular techniques including space-time substitution.","category":"hax","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Hebi\",\"Post-timeskip\"]","arc":"Hebi","canonical":1,"character_id":"sasuke","created":1791504000000,"description":"Sasuke during the Hebi period with Chidori and Sharingan.","era":"Naruto Shippuden","id":"sasuke-hebi","name":"Hebi Sasuke","parent_version_id":null,"short_name":"Hebi","sort_order":10,"source_endpoint":"Naruto Shippuden · Fourth Shinobi World War"}}
+{"table":"squad_version_costs","values":{"character_id":"sasuke","cost":48,"updated":1791504000000,"version_id":"sasuke-hebi"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"assassin","version_id":"sasuke-hebi"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"strategist","version_id":"sasuke-hebi"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"sasuke-hebi"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"sasuke-hebi"}}
+{"table":"version_abilities","values":{"ability_id":"sasuke-chidori","notes":"","status":"available","version_id":"sasuke-hebi"}}
+{"table":"version_abilities","values":{"ability_id":"sasuke-sharingan","notes":"","status":"available","version_id":"sasuke-hebi"}}
+{"table":"character_versions","values":{"aliases":"[\"Six Paths Sasuke\",\"War Arc Sasuke\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"sasuke","created":1791504000000,"description":"Sasuke after receiving the Rinnegan in the Fourth Shinobi World War.","era":"Naruto Shippuden","id":"sasuke-rinnegan","name":"Rinnegan Sasuke","parent_version_id":"sasuke-hebi","short_name":"Rinnegan","sort_order":20,"source_endpoint":"Naruto Shippuden · Fourth Shinobi World War"}}
+{"table":"squad_version_costs","values":{"character_id":"sasuke","cost":89,"updated":1791504000000,"version_id":"sasuke-rinnegan"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"sasuke-rinnegan"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"sasuke-rinnegan"}}
+{"table":"version_strategic_traits","values":{"trait":"teleportation","version_id":"sasuke-rinnegan"}}
+{"table":"version_strategic_traits","values":{"trait":"long_range","version_id":"sasuke-rinnegan"}}
+{"table":"version_abilities","values":{"ability_id":"sasuke-chidori","notes":"","status":"available","version_id":"sasuke-rinnegan"}}
+{"table":"version_abilities","values":{"ability_id":"sasuke-sharingan","notes":"","status":"available","version_id":"sasuke-rinnegan"}}
+{"table":"version_abilities","values":{"ability_id":"sasuke-rinnegan-ability","notes":"","status":"available","version_id":"sasuke-rinnegan"}}
+{"table":"abilities","values":{"id":"kakashi-raikiri","character_id":"kakashi","name":"Raikiri","description":"Lightning Blade, a precision lightning attack.","category":"technique","created":1791504000000}}
+{"table":"abilities","values":{"id":"kakashi-sharingan","character_id":"kakashi","name":"Sharingan","description":"Copy-ninja ocular tracking and combat analysis.","category":"sensory","created":1791504000000}}
+{"table":"abilities","values":{"id":"kakashi-kamui","character_id":"kakashi","name":"Kamui","description":"Mangekyo Sharingan space-time technique.","category":"hax","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Copy Ninja Kakashi\"]","arc":"Original series","canonical":1,"character_id":"kakashi","created":1791504000000,"description":"Kakashi with Sharingan combat and Raikiri.","era":"Naruto","id":"kakashi-sharingan","name":"Sharingan Kakashi","parent_version_id":null,"short_name":"Sharingan","sort_order":10,"source_endpoint":"Naruto Shippuden anime"}}
+{"table":"squad_version_costs","values":{"character_id":"kakashi","cost":40,"updated":1791504000000,"version_id":"kakashi-sharingan"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"kakashi-sharingan"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"assassin","version_id":"kakashi-sharingan"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"kakashi-sharingan"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"kakashi-sharingan"}}
+{"table":"version_abilities","values":{"ability_id":"kakashi-raikiri","notes":"","status":"available","version_id":"kakashi-sharingan"}}
+{"table":"version_abilities","values":{"ability_id":"kakashi-sharingan","notes":"","status":"available","version_id":"kakashi-sharingan"}}
+{"table":"character_versions","values":{"aliases":"[\"Kamui Kakashi\"]","arc":"Fourth Shinobi World War","canonical":1,"character_id":"kakashi","created":1791504000000,"description":"Kakashi using Kamui during the Fourth Shinobi World War.","era":"Naruto Shippuden","id":"kakashi-war-arc","name":"War Arc Kakashi","parent_version_id":"kakashi-sharingan","short_name":"War Arc","sort_order":20,"source_endpoint":"Naruto Shippuden anime"}}
+{"table":"squad_version_costs","values":{"character_id":"kakashi","cost":72,"updated":1791504000000,"version_id":"kakashi-war-arc"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"strategist","version_id":"kakashi-war-arc"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"controller","version_id":"kakashi-war-arc"}}
+{"table":"version_strategic_traits","values":{"trait":"teleportation","version_id":"kakashi-war-arc"}}
+{"table":"version_strategic_traits","values":{"trait":"information","version_id":"kakashi-war-arc"}}
+{"table":"version_abilities","values":{"ability_id":"kakashi-raikiri","notes":"","status":"available","version_id":"kakashi-war-arc"}}
+{"table":"version_abilities","values":{"ability_id":"kakashi-sharingan","notes":"","status":"available","version_id":"kakashi-war-arc"}}
+{"table":"version_abilities","values":{"ability_id":"kakashi-kamui","notes":"","status":"available","version_id":"kakashi-war-arc"}}
+{"table":"abilities","values":{"id":"zoro-three-sword","character_id":"zoro","name":"Three-Sword Style","description":"Santoryu swordsmanship using three blades.","category":"weapon","created":1791504000000}}
+{"table":"abilities","values":{"id":"zoro-armament","character_id":"zoro","name":"Armament Haki","description":"Haki reinforcement for attacks and defense.","category":"energy","created":1791504000000}}
+{"table":"abilities","values":{"id":"zoro-king-of-hell","character_id":"zoro","name":"King of Hell Style","description":"Advanced sword techniques associated with Enma and Haki.","category":"technique","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Asura Zoro\"]","arc":"Enies Lobby","canonical":1,"character_id":"zoro","created":1791504000000,"description":"Zoro with three-sword style during Enies Lobby.","era":"One Piece","id":"zoro-enies-lobby","name":"Enies Lobby Zoro","parent_version_id":null,"short_name":"Enies Lobby","sort_order":10,"source_endpoint":"One Piece anime · Wano Country"}}
+{"table":"squad_version_costs","values":{"character_id":"zoro","cost":35,"updated":1791504000000,"version_id":"zoro-enies-lobby"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"zoro-enies-lobby"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"assassin","version_id":"zoro-enies-lobby"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"zoro-enies-lobby"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"zoro-enies-lobby"}}
+{"table":"version_abilities","values":{"ability_id":"zoro-three-sword","notes":"","status":"available","version_id":"zoro-enies-lobby"}}
+{"table":"character_versions","values":{"aliases":"[\"King of Hell Zoro\",\"Enma Zoro\"]","arc":"Wano Country","canonical":1,"character_id":"zoro","created":1791504000000,"description":"Zoro with Wano-era sword techniques and Haki.","era":"One Piece","id":"zoro-wano","name":"Wano Zoro","parent_version_id":"zoro-enies-lobby","short_name":"Wano","sort_order":20,"source_endpoint":"One Piece anime · Wano Country"}}
+{"table":"squad_version_costs","values":{"character_id":"zoro","cost":70,"updated":1791504000000,"version_id":"zoro-wano"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"zoro-wano"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"tank","version_id":"zoro-wano"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"zoro-wano"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"zoro-wano"}}
+{"table":"version_abilities","values":{"ability_id":"zoro-three-sword","notes":"","status":"available","version_id":"zoro-wano"}}
+{"table":"version_abilities","values":{"ability_id":"zoro-armament","notes":"","status":"available","version_id":"zoro-wano"}}
+{"table":"version_abilities","values":{"ability_id":"zoro-king-of-hell","notes":"","status":"available","version_id":"zoro-wano"}}
+{"table":"abilities","values":{"id":"sanji-black-leg","character_id":"sanji","name":"Black Leg Style","description":"High-speed kicking-based martial arts.","category":"physical","created":1791504000000}}
+{"table":"abilities","values":{"id":"sanji-diable-jambe","character_id":"sanji","name":"Diable Jambe","description":"Flame-enhanced kicks.","category":"technique","created":1791504000000}}
+{"table":"abilities","values":{"id":"sanji-ifrit-jambe","character_id":"sanji","name":"Ifrit Jambe","description":"Advanced hotter flame-enhanced kicks.","category":"technique","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Diable Jambe Sanji\"]","arc":"Enies Lobby","canonical":1,"character_id":"sanji","created":1791504000000,"description":"Sanji during Enies Lobby with Diable Jambe.","era":"One Piece","id":"sanji-enies-lobby","name":"Enies Lobby Sanji","parent_version_id":null,"short_name":"Enies Lobby","sort_order":10,"source_endpoint":"One Piece anime · Wano Country"}}
+{"table":"squad_version_costs","values":{"character_id":"sanji","cost":33,"updated":1791504000000,"version_id":"sanji-enies-lobby"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"sanji-enies-lobby"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"sanji-enies-lobby"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"sanji-enies-lobby"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"sanji-enies-lobby"}}
+{"table":"version_abilities","values":{"ability_id":"sanji-black-leg","notes":"","status":"available","version_id":"sanji-enies-lobby"}}
+{"table":"version_abilities","values":{"ability_id":"sanji-diable-jambe","notes":"","status":"available","version_id":"sanji-enies-lobby"}}
+{"table":"character_versions","values":{"aliases":"[\"Ifrit Jambe Sanji\"]","arc":"Wano Country","canonical":1,"character_id":"sanji","created":1791504000000,"description":"Sanji using Ifrit Jambe during Wano.","era":"One Piece","id":"sanji-wano","name":"Wano Sanji","parent_version_id":"sanji-enies-lobby","short_name":"Wano","sort_order":20,"source_endpoint":"One Piece anime · Wano Country"}}
+{"table":"squad_version_costs","values":{"character_id":"sanji","cost":66,"updated":1791504000000,"version_id":"sanji-wano"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"speedster","version_id":"sanji-wano"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"sanji-wano"}}
+{"table":"version_strategic_traits","values":{"trait":"mobility","version_id":"sanji-wano"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"sanji-wano"}}
+{"table":"version_abilities","values":{"ability_id":"sanji-black-leg","notes":"","status":"available","version_id":"sanji-wano"}}
+{"table":"version_abilities","values":{"ability_id":"sanji-diable-jambe","notes":"","status":"available","version_id":"sanji-wano"}}
+{"table":"version_abilities","values":{"ability_id":"sanji-ifrit-jambe","notes":"","status":"available","version_id":"sanji-wano"}}
+{"table":"abilities","values":{"id":"sukuna-slashes","character_id":"sukuna","name":"Cleave and Dismantle","description":"Sukuna's slashing cursed techniques.","category":"technique","created":1791504000000}}
+{"table":"abilities","values":{"id":"sukuna-rct","character_id":"sukuna","name":"Reverse Cursed Technique","description":"Cursed-energy-based regeneration.","category":"defensive","created":1791504000000}}
+{"table":"abilities","values":{"id":"sukuna-domain","character_id":"sukuna","name":"Malevolent Shrine","description":"Open-barrier domain expansion.","category":"hax","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Yuji Vessel\",\"Early Sukuna\"]","arc":"Season 1","canonical":1,"character_id":"sukuna","created":1791504000000,"description":"Sukuna manifesting through Yuji's body during early anime arcs.","era":"Jujutsu Kaisen","id":"sukuna-vessel","name":"Early Vessel Sukuna","parent_version_id":null,"short_name":"Vessel","sort_order":10,"source_endpoint":"Jujutsu Kaisen anime · Shibuya Incident"}}
+{"table":"squad_version_costs","values":{"character_id":"sukuna","cost":68,"updated":1791504000000,"version_id":"sukuna-vessel"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"dps","version_id":"sukuna-vessel"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"controller","version_id":"sukuna-vessel"}}
+{"table":"version_strategic_traits","values":{"trait":"single_target","version_id":"sukuna-vessel"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"sukuna-vessel"}}
+{"table":"version_abilities","values":{"ability_id":"sukuna-slashes","notes":"","status":"available","version_id":"sukuna-vessel"}}
+{"table":"version_abilities","values":{"ability_id":"sukuna-rct","notes":"","status":"available","version_id":"sukuna-vessel"}}
+{"table":"character_versions","values":{"aliases":"[\"Malevolent Shrine Sukuna\"]","arc":"Shibuya Incident","canonical":1,"character_id":"sukuna","created":1791504000000,"description":"Sukuna during the Shibuya Incident anime arc.","era":"Jujutsu Kaisen","id":"sukuna-shibuya","name":"Shibuya Sukuna","parent_version_id":"sukuna-vessel","short_name":"Shibuya","sort_order":20,"source_endpoint":"Jujutsu Kaisen anime · Shibuya Incident"}}
+{"table":"squad_version_costs","values":{"character_id":"sukuna","cost":97,"updated":1791504000000,"version_id":"sukuna-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"controller","version_id":"sukuna-shibuya"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"sukuna-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"sukuna-shibuya"}}
+{"table":"version_strategic_traits","values":{"trait":"anti_regeneration","version_id":"sukuna-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"sukuna-slashes","notes":"","status":"available","version_id":"sukuna-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"sukuna-rct","notes":"","status":"available","version_id":"sukuna-shibuya"}}
+{"table":"version_abilities","values":{"ability_id":"sukuna-domain","notes":"","status":"available","version_id":"sukuna-shibuya"}}
+{"table":"abilities","values":{"id":"yuta-sword","character_id":"yuta","name":"Cursed Energy Swordplay","description":"Katana fighting reinforced with cursed energy.","category":"weapon","created":1791504000000}}
+{"table":"abilities","values":{"id":"yuta-rika","character_id":"yuta","name":"Rika","description":"Rika manifestation used for support and combat.","category":"summoning","created":1791504000000}}
+{"table":"abilities","values":{"id":"yuta-copy","character_id":"yuta","name":"Copy","description":"Conditional use of copied cursed techniques.","category":"hax","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Jujutsu Kaisen Zero\",\"Yuta Okkotsu Film\"]","arc":"JJK 0","canonical":1,"character_id":"yuta","created":1791504000000,"description":"Yuta at the end of the Jujutsu Kaisen 0 film.","era":"Jujutsu Kaisen 0","id":"yuta-jujutsu-zero","name":"Jujutsu Kaisen 0 Yuta","parent_version_id":null,"short_name":"JJK 0","sort_order":10,"source_endpoint":"Jujutsu Kaisen 0 film / manga later arcs"}}
+{"table":"squad_version_costs","values":{"character_id":"yuta","cost":56,"updated":1791504000000,"version_id":"yuta-jujutsu-zero"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"summoner","version_id":"yuta-jujutsu-zero"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"support","version_id":"yuta-jujutsu-zero"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"yuta-jujutsu-zero"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"yuta-jujutsu-zero"}}
+{"table":"version_abilities","values":{"ability_id":"yuta-sword","notes":"","status":"available","version_id":"yuta-jujutsu-zero"}}
+{"table":"version_abilities","values":{"ability_id":"yuta-rika","notes":"","status":"available","version_id":"yuta-jujutsu-zero"}}
+{"table":"character_versions","values":{"aliases":"[\"Sendai Colony Yuta\",\"Manga Yuta\"]","arc":"Culling Game","canonical":1,"character_id":"yuta","created":1791504000000,"description":"Yuta during the Culling Game manga arc; manga spoilers.","era":"Jujutsu Kaisen manga","id":"yuta-culling-game","name":"Culling Game Yuta","parent_version_id":"yuta-jujutsu-zero","short_name":"Culling Game","sort_order":20,"source_endpoint":"Jujutsu Kaisen 0 film / manga later arcs"}}
+{"table":"squad_version_costs","values":{"character_id":"yuta","cost":82,"updated":1791504000000,"version_id":"yuta-culling-game"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"summoner","version_id":"yuta-culling-game"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"yuta-culling-game"}}
+{"table":"version_strategic_traits","values":{"trait":"summoning","version_id":"yuta-culling-game"}}
+{"table":"version_strategic_traits","values":{"trait":"adaptation","version_id":"yuta-culling-game"}}
+{"table":"version_abilities","values":{"ability_id":"yuta-sword","notes":"","status":"available","version_id":"yuta-culling-game"}}
+{"table":"version_abilities","values":{"ability_id":"yuta-rika","notes":"","status":"available","version_id":"yuta-culling-game"}}
+{"table":"version_abilities","values":{"ability_id":"yuta-copy","notes":"","status":"available","version_id":"yuta-culling-game"}}
+{"table":"abilities","values":{"id":"nezuko-regeneration","character_id":"nezuko","name":"Demon Regeneration","description":"Rapid healing as a demon.","category":"defensive","created":1791504000000}}
+{"table":"abilities","values":{"id":"nezuko-kicks","character_id":"nezuko","name":"Close-Range Kicks","description":"Powerful close-range physical combat.","category":"physical","created":1791504000000}}
+{"table":"abilities","values":{"id":"nezuko-exploding-blood","character_id":"nezuko","name":"Exploding Blood","description":"Nezuko's burning Blood Demon Art.","category":"technique","created":1791504000000}}
+{"table":"character_versions","values":{"aliases":"[\"Early Nezuko\"]","arc":"Season 1","canonical":1,"character_id":"nezuko","created":1791504000000,"description":"Nezuko's initial demon combat profile.","era":"Demon Slayer","id":"nezuko-season-1","name":"Season 1 Nezuko","parent_version_id":null,"short_name":"Season 1","sort_order":10,"source_endpoint":"Demon Slayer anime · Entertainment District"}}
+{"table":"squad_version_costs","values":{"character_id":"nezuko","cost":25,"updated":1791504000000,"version_id":"nezuko-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"tank","version_id":"nezuko-season-1"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"nezuko-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"close_range","version_id":"nezuko-season-1"}}
+{"table":"version_strategic_traits","values":{"trait":"healing","version_id":"nezuko-season-1"}}
+{"table":"version_abilities","values":{"ability_id":"nezuko-regeneration","notes":"","status":"available","version_id":"nezuko-season-1"}}
+{"table":"version_abilities","values":{"ability_id":"nezuko-kicks","notes":"","status":"available","version_id":"nezuko-season-1"}}
+{"table":"character_versions","values":{"aliases":"[\"Exploding Blood Nezuko\"]","arc":"Entertainment District","canonical":1,"character_id":"nezuko","created":1791504000000,"description":"Nezuko during the Entertainment District anime arc.","era":"Demon Slayer","id":"nezuko-entertainment-district","name":"Entertainment District Nezuko","parent_version_id":"nezuko-season-1","short_name":"Entertainment District","sort_order":20,"source_endpoint":"Demon Slayer anime · Entertainment District"}}
+{"table":"squad_version_costs","values":{"character_id":"nezuko","cost":52,"updated":1791504000000,"version_id":"nezuko-entertainment-district"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"primary","role":"tank","version_id":"nezuko-entertainment-district"}}
+{"table":"version_combat_roles","values":{"notes":"","priority":"secondary","role":"dps","version_id":"nezuko-entertainment-district"}}
+{"table":"version_strategic_traits","values":{"trait":"healing","version_id":"nezuko-entertainment-district"}}
+{"table":"version_strategic_traits","values":{"trait":"area_damage","version_id":"nezuko-entertainment-district"}}
+{"table":"version_abilities","values":{"ability_id":"nezuko-regeneration","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
+{"table":"version_abilities","values":{"ability_id":"nezuko-kicks","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
+{"table":"version_abilities","values":{"ability_id":"nezuko-exploding-blood","notes":"","status":"available","version_id":"nezuko-entertainment-district"}}
