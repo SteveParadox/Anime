@@ -107,17 +107,17 @@ export function analyzeSquadComposition(members:StrategicMember[]){
 
 /** Curated tactical hypotheses. These are not canon claims or win predictions. */
 export const TRAIT_INTERACTION_RULES=[
- {id:'healing-frontline',left:'healing',right:'close_range',kind:'synergy',label:'Frontline Sustain',description:'Healing may help a close-range ally sustain pressure.'},
+ {id:'healing-frontline',left:'healing',leftRole:'healer',right:'close_range',kind:'synergy',label:'Frontline Sustain',description:'A dedicated healer may help a close-range ally sustain pressure.'},
  {id:'barrier-ranged',left:'barrier',right:'long_range',kind:'synergy',label:'Protected Ranged Pressure',description:'A barrier may protect an allied ranged attacker.'},
  {id:'information-stealth',left:'information',right:'stealth',kind:'synergy',label:'Informed Ambush',description:'Reconnaissance may improve an ally’s stealth engagement.'},
  {id:'control-area',left:'crowd_control',right:'area_damage',kind:'synergy',label:'Control and Area Damage',description:'Restraining opponents may create openings for allied area attacks.'}
-] as const satisfies readonly {id:string;left:StrategicTrait;right:StrategicTrait;kind:'synergy'|'conflict';label:string;description:string}[];
+] as const satisfies readonly {id:string;left:StrategicTrait;leftRole?:CombatRole;right:StrategicTrait;kind:'synergy'|'conflict';label:string;description:string}[];
 
 /** Each rule can fire at most once; both traits must belong to different members. */
 export function analyzeTraitInteractions(members:StrategicMember[]){
  return TRAIT_INTERACTION_RULES.flatMap(rule=>{
   for(let i=0;i<members.length;i++){
-   if(!members[i].traits.includes(rule.left))continue;
+   if(!members[i].traits.includes(rule.left)||('leftRole' in rule&&!members[i].roles.some(({role})=>role===rule.leftRole)))continue;
    for(let j=0;j<members.length;j++){
     if(i===j||!members[j].traits.includes(rule.right))continue;
     return [{id:rule.id,kind:rule.kind,label:rule.label,description:rule.description,
