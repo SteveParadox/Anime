@@ -116,6 +116,23 @@ export const characterVersions:CharacterVersion[]=[
 
  {id:'megumi-season-1',characterId:'megumi',name:'Season 1 Megumi',shortName:'Season 1',aliases:['Season 1'],description:'Megumi at the first-season anime combat endpoint.',era:'Jujutsu Kaisen',sortOrder:10,canonical:true,sourceEndpoint:'Jujutsu Kaisen anime season 1',parentVersionId:null},
  {id:'megumi-shibuya',characterId:'megumi',name:'Shibuya Incident Megumi',shortName:'Shibuya',aliases:['Shibuya Megumi'],description:'Megumi at the Shibuya Incident anime endpoint.',era:'Jujutsu Kaisen',arc:'Shibuya Incident',sortOrder:20,canonical:true,sourceEndpoint:'Jujutsu Kaisen · Shibuya Incident',parentVersionId:'megumi-season-1'}
+
+ {id:"vegeta-saiyan-saga",characterId:"vegeta",name:"Saiyan Saga Vegeta",shortName:"Saiyan Saga",aliases:["Saiyan Prince"],description:"Vegeta during his early confrontation with Earth defenders.",era:"Dragon Ball Z",arc:"Saiyan Saga",sortOrder:10,canonical:true,sourceEndpoint:"Dragon Ball Super anime",parentVersionId:null},
+ {id:"vegeta-super-saiyan-blue",characterId:"vegeta",name:"Super Saiyan Blue Vegeta",shortName:"SSB",aliases:["Super Saiyan Blue","SSB Vegeta"],description:"Vegeta with Super Saiyan Blue as shown in Dragon Ball Super.",era:"Dragon Ball Super",arc:undefined,sortOrder:20,canonical:true,sourceEndpoint:"Dragon Ball Super anime",parentVersionId:"vegeta-saiyan-saga"},
+ {id:"sasuke-hebi",characterId:"sasuke",name:"Hebi Sasuke",shortName:"Hebi",aliases:["Hebi","Post-timeskip"],description:"Sasuke during the Hebi period with Chidori and Sharingan.",era:"Naruto Shippuden",arc:"Hebi",sortOrder:10,canonical:true,sourceEndpoint:"Naruto Shippuden · Fourth Shinobi World War",parentVersionId:null},
+ {id:"sasuke-rinnegan",characterId:"sasuke",name:"Rinnegan Sasuke",shortName:"Rinnegan",aliases:["Six Paths Sasuke","War Arc Sasuke"],description:"Sasuke after receiving the Rinnegan in the Fourth Shinobi World War.",era:"Naruto Shippuden",arc:"Fourth Shinobi World War",sortOrder:20,canonical:true,sourceEndpoint:"Naruto Shippuden · Fourth Shinobi World War",parentVersionId:"sasuke-hebi"},
+ {id:"kakashi-sharingan",characterId:"kakashi",name:"Sharingan Kakashi",shortName:"Sharingan",aliases:["Copy Ninja Kakashi"],description:"Kakashi with Sharingan combat and Raikiri.",era:"Naruto",arc:"Original series",sortOrder:10,canonical:true,sourceEndpoint:"Naruto Shippuden anime",parentVersionId:null},
+ {id:"kakashi-war-arc",characterId:"kakashi",name:"War Arc Kakashi",shortName:"War Arc",aliases:["Kamui Kakashi"],description:"Kakashi using Kamui during the Fourth Shinobi World War.",era:"Naruto Shippuden",arc:"Fourth Shinobi World War",sortOrder:20,canonical:true,sourceEndpoint:"Naruto Shippuden anime",parentVersionId:"kakashi-sharingan"},
+ {id:"zoro-enies-lobby",characterId:"zoro",name:"Enies Lobby Zoro",shortName:"Enies Lobby",aliases:["Asura Zoro"],description:"Zoro with three-sword style during Enies Lobby.",era:"One Piece",arc:"Enies Lobby",sortOrder:10,canonical:true,sourceEndpoint:"One Piece anime · Wano Country",parentVersionId:null},
+ {id:"zoro-wano",characterId:"zoro",name:"Wano Zoro",shortName:"Wano",aliases:["King of Hell Zoro","Enma Zoro"],description:"Zoro with Wano-era sword techniques and Haki.",era:"One Piece",arc:"Wano Country",sortOrder:20,canonical:true,sourceEndpoint:"One Piece anime · Wano Country",parentVersionId:"zoro-enies-lobby"},
+ {id:"sanji-enies-lobby",characterId:"sanji",name:"Enies Lobby Sanji",shortName:"Enies Lobby",aliases:["Diable Jambe Sanji"],description:"Sanji during Enies Lobby with Diable Jambe.",era:"One Piece",arc:"Enies Lobby",sortOrder:10,canonical:true,sourceEndpoint:"One Piece anime · Wano Country",parentVersionId:null},
+ {id:"sanji-wano",characterId:"sanji",name:"Wano Sanji",shortName:"Wano",aliases:["Ifrit Jambe Sanji"],description:"Sanji using Ifrit Jambe during Wano.",era:"One Piece",arc:"Wano Country",sortOrder:20,canonical:true,sourceEndpoint:"One Piece anime · Wano Country",parentVersionId:"sanji-enies-lobby"},
+ {id:"sukuna-vessel",characterId:"sukuna",name:"Early Vessel Sukuna",shortName:"Vessel",aliases:["Yuji Vessel","Early Sukuna"],description:"Sukuna manifesting through Yuji's body during early anime arcs.",era:"Jujutsu Kaisen",arc:"Season 1",sortOrder:10,canonical:true,sourceEndpoint:"Jujutsu Kaisen anime · Shibuya Incident",parentVersionId:null},
+ {id:"sukuna-shibuya",characterId:"sukuna",name:"Shibuya Sukuna",shortName:"Shibuya",aliases:["Malevolent Shrine Sukuna"],description:"Sukuna during the Shibuya Incident anime arc.",era:"Jujutsu Kaisen",arc:"Shibuya Incident",sortOrder:20,canonical:true,sourceEndpoint:"Jujutsu Kaisen anime · Shibuya Incident",parentVersionId:"sukuna-vessel"},
+ {id:"yuta-jujutsu-zero",characterId:"yuta",name:"Jujutsu Kaisen 0 Yuta",shortName:"JJK 0",aliases:["Jujutsu Kaisen Zero","Yuta Okkotsu Film"],description:"Yuta at the end of the Jujutsu Kaisen 0 film.",era:"Jujutsu Kaisen 0",arc:"JJK 0",sortOrder:10,canonical:true,sourceEndpoint:"Jujutsu Kaisen 0 film / manga later arcs",parentVersionId:null},
+ {id:"yuta-culling-game",characterId:"yuta",name:"Culling Game Yuta",shortName:"Culling Game",aliases:["Sendai Colony Yuta","Manga Yuta"],description:"Yuta during the Culling Game manga arc; manga spoilers.",era:"Jujutsu Kaisen manga",arc:"Culling Game",sortOrder:20,canonical:true,sourceEndpoint:"Jujutsu Kaisen 0 film / manga later arcs",parentVersionId:"yuta-jujutsu-zero"},
+ {id:"nezuko-season-1",characterId:"nezuko",name:"Season 1 Nezuko",shortName:"Season 1",aliases:["Early Nezuko"],description:"Nezuko's initial demon combat profile.",era:"Demon Slayer",arc:"Season 1",sortOrder:10,canonical:true,sourceEndpoint:"Demon Slayer anime · Entertainment District",parentVersionId:null},
+ {id:"nezuko-entertainment-district",characterId:"nezuko",name:"Entertainment District Nezuko",shortName:"Entertainment District",aliases:["Exploding Blood Nezuko"],description:"Nezuko during the Entertainment District anime arc.",era:"Demon Slayer",arc:"Entertainment District",sortOrder:20,canonical:true,sourceEndpoint:"Demon Slayer anime · Entertainment District",parentVersionId:"nezuko-season-1"},
 ];
 
 export const abilities:Ability[]=[
@@ -176,6 +193,31 @@ export const abilities:Ability[]=[
 
  {id:'megumi-ten-shadows',characterId:'megumi',name:'Ten Shadows Technique',description:'Shikigami-based inherited cursed technique.',category:'summoning'},
  {id:'megumi-chimera-shadow-garden',characterId:'megumi',name:'Chimera Shadow Garden',description:'Megumi incomplete domain expansion.',category:'hax'}
+
+ {id:"vegeta-ki",characterId:"vegeta",name:"Saiyan Ki Combat",description:"Ki blasts and martial arts with Saiyan combat strength.",category:"energy"},
+ {id:"vegeta-galick-gun",characterId:"vegeta",name:"Galick Gun",description:"Directed ki-beam attack.",category:"technique"},
+ {id:"vegeta-blue",characterId:"vegeta",name:"Super Saiyan Blue",description:"God-ki Super Saiyan transformation.",category:"transformation"},
+ {id:"sasuke-chidori",characterId:"sasuke",name:"Chidori",description:"Lightning nature transformation concentrated in a close-range thrust.",category:"technique"},
+ {id:"sasuke-sharingan",characterId:"sasuke",name:"Sharingan",description:"Uchiha visual perception and genjutsu.",category:"sensory"},
+ {id:"sasuke-rinnegan-ability",characterId:"sasuke",name:"Rinnegan",description:"Six Paths ocular techniques including space-time substitution.",category:"hax"},
+ {id:"kakashi-raikiri",characterId:"kakashi",name:"Raikiri",description:"Lightning Blade, a precision lightning attack.",category:"technique"},
+ {id:"kakashi-sharingan",characterId:"kakashi",name:"Sharingan",description:"Copy-ninja ocular tracking and combat analysis.",category:"sensory"},
+ {id:"kakashi-kamui",characterId:"kakashi",name:"Kamui",description:"Mangekyo Sharingan space-time technique.",category:"hax"},
+ {id:"zoro-three-sword",characterId:"zoro",name:"Three-Sword Style",description:"Santoryu swordsmanship using three blades.",category:"weapon"},
+ {id:"zoro-armament",characterId:"zoro",name:"Armament Haki",description:"Haki reinforcement for attacks and defense.",category:"energy"},
+ {id:"zoro-king-of-hell",characterId:"zoro",name:"King of Hell Style",description:"Advanced sword techniques associated with Enma and Haki.",category:"technique"},
+ {id:"sanji-black-leg",characterId:"sanji",name:"Black Leg Style",description:"High-speed kicking-based martial arts.",category:"physical"},
+ {id:"sanji-diable-jambe",characterId:"sanji",name:"Diable Jambe",description:"Flame-enhanced kicks.",category:"technique"},
+ {id:"sanji-ifrit-jambe",characterId:"sanji",name:"Ifrit Jambe",description:"Advanced hotter flame-enhanced kicks.",category:"technique"},
+ {id:"sukuna-slashes",characterId:"sukuna",name:"Cleave and Dismantle",description:"Sukuna's slashing cursed techniques.",category:"technique"},
+ {id:"sukuna-rct",characterId:"sukuna",name:"Reverse Cursed Technique",description:"Cursed-energy-based regeneration.",category:"defensive"},
+ {id:"sukuna-domain",characterId:"sukuna",name:"Malevolent Shrine",description:"Open-barrier domain expansion.",category:"hax"},
+ {id:"yuta-sword",characterId:"yuta",name:"Cursed Energy Swordplay",description:"Katana fighting reinforced with cursed energy.",category:"weapon"},
+ {id:"yuta-rika",characterId:"yuta",name:"Rika",description:"Rika manifestation used for support and combat.",category:"summoning"},
+ {id:"yuta-copy",characterId:"yuta",name:"Copy",description:"Conditional use of copied cursed techniques.",category:"hax"},
+ {id:"nezuko-regeneration",characterId:"nezuko",name:"Demon Regeneration",description:"Rapid healing as a demon.",category:"defensive"},
+ {id:"nezuko-kicks",characterId:"nezuko",name:"Close-Range Kicks",description:"Powerful close-range physical combat.",category:"physical"},
+ {id:"nezuko-exploding-blood",characterId:"nezuko",name:"Exploding Blood",description:"Nezuko's burning Blood Demon Art.",category:"technique"},
 ];
 
 export const versionAbilities:VersionAbility[]=[
@@ -248,6 +290,46 @@ export const versionAbilities:VersionAbility[]=[
 
  ...['megumi-season-1','megumi-shibuya'].map(versionId=>({versionId,abilityId:'megumi-ten-shadows',status:'available' as const})),
  ...['megumi-season-1','megumi-shibuya'].map(versionId=>({versionId,abilityId:'megumi-chimera-shadow-garden',status:'limited' as const}))
+,
+ {versionId:"vegeta-saiyan-saga",abilityId:"vegeta-ki",status:'available'},
+ {versionId:"vegeta-saiyan-saga",abilityId:"vegeta-galick-gun",status:'available'},
+ {versionId:"vegeta-super-saiyan-blue",abilityId:"vegeta-ki",status:'available'},
+ {versionId:"vegeta-super-saiyan-blue",abilityId:"vegeta-galick-gun",status:'available'},
+ {versionId:"vegeta-super-saiyan-blue",abilityId:"vegeta-blue",status:'available'},
+ {versionId:"sasuke-hebi",abilityId:"sasuke-chidori",status:'available'},
+ {versionId:"sasuke-hebi",abilityId:"sasuke-sharingan",status:'available'},
+ {versionId:"sasuke-rinnegan",abilityId:"sasuke-chidori",status:'available'},
+ {versionId:"sasuke-rinnegan",abilityId:"sasuke-sharingan",status:'available'},
+ {versionId:"sasuke-rinnegan",abilityId:"sasuke-rinnegan-ability",status:'available'},
+ {versionId:"kakashi-sharingan",abilityId:"kakashi-raikiri",status:'available'},
+ {versionId:"kakashi-sharingan",abilityId:"kakashi-sharingan",status:'available'},
+ {versionId:"kakashi-war-arc",abilityId:"kakashi-raikiri",status:'available'},
+ {versionId:"kakashi-war-arc",abilityId:"kakashi-sharingan",status:'available'},
+ {versionId:"kakashi-war-arc",abilityId:"kakashi-kamui",status:'available'},
+ {versionId:"zoro-enies-lobby",abilityId:"zoro-three-sword",status:'available'},
+ {versionId:"zoro-wano",abilityId:"zoro-three-sword",status:'available'},
+ {versionId:"zoro-wano",abilityId:"zoro-armament",status:'available'},
+ {versionId:"zoro-wano",abilityId:"zoro-king-of-hell",status:'available'},
+ {versionId:"sanji-enies-lobby",abilityId:"sanji-black-leg",status:'available'},
+ {versionId:"sanji-enies-lobby",abilityId:"sanji-diable-jambe",status:'available'},
+ {versionId:"sanji-wano",abilityId:"sanji-black-leg",status:'available'},
+ {versionId:"sanji-wano",abilityId:"sanji-diable-jambe",status:'available'},
+ {versionId:"sanji-wano",abilityId:"sanji-ifrit-jambe",status:'available'},
+ {versionId:"sukuna-vessel",abilityId:"sukuna-slashes",status:'available'},
+ {versionId:"sukuna-vessel",abilityId:"sukuna-rct",status:'available'},
+ {versionId:"sukuna-shibuya",abilityId:"sukuna-slashes",status:'available'},
+ {versionId:"sukuna-shibuya",abilityId:"sukuna-rct",status:'available'},
+ {versionId:"sukuna-shibuya",abilityId:"sukuna-domain",status:'available'},
+ {versionId:"yuta-jujutsu-zero",abilityId:"yuta-sword",status:'available'},
+ {versionId:"yuta-jujutsu-zero",abilityId:"yuta-rika",status:'available'},
+ {versionId:"yuta-culling-game",abilityId:"yuta-sword",status:'available'},
+ {versionId:"yuta-culling-game",abilityId:"yuta-rika",status:'available'},
+ {versionId:"yuta-culling-game",abilityId:"yuta-copy",status:'available'},
+ {versionId:"nezuko-season-1",abilityId:"nezuko-regeneration",status:'available'},
+ {versionId:"nezuko-season-1",abilityId:"nezuko-kicks",status:'available'},
+ {versionId:"nezuko-entertainment-district",abilityId:"nezuko-regeneration",status:'available'},
+ {versionId:"nezuko-entertainment-district",abilityId:"nezuko-kicks",status:'available'},
+ {versionId:"nezuko-entertainment-district",abilityId:"nezuko-exploding-blood",status:'available'}
 ];
 
 export function versionsForCharacter(characterId:string){
