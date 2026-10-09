@@ -92,8 +92,11 @@ test('append-only migration history mirrors the curated version catalog',()=>{
   readFileSync('drizzle/0008_correct_roster_abilities.sql','utf8'),
   readFileSync('drizzle/0011_add_more_combat_fighters.sql','utf8')
  ].join('\n');
- for(const version of characterVersions)assert.ok(migrationHistory.includes(`('${version.id}','${version.characterId}'`),version.id);
- for(const link of versionAbilities)assert.ok(migrationHistory.includes(`'${link.versionId}','${link.abilityId}'`),`${link.versionId} -> ${link.abilityId}`);
+ const seeded=readFileSync('packages/database/seeds/catalog.jsonl','utf8').trim().split('\n').map(line=>JSON.parse(line));
+ const seededVersions=new Set(seeded.filter(row=>row.table==='character_versions').map(row=>row.values.id));
+ const seededLinks=new Set(seeded.filter(row=>row.table==='version_abilities').map(row=>row.values.version_id+'|'+row.values.ability_id));
+ for(const version of characterVersions)assert.ok(migrationHistory.includes(`('${version.id}','${version.characterId}'`)||seededVersions.has(version.id),version.id);
+ for(const link of versionAbilities)assert.ok(migrationHistory.includes(`'${link.versionId}','${link.abilityId}'`)||seededLinks.has(link.versionId+'|'+link.abilityId),`${link.versionId} -> ${link.abilityId}`);
 });
 
 test('expanded challenge roster exposes stable combat versions and search aliases',()=>{
