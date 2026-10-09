@@ -692,3 +692,542 @@
 {"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-sword","status":"available","notes":""}}
 {"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-nozarashi","status":"available","notes":""}}
 {"table":"version_abilities","values":{"version_id":"kenpachi-bankai","ability_id":"kenpachi-bankai","status":"available","notes":""}}
+{"table":"character_versions","values":{"id":"byakuya-standard","character_id":"byakuya","name":"Standard Byakuya Kuchiki","short_name":"Standard","aliases":"[]","description":"Senbonzakura and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"byakuya-senbonzakura","character_id":"byakuya","name":"Senbonzakura","description":"Senbonzakura and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"byakuya-standard","ability_id":"byakuya-senbonzakura","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"byakuya-standard","character_id":"byakuya","cost":54,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"byakuya-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"byakuya-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"byakuya-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"toshiro-standard","character_id":"toshiro","name":"Standard Toshiro Hitsugaya","short_name":"Standard","aliases":"[]","description":"Hyorinmaru and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"toshiro-hyorinmaru","character_id":"toshiro","name":"Hyorinmaru","description":"Hyorinmaru and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"toshiro-standard","ability_id":"toshiro-hyorinmaru","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"toshiro-standard","character_id":"toshiro","cost":50,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"toshiro-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"toshiro-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"toshiro-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"urahara-standard","character_id":"urahara","name":"Standard Kisuke Urahara","short_name":"Standard","aliases":"[]","description":"Benihime and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"urahara-benihime","character_id":"urahara","name":"Benihime","description":"Benihime and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"urahara-standard","ability_id":"urahara-benihime","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"urahara-standard","character_id":"urahara","cost":55,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"urahara-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"urahara-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"urahara-standard","trait":"information"}}
+{"table":"character_versions","values":{"id":"mayuri-standard","character_id":"mayuri","name":"Standard Mayuri Kurotsuchi","short_name":"Standard","aliases":"[]","description":"Ashisogi Jizo and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"mayuri-ashisogi","character_id":"mayuri","name":"Ashisogi Jizo","description":"Ashisogi Jizo and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"mayuri-standard","ability_id":"mayuri-ashisogi","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"mayuri-standard","character_id":"mayuri","cost":48,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"mayuri-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"mayuri-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"mayuri-standard","trait":"debuff"}}
+{"table":"character_versions","values":{"id":"shunsui-standard","character_id":"shunsui","name":"Standard Shunsui Kyoraku","short_name":"Standard","aliases":"[]","description":"Katen Kyokotsu and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"shunsui-katen","character_id":"shunsui","name":"Katen Kyokotsu","description":"Katen Kyokotsu and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"shunsui-standard","ability_id":"shunsui-katen","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"shunsui-standard","character_id":"shunsui","cost":64,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"shunsui-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"shunsui-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"shunsui-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"yamamoto-standard","character_id":"yamamoto","name":"Standard Genryusai Yamamoto","short_name":"Standard","aliases":"[]","description":"Ryujin Jakka and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"yamamoto-ryujin","character_id":"yamamoto","name":"Ryujin Jakka","description":"Ryujin Jakka and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"yamamoto-standard","ability_id":"yamamoto-ryujin","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"yamamoto-standard","character_id":"yamamoto","cost":85,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"yamamoto-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"yamamoto-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"yamamoto-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"renji-standard","character_id":"renji","name":"Standard Renji Abarai","short_name":"Standard","aliases":"[]","description":"Zabimaru and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"renji-zabimaru","character_id":"renji","name":"Zabimaru","description":"Zabimaru and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"renji-standard","ability_id":"renji-zabimaru","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"renji-standard","character_id":"renji","cost":40,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"renji-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"renji-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"renji-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"uryu-standard","character_id":"uryu","name":"Standard Uryu Ishida","short_name":"Standard","aliases":"[]","description":"Quincy Spirit Bow and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"uryu-quincy-bow","character_id":"uryu","name":"Quincy Spirit Bow","description":"Quincy Spirit Bow and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"uryu-standard","ability_id":"uryu-quincy-bow","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"uryu-standard","character_id":"uryu","cost":49,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"uryu-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"uryu-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"uryu-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"chad-standard","character_id":"chad","name":"Standard Yasutora Sado","short_name":"Standard","aliases":"[]","description":"Brazo Derecha de Gigante and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"chad-brazo","character_id":"chad","name":"Brazo Derecha de Gigante","description":"Brazo Derecha de Gigante and associated combat techniques; exact effects require matchup rules.","category":"physical","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"chad-standard","ability_id":"chad-brazo","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"chad-standard","character_id":"chad","cost":34,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"chad-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"chad-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"chad-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"unohana-standard","character_id":"unohana","name":"Standard Retsu Unohana","short_name":"Standard","aliases":"[]","description":"Kaido Healing and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"unohana-kaido","character_id":"unohana","name":"Kaido Healing","description":"Kaido Healing and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"unohana-standard","ability_id":"unohana-kaido","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"unohana-standard","character_id":"unohana","cost":57,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"unohana-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"unohana-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"unohana-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"komamura-standard","character_id":"komamura","name":"Standard Sajin Komamura","short_name":"Standard","aliases":"[]","description":"Tenken and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"komamura-tenken","character_id":"komamura","name":"Tenken","description":"Tenken and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"komamura-standard","ability_id":"komamura-tenken","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"komamura-standard","character_id":"komamura","cost":45,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"komamura-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"komamura-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"komamura-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"soifon-standard","character_id":"soifon","name":"Standard Soi Fon","short_name":"Standard","aliases":"[]","description":"Suzumebachi and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"soifon-suzumebachi","character_id":"soifon","name":"Suzumebachi","description":"Suzumebachi and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"soifon-standard","ability_id":"soifon-suzumebachi","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"soifon-standard","character_id":"soifon","cost":46,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"soifon-standard","role":"assassin","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"soifon-standard","role":"speedster","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"soifon-standard","trait":"mobility"}}
+{"table":"character_versions","values":{"id":"grimmjow-standard","character_id":"grimmjow","name":"Standard Grimmjow Jaegerjaquez","short_name":"Standard","aliases":"[]","description":"Pantera and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"grimmjow-pantera","character_id":"grimmjow","name":"Pantera","description":"Pantera and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"grimmjow-standard","ability_id":"grimmjow-pantera","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"grimmjow-standard","character_id":"grimmjow","cost":56,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"grimmjow-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"grimmjow-standard","role":"speedster","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"grimmjow-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"ulquiorra-standard","character_id":"ulquiorra","name":"Standard Ulquiorra Cifer","short_name":"Standard","aliases":"[]","description":"Murcielago and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"ulquiorra-murcielago","character_id":"ulquiorra","name":"Murcielago","description":"Murcielago and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"ulquiorra-standard","ability_id":"ulquiorra-murcielago","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"ulquiorra-standard","character_id":"ulquiorra","cost":67,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"ulquiorra-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"ulquiorra-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"ulquiorra-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"starrk-standard","character_id":"starrk","name":"Standard Coyote Starrk","short_name":"Standard","aliases":"[]","description":"Los Lobos and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"starrk-los-lobos","character_id":"starrk","name":"Los Lobos","description":"Los Lobos and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"starrk-standard","ability_id":"starrk-los-lobos","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"starrk-standard","character_id":"starrk","cost":66,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"starrk-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"starrk-standard","role":"summoner","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"starrk-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"barragan-standard","character_id":"barragan","name":"Standard Barragan Louisenbairn","short_name":"Standard","aliases":"[]","description":"Respira and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"barragan-respira","character_id":"barragan","name":"Respira","description":"Respira and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"barragan-standard","ability_id":"barragan-respira","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"barragan-standard","character_id":"barragan","cost":68,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"barragan-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"barragan-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"barragan-standard","trait":"debuff"}}
+{"table":"character_versions","values":{"id":"nelliel-standard","character_id":"nelliel","name":"Standard Nelliel Tu Odelschwanck","short_name":"Standard","aliases":"[]","description":"Gamuza and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"nelliel-gamuza","character_id":"nelliel","name":"Gamuza","description":"Gamuza and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"nelliel-standard","ability_id":"nelliel-gamuza","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"nelliel-standard","character_id":"nelliel","cost":50,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"nelliel-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"nelliel-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"nelliel-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"harribel-standard","character_id":"harribel","name":"Standard Tier Harribel","short_name":"Standard","aliases":"[]","description":"Tiburon and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"harribel-tiburon","character_id":"harribel","name":"Tiburon","description":"Tiburon and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"harribel-standard","ability_id":"harribel-tiburon","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"harribel-standard","character_id":"harribel","cost":58,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"harribel-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"harribel-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"harribel-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"yhwach-standard","character_id":"yhwach","name":"Standard Yhwach","short_name":"Standard","aliases":"[]","description":"The Almighty and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"yhwach-almighty","character_id":"yhwach","name":"The Almighty","description":"The Almighty and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"yhwach-standard","ability_id":"yhwach-almighty","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"yhwach-standard","character_id":"yhwach","cost":98,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"yhwach-standard","role":"reality_manipulator","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"yhwach-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"yhwach-standard","trait":"prediction"}}
+{"table":"character_versions","values":{"id":"jugram-standard","character_id":"jugram","name":"Standard Jugram Haschwalth","short_name":"Standard","aliases":"[]","description":"The Balance and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"jugram-balance","character_id":"jugram","name":"The Balance","description":"The Balance and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"jugram-standard","ability_id":"jugram-balance","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"jugram-standard","character_id":"jugram","cost":76,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"jugram-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"jugram-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"jugram-standard","trait":"debuff"}}
+{"table":"character_versions","values":{"id":"askin-standard","character_id":"askin","name":"Standard Askin Nakk Le Vaar","short_name":"Standard","aliases":"[]","description":"The Deathdealing and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"askin-deathdealing","character_id":"askin","name":"The Deathdealing","description":"The Deathdealing and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"askin-standard","ability_id":"askin-deathdealing","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"askin-standard","character_id":"askin","cost":72,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"askin-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"askin-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"askin-standard","trait":"debuff"}}
+{"table":"character_versions","values":{"id":"lille-standard","character_id":"lille","name":"Standard Lille Barro","short_name":"Standard","aliases":"[]","description":"The X-Axis and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"lille-x-axis","character_id":"lille","name":"The X-Axis","description":"The X-Axis and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"lille-standard","ability_id":"lille-x-axis","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"lille-standard","character_id":"lille","cost":77,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"lille-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"lille-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"lille-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"gerard-standard","character_id":"gerard","name":"Standard Gerard Valkyrie","short_name":"Standard","aliases":"[]","description":"The Miracle and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"gerard-miracle","character_id":"gerard","name":"The Miracle","description":"The Miracle and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"gerard-standard","ability_id":"gerard-miracle","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"gerard-standard","character_id":"gerard","cost":83,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"gerard-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"gerard-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"gerard-standard","trait":"adaptation"}}
+{"table":"character_versions","values":{"id":"gremmy-standard","character_id":"gremmy","name":"Standard Gremmy Thoumeaux","short_name":"Standard","aliases":"[]","description":"The Visionary and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"gremmy-visionary","character_id":"gremmy","name":"The Visionary","description":"The Visionary and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"gremmy-standard","ability_id":"gremmy-visionary","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"gremmy-standard","character_id":"gremmy","cost":80,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"gremmy-standard","role":"reality_manipulator","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"gremmy-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"gremmy-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"pernida-standard","character_id":"pernida","name":"Standard Pernida Parnkgjas","short_name":"Standard","aliases":"[]","description":"The Compulsory and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"pernida-compulsory","character_id":"pernida","name":"The Compulsory","description":"The Compulsory and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"pernida-standard","ability_id":"pernida-compulsory","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"pernida-standard","character_id":"pernida","cost":74,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"pernida-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"pernida-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"pernida-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"gin-standard","character_id":"gin","name":"Standard Gin Ichimaru","short_name":"Standard","aliases":"[]","description":"Shinso and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"gin-shinso","character_id":"gin","name":"Shinso","description":"Shinso and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"gin-standard","ability_id":"gin-shinso","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"gin-standard","character_id":"gin","cost":58,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"gin-standard","role":"assassin","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"gin-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"gin-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"kaname-standard","character_id":"kaname","name":"Standard Kaname Tosen","short_name":"Standard","aliases":"[]","description":"Suzumushi and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kaname-suzumushi","character_id":"kaname","name":"Suzumushi","description":"Suzumushi and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kaname-standard","ability_id":"kaname-suzumushi","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kaname-standard","character_id":"kaname","cost":51,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kaname-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kaname-standard","role":"assassin","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kaname-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"ikkaku-standard","character_id":"ikkaku","name":"Standard Ikkaku Madarame","short_name":"Standard","aliases":"[]","description":"Hozukimaru and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"ikkaku-hozuki","character_id":"ikkaku","name":"Hozukimaru","description":"Hozukimaru and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"ikkaku-standard","ability_id":"ikkaku-hozuki","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"ikkaku-standard","character_id":"ikkaku","cost":33,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"ikkaku-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"ikkaku-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"ikkaku-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"yumichika-standard","character_id":"yumichika","name":"Standard Yumichika Ayasegawa","short_name":"Standard","aliases":"[]","description":"Ruri'iro Kujaku and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"yumichika-ruri-iro","character_id":"yumichika","name":"Ruri'iro Kujaku","description":"Ruri'iro Kujaku and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"yumichika-standard","ability_id":"yumichika-ruri-iro","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"yumichika-standard","character_id":"yumichika","cost":32,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"yumichika-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"yumichika-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"yumichika-standard","trait":"debuff"}}
+{"table":"character_versions","values":{"id":"nnoitra-standard","character_id":"nnoitra","name":"Standard Nnoitra Gilga","short_name":"Standard","aliases":"[]","description":"Santa Teresa and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"nnoitra-santa-teresa","character_id":"nnoitra","name":"Santa Teresa","description":"Santa Teresa and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"nnoitra-standard","ability_id":"nnoitra-santa-teresa","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"nnoitra-standard","character_id":"nnoitra","cost":51,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"nnoitra-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"nnoitra-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"nnoitra-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"szayel-standard","character_id":"szayel","name":"Standard Szayelaporro Granz","short_name":"Standard","aliases":"[]","description":"Fornicaras and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"szayel-fornicaras","character_id":"szayel","name":"Fornicaras","description":"Fornicaras and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"szayel-standard","ability_id":"szayel-fornicaras","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"szayel-standard","character_id":"szayel","cost":55,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"szayel-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"szayel-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"szayel-standard","trait":"information"}}
+{"table":"character_versions","values":{"id":"halibel-fraccion-standard","character_id":"halibel-fraccion","name":"Standard Apache","short_name":"Standard","aliases":"[]","description":"Resurreccion and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"halibel-fraccion-resurreccion","character_id":"halibel-fraccion","name":"Resurreccion","description":"Resurreccion and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"halibel-fraccion-standard","ability_id":"halibel-fraccion-resurreccion","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"halibel-fraccion-standard","character_id":"halibel-fraccion","cost":27,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"halibel-fraccion-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"halibel-fraccion-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"halibel-fraccion-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"kensei-standard","character_id":"kensei","name":"Standard Kensei Muguruma","short_name":"Standard","aliases":"[]","description":"Tachikaze and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kensei-tachikaze","character_id":"kensei","name":"Tachikaze","description":"Tachikaze and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kensei-standard","ability_id":"kensei-tachikaze","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kensei-standard","character_id":"kensei","cost":44,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kensei-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kensei-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kensei-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"shiniji-standard","character_id":"shiniji","name":"Standard Shinji Hirako","short_name":"Standard","aliases":"[]","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"shiniji-sakanade","character_id":"shiniji","name":"Sakanade","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"shiniji-standard","ability_id":"shiniji-sakanade","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"shiniji-standard","character_id":"shiniji","cost":59,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"shiniji-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"shiniji-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"shiniji-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"hiyori-standard","character_id":"hiyori","name":"Standard Hiyori Sarugaki","short_name":"Standard","aliases":"[]","description":"Kubikiri Orochi and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"hiyori-kubikiri","character_id":"hiyori","name":"Kubikiri Orochi","description":"Kubikiri Orochi and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"hiyori-standard","ability_id":"hiyori-kubikiri","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"hiyori-standard","character_id":"hiyori","cost":32,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"hiyori-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"hiyori-standard","role":"speedster","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"hiyori-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"obito-standard","character_id":"obito","name":"Standard Obito Uchiha","short_name":"Standard","aliases":"[]","description":"Kamui and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"obito-kamui","character_id":"obito","name":"Kamui","description":"Kamui and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"obito-standard","ability_id":"obito-kamui","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"obito-standard","character_id":"obito","cost":71,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"obito-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"obito-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"obito-standard","trait":"teleportation"}}
+{"table":"character_versions","values":{"id":"orochimaru-standard","character_id":"orochimaru","name":"Standard Orochimaru","short_name":"Standard","aliases":"[]","description":"Snake Summoning and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"orochimaru-snake-summoning","character_id":"orochimaru","name":"Snake Summoning","description":"Snake Summoning and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"orochimaru-standard","ability_id":"orochimaru-snake-summoning","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"orochimaru-standard","character_id":"orochimaru","cost":56,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"orochimaru-standard","role":"summoner","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"orochimaru-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"orochimaru-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"pain-standard","character_id":"pain","name":"Standard Nagato","short_name":"Standard","aliases":"[]","description":"Six Paths of Pain and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"pain-six-paths","character_id":"pain","name":"Six Paths of Pain","description":"Six Paths of Pain and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"pain-standard","ability_id":"pain-six-paths","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"pain-standard","character_id":"pain","cost":74,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"pain-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"pain-standard","role":"summoner","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"pain-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"kaguya-standard","character_id":"kaguya","name":"Standard Kaguya Otsutsuki","short_name":"Standard","aliases":"[]","description":"Amenominaka and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kaguya-dimension-shift","character_id":"kaguya","name":"Amenominaka","description":"Amenominaka and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kaguya-standard","ability_id":"kaguya-dimension-shift","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kaguya-standard","character_id":"kaguya","cost":94,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kaguya-standard","role":"reality_manipulator","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kaguya-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kaguya-standard","trait":"teleportation"}}
+{"table":"character_versions","values":{"id":"kabuto-standard","character_id":"kabuto","name":"Standard Kabuto Yakushi","short_name":"Standard","aliases":"[]","description":"Medical Ninjutsu and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kabuto-medical-ninjutsu","character_id":"kabuto","name":"Medical Ninjutsu","description":"Medical Ninjutsu and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kabuto-standard","ability_id":"kabuto-medical-ninjutsu","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kabuto-standard","character_id":"kabuto","cost":49,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kabuto-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kabuto-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kabuto-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"deidara-standard","character_id":"deidara","name":"Standard Deidara","short_name":"Standard","aliases":"[]","description":"Explosive Clay and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"deidara-explosive-clay","character_id":"deidara","name":"Explosive Clay","description":"Explosive Clay and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"deidara-standard","ability_id":"deidara-explosive-clay","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"deidara-standard","character_id":"deidara","cost":47,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"deidara-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"deidara-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"deidara-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"sasori-standard","character_id":"sasori","name":"Standard Sasori","short_name":"Standard","aliases":"[]","description":"Human Puppet Technique and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"sasori-puppetry","character_id":"sasori","name":"Human Puppet Technique","description":"Human Puppet Technique and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"sasori-standard","ability_id":"sasori-puppetry","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"sasori-standard","character_id":"sasori","cost":49,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"sasori-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"sasori-standard","role":"summoner","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"sasori-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"kisame-standard","character_id":"kisame","name":"Standard Kisame Hoshigaki","short_name":"Standard","aliases":"[]","description":"Samehada and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kisame-samehada","character_id":"kisame","name":"Samehada","description":"Samehada and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kisame-standard","ability_id":"kisame-samehada","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kisame-standard","character_id":"kisame","cost":52,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kisame-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kisame-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kisame-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"frieza-standard","character_id":"frieza","name":"Standard Frieza","short_name":"Standard","aliases":"[]","description":"Death Beam and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"frieza-death-beam","character_id":"frieza","name":"Death Beam","description":"Death Beam and associated combat techniques; exact effects require matchup rules.","category":"energy","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"frieza-standard","ability_id":"frieza-death-beam","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"frieza-standard","character_id":"frieza","cost":91,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"frieza-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"frieza-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"frieza-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"cell-standard","character_id":"cell","name":"Standard Cell","short_name":"Standard","aliases":"[]","description":"Cell Regeneration and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"cell-regeneration","character_id":"cell","name":"Cell Regeneration","description":"Cell Regeneration and associated combat techniques; exact effects require matchup rules.","category":"passive","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"cell-standard","ability_id":"cell-regeneration","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"cell-standard","character_id":"cell","cost":87,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"cell-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"cell-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"cell-standard","trait":"adaptation"}}
+{"table":"character_versions","values":{"id":"majin-buu-standard","character_id":"majin-buu","name":"Standard Majin Buu","short_name":"Standard","aliases":"[]","description":"Majin Regeneration and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"majin-buu-regeneration","character_id":"majin-buu","name":"Majin Regeneration","description":"Majin Regeneration and associated combat techniques; exact effects require matchup rules.","category":"passive","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"majin-buu-standard","ability_id":"majin-buu-regeneration","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"majin-buu-standard","character_id":"majin-buu","cost":88,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"majin-buu-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"majin-buu-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"majin-buu-standard","trait":"adaptation"}}
+{"table":"character_versions","values":{"id":"goku-black-standard","character_id":"goku-black","name":"Standard Goku Black","short_name":"Standard","aliases":"[]","description":"Ki Blade and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"goku-black-ki-blade","character_id":"goku-black","name":"Ki Blade","description":"Ki Blade and associated combat techniques; exact effects require matchup rules.","category":"energy","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"goku-black-standard","ability_id":"goku-black-ki-blade","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"goku-black-standard","character_id":"goku-black","cost":89,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"goku-black-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"goku-black-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"goku-black-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"zamasu-standard","character_id":"zamasu","name":"Standard Zamasu","short_name":"Standard","aliases":"[]","description":"Immortality and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"zamasu-immortality","character_id":"zamasu","name":"Immortality","description":"Immortality and associated combat techniques; exact effects require matchup rules.","category":"passive","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"zamasu-standard","ability_id":"zamasu-immortality","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"zamasu-standard","character_id":"zamasu","cost":86,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"zamasu-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"zamasu-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"zamasu-standard","trait":"adaptation"}}
+{"table":"character_versions","values":{"id":"kenjaku-standard","character_id":"kenjaku","name":"Standard Kenjaku","short_name":"Standard","aliases":"[]","description":"Cursed Spirit Manipulation and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kenjaku-curse-manipulation","character_id":"kenjaku","name":"Cursed Spirit Manipulation","description":"Cursed Spirit Manipulation and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kenjaku-standard","ability_id":"kenjaku-curse-manipulation","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kenjaku-standard","character_id":"kenjaku","cost":72,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kenjaku-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kenjaku-standard","role":"summoner","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kenjaku-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"mahito-standard","character_id":"mahito","name":"Standard Mahito","short_name":"Standard","aliases":"[]","description":"Idle Transfiguration and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"mahito-idle-transfiguration","character_id":"mahito","name":"Idle Transfiguration","description":"Idle Transfiguration and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"mahito-standard","ability_id":"mahito-idle-transfiguration","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"mahito-standard","character_id":"mahito","cost":63,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"mahito-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"mahito-standard","role":"assassin","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"mahito-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"jogo-standard","character_id":"jogo","name":"Standard Jogo","short_name":"Standard","aliases":"[]","description":"Volcanic Cursed Technique and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"jogo-volcanic-curses","character_id":"jogo","name":"Volcanic Cursed Technique","description":"Volcanic Cursed Technique and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"jogo-standard","ability_id":"jogo-volcanic-curses","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"jogo-standard","character_id":"jogo","cost":53,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"jogo-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"jogo-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"jogo-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"hanami-standard","character_id":"hanami","name":"Standard Hanami","short_name":"Standard","aliases":"[]","description":"Plant Manipulation and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"hanami-plant-manipulation","character_id":"hanami","name":"Plant Manipulation","description":"Plant Manipulation and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"hanami-standard","ability_id":"hanami-plant-manipulation","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"hanami-standard","character_id":"hanami","cost":48,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"hanami-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"hanami-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"hanami-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"dagon-standard","character_id":"dagon","name":"Standard Dagon","short_name":"Standard","aliases":"[]","description":"Death Swarm and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"dagon-death-swarm","character_id":"dagon","name":"Death Swarm","description":"Death Swarm and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"dagon-standard","ability_id":"dagon-death-swarm","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"dagon-standard","character_id":"dagon","cost":51,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"dagon-standard","role":"summoner","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"dagon-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"dagon-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"meruem-standard","character_id":"meruem","name":"Standard Meruem","short_name":"Standard","aliases":"[]","description":"Chimera Ant Physiology and associated combat techniques; exact effects require matchup rules.","era":"Hunter x Hunter","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Hunter x Hunter anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"meruem-royal-guard-physique","character_id":"meruem","name":"Chimera Ant Physiology","description":"Chimera Ant Physiology and associated combat techniques; exact effects require matchup rules.","category":"physical","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"meruem-standard","ability_id":"meruem-royal-guard-physique","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"meruem-standard","character_id":"meruem","cost":84,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"meruem-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"meruem-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"meruem-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"chrollo-standard","character_id":"chrollo","name":"Standard Chrollo Lucilfer","short_name":"Standard","aliases":"[]","description":"Skill Hunter and associated combat techniques; exact effects require matchup rules.","era":"Hunter x Hunter","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Hunter x Hunter anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"chrollo-skill-hunter","character_id":"chrollo","name":"Skill Hunter","description":"Skill Hunter and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"chrollo-standard","ability_id":"chrollo-skill-hunter","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"chrollo-standard","character_id":"chrollo","cost":64,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"chrollo-standard","role":"strategist","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"chrollo-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"chrollo-standard","trait":"information"}}
+{"table":"character_versions","values":{"id":"hisoka-standard","character_id":"hisoka","name":"Standard Hisoka Morow","short_name":"Standard","aliases":"[]","description":"Bungee Gum and associated combat techniques; exact effects require matchup rules.","era":"Hunter x Hunter","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Hunter x Hunter anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"hisoka-bungee-gum","character_id":"hisoka","name":"Bungee Gum","description":"Bungee Gum and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"hisoka-standard","ability_id":"hisoka-bungee-gum","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"hisoka-standard","character_id":"hisoka","cost":55,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"hisoka-standard","role":"assassin","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"hisoka-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"hisoka-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"neferpitou-standard","character_id":"neferpitou","name":"Standard Neferpitou","short_name":"Standard","aliases":"[]","description":"Doctor Blythe and associated combat techniques; exact effects require matchup rules.","era":"Hunter x Hunter","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Hunter x Hunter anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"neferpitou-doctor-blythe","character_id":"neferpitou","name":"Doctor Blythe","description":"Doctor Blythe and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"neferpitou-standard","ability_id":"neferpitou-doctor-blythe","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"neferpitou-standard","character_id":"neferpitou","cost":65,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"neferpitou-standard","role":"assassin","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"neferpitou-standard","role":"healer","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"neferpitou-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"blackbeard-standard","character_id":"blackbeard","name":"Standard Marshall D. Teach","short_name":"Standard","aliases":"[]","description":"Yami Yami no Mi and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"blackbeard-yami-yami","character_id":"blackbeard","name":"Yami Yami no Mi","description":"Yami Yami no Mi and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"blackbeard-standard","ability_id":"blackbeard-yami-yami","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"blackbeard-standard","character_id":"blackbeard","cost":79,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"blackbeard-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"blackbeard-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"blackbeard-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"doflamingo-standard","character_id":"doflamingo","name":"Standard Donquixote Doflamingo","short_name":"Standard","aliases":"[]","description":"Ito Ito no Mi and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"doflamingo-ito-ito","character_id":"doflamingo","name":"Ito Ito no Mi","description":"Ito Ito no Mi and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"doflamingo-standard","ability_id":"doflamingo-ito-ito","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"doflamingo-standard","character_id":"doflamingo","cost":65,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"doflamingo-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"doflamingo-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"doflamingo-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"crocodile-standard","character_id":"crocodile","name":"Standard Crocodile","short_name":"Standard","aliases":"[]","description":"Suna Suna no Mi and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"crocodile-suna-suna","character_id":"crocodile","name":"Suna Suna no Mi","description":"Suna Suna no Mi and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"crocodile-standard","ability_id":"crocodile-suna-suna","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"crocodile-standard","character_id":"crocodile","cost":59,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"crocodile-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"crocodile-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"crocodile-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"enel-standard","character_id":"enel","name":"Standard Enel","short_name":"Standard","aliases":"[]","description":"Goro Goro no Mi and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"enel-goro-goro","character_id":"enel","name":"Goro Goro no Mi","description":"Goro Goro no Mi and associated combat techniques; exact effects require matchup rules.","category":"energy","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"enel-standard","ability_id":"enel-goro-goro","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"enel-standard","character_id":"enel","cost":66,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"enel-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"enel-standard","role":"speedster","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"enel-standard","trait":"long_range"}}
+{"table":"character_versions","values":{"id":"kaido-standard","character_id":"kaido","name":"Standard Kaido","short_name":"Standard","aliases":"[]","description":"Azure Dragon Transformation and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"kaido-dragon-form","character_id":"kaido","name":"Azure Dragon Transformation","description":"Azure Dragon Transformation and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"kaido-standard","ability_id":"kaido-dragon-form","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"kaido-standard","character_id":"kaido","cost":91,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"kaido-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"kaido-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"kaido-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"big-mom-standard","character_id":"big-mom","name":"Standard Charlotte Linlin","short_name":"Standard","aliases":"[]","description":"Soru Soru no Mi and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"big-mom-soru-soru","character_id":"big-mom","name":"Soru Soru no Mi","description":"Soru Soru no Mi and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"big-mom-standard","ability_id":"big-mom-soru-soru","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"big-mom-standard","character_id":"big-mom","cost":88,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"big-mom-standard","role":"tank","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"big-mom-standard","role":"summoner","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"big-mom-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"lucci-standard","character_id":"lucci","name":"Standard Rob Lucci","short_name":"Standard","aliases":"[]","description":"Leopard Zoan and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"lucci-leopard","character_id":"lucci","name":"Leopard Zoan","description":"Leopard Zoan and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"lucci-standard","ability_id":"lucci-leopard","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"lucci-standard","character_id":"lucci","cost":60,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"lucci-standard","role":"assassin","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"lucci-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"lucci-standard","trait":"close_range"}}
+{"table":"character_versions","values":{"id":"marco-standard","character_id":"marco","name":"Standard Marco","short_name":"Standard","aliases":"[]","description":"Phoenix Flames and associated combat techniques; exact effects require matchup rules.","era":"One Piece","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"One Piece anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"marco-phoenix","character_id":"marco","name":"Phoenix Flames","description":"Phoenix Flames and associated combat techniques; exact effects require matchup rules.","category":"transformation","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"marco-standard","ability_id":"marco-phoenix","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"marco-standard","character_id":"marco","cost":68,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"marco-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"marco-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"marco-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"tsunade-standard","character_id":"tsunade","name":"Standard Tsunade","short_name":"Standard","aliases":"[]","description":"Creation Rebirth and associated combat techniques; exact effects require matchup rules.","era":"Naruto","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Naruto anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"tsunade-creation-rebirth","character_id":"tsunade","name":"Creation Rebirth","description":"Creation Rebirth and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"tsunade-standard","ability_id":"tsunade-creation-rebirth","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"tsunade-standard","character_id":"tsunade","cost":63,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"tsunade-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"tsunade-standard","role":"tank","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"tsunade-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"shoko-standard","character_id":"shoko","name":"Standard Shoko Ieiri","short_name":"Standard","aliases":"[]","description":"Reverse Cursed Technique and associated combat techniques; exact effects require matchup rules.","era":"Jujutsu Kaisen","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Jujutsu Kaisen anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"shoko-rct","character_id":"shoko","name":"Reverse Cursed Technique","description":"Reverse Cursed Technique and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"shoko-standard","ability_id":"shoko-rct","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"shoko-standard","character_id":"shoko","cost":20,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"shoko-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"shoko-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"shoko-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"dende-standard","character_id":"dende","name":"Standard Dende","short_name":"Standard","aliases":"[]","description":"Namekian Healing and associated combat techniques; exact effects require matchup rules.","era":"Dragon Ball","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Dragon Ball anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"dende-healing","character_id":"dende","name":"Namekian Healing","description":"Namekian Healing and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"dende-standard","ability_id":"dende-healing","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"dende-standard","character_id":"dende","cost":23,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"dende-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"dende-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"dende-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"wendy-standard","character_id":"wendy","name":"Standard Wendy Marvell","short_name":"Standard","aliases":"[]","description":"Sky Dragon Healing Magic and associated combat techniques; exact effects require matchup rules.","era":"Fairy Tail","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Fairy Tail anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"wendy-sky-dragon","character_id":"wendy","name":"Sky Dragon Healing Magic","description":"Sky Dragon Healing Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"wendy-standard","ability_id":"wendy-sky-dragon","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"wendy-standard","character_id":"wendy","cost":46,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"wendy-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"wendy-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"wendy-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"lucy-standard","character_id":"lucy","name":"Standard Lucy Heartfilia","short_name":"Standard","aliases":"[]","description":"Celestial Spirit Magic and associated combat techniques; exact effects require matchup rules.","era":"Fairy Tail","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Fairy Tail anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"lucy-celestial","character_id":"lucy","name":"Celestial Spirit Magic","description":"Celestial Spirit Magic and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"lucy-standard","ability_id":"lucy-celestial","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"lucy-standard","character_id":"lucy","cost":50,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"lucy-standard","role":"summoner","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"lucy-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"lucy-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"jinwoo-standard","character_id":"jinwoo","name":"Standard Sung Jinwoo","short_name":"Standard","aliases":"[]","description":"Shadow Extraction and associated combat techniques; exact effects require matchup rules.","era":"Solo Leveling","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Solo Leveling anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"jinwoo-shadow-extraction","character_id":"jinwoo","name":"Shadow Extraction","description":"Shadow Extraction and associated combat techniques; exact effects require matchup rules.","category":"summoning","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"jinwoo-standard","ability_id":"jinwoo-shadow-extraction","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"jinwoo-standard","character_id":"jinwoo","cost":81,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"jinwoo-standard","role":"summoner","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"jinwoo-standard","role":"assassin","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"jinwoo-standard","trait":"summoning"}}
+{"table":"character_versions","values":{"id":"rimuru-standard","character_id":"rimuru","name":"Standard Rimuru Tempest","short_name":"Standard","aliases":"[]","description":"Predator and associated combat techniques; exact effects require matchup rules.","era":"That Time I Got Reincarnated as a Slime","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"That Time I Got Reincarnated as a Slime anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"rimuru-predator","character_id":"rimuru","name":"Predator","description":"Predator and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"rimuru-standard","ability_id":"rimuru-predator","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"rimuru-standard","character_id":"rimuru","cost":79,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"rimuru-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"rimuru-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"rimuru-standard","trait":"adaptation"}}
+{"table":"character_versions","values":{"id":"giorno-standard","character_id":"giorno","name":"Standard Giorno Giovanna","short_name":"Standard","aliases":"[]","description":"Gold Experience and associated combat techniques; exact effects require matchup rules.","era":"JoJo's Bizarre Adventure","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"JoJo's Bizarre Adventure anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"giorno-gold-experience","character_id":"giorno","name":"Gold Experience","description":"Gold Experience and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"giorno-standard","ability_id":"giorno-gold-experience","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"giorno-standard","character_id":"giorno","cost":68,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"giorno-standard","role":"support","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"giorno-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"giorno-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"asta-extra-standard","character_id":"asta-extra","name":"Standard Noelle Silva","short_name":"Standard","aliases":"[]","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"asta-extra-water-magic","character_id":"asta-extra","name":"Water Magic","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"asta-extra-standard","ability_id":"asta-extra-water-magic","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"asta-extra-standard","character_id":"asta-extra","cost":52,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"asta-extra-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"asta-extra-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"asta-extra-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"mimosa-standard","character_id":"mimosa","name":"Standard Mimosa Vermillion","short_name":"Standard","aliases":"[]","description":"Plant Healing Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"mimosa-plant-healing","character_id":"mimosa","name":"Plant Healing Magic","description":"Plant Healing Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"mimosa-standard","ability_id":"mimosa-plant-healing","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"mimosa-standard","character_id":"mimosa","cost":39,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"mimosa-standard","role":"healer","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"mimosa-standard","role":"support","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"mimosa-standard","trait":"healing"}}
+{"table":"character_versions","values":{"id":"vanessa-standard","character_id":"vanessa","name":"Standard Vanessa Enoteca","short_name":"Standard","aliases":"[]","description":"Red Thread of Fate and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"vanessa-rouge","character_id":"vanessa","name":"Red Thread of Fate","description":"Red Thread of Fate and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"vanessa-standard","ability_id":"vanessa-rouge","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"vanessa-standard","character_id":"vanessa","cost":56,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"vanessa-standard","role":"support","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"vanessa-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"vanessa-standard","trait":"buff"}}
+{"table":"character_versions","values":{"id":"charmy-standard","character_id":"charmy","name":"Standard Charmy Pappitson","short_name":"Standard","aliases":"[]","description":"Food Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"charmy-food-magic","character_id":"charmy","name":"Food Magic","description":"Food Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"charmy-standard","ability_id":"charmy-food-magic","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"charmy-standard","character_id":"charmy","cost":44,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"charmy-standard","role":"support","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"charmy-standard","role":"dps","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"charmy-standard","trait":"buff"}}
