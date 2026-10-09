@@ -65,8 +65,11 @@ export function MatchupLab({onCreateMatchup}:MatchupLabProps){
   const indexA=Math.floor(Math.random()*fighters.length);
   const offset=1+Math.floor(Math.random()*(fighters.length-1));
   const indexB=(indexA+offset)%fighters.length;
-  setFighterAId(fighters[indexA].id);
-  setFighterBId(fighters[indexB].id);
+  const randomA=fighters[indexA].id;
+  const randomB=fighters[indexB].id;
+  setFighterAId(randomA);
+  setFighterBId(randomB);
+  onCreateMatchup(randomA,randomB);
  }
 
  return <section className="matchup-lab" aria-labelledby="matchup-lab-heading">
@@ -86,7 +89,7 @@ export function MatchupLab({onCreateMatchup}:MatchupLabProps){
   </div>
 
   <footer className="matchup-lab-footer">
-   <div className="matchup-lab-next">
+   <div className="matchup-lab-next" role="status" aria-live="polite">
     <span className={`matchup-lab-step${ready?' is-ready':''}`}>{ready?<ShieldCheck size={18} aria-hidden="true"/>:<span aria-hidden="true">01</span>}</span>
     <div><strong>{ready?'Both fighters selected':'Pick two different fighters'}</strong><small>{ready?'Next: lock versions, rules and victory conditions':'The arena is waiting for its contenders'}</small></div>
    </div>
