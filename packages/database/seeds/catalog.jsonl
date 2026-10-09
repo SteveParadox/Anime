@@ -1203,13 +1203,13 @@
 {"table":"version_combat_roles","values":{"version_id":"giorno-standard","role":"support","priority":"primary","notes":""}}
 {"table":"version_combat_roles","values":{"version_id":"giorno-standard","role":"controller","priority":"secondary","notes":""}}
 {"table":"version_strategic_traits","values":{"version_id":"giorno-standard","trait":"healing"}}
-{"table":"character_versions","values":{"id":"asta-extra-standard","character_id":"asta-extra","name":"Standard Noelle Silva","short_name":"Standard","aliases":"[]","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
-{"table":"abilities","values":{"id":"asta-extra-water-magic","character_id":"asta-extra","name":"Water Magic","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
-{"table":"version_abilities","values":{"version_id":"asta-extra-standard","ability_id":"asta-extra-water-magic","status":"available","notes":""}}
-{"table":"squad_version_costs","values":{"version_id":"asta-extra-standard","character_id":"asta-extra","cost":52,"updated":1791398520000}}
-{"table":"version_combat_roles","values":{"version_id":"asta-extra-standard","role":"dps","priority":"primary","notes":""}}
-{"table":"version_combat_roles","values":{"version_id":"asta-extra-standard","role":"controller","priority":"secondary","notes":""}}
-{"table":"version_strategic_traits","values":{"version_id":"asta-extra-standard","trait":"area_damage"}}
+{"table":"character_versions","values":{"id":"noelle-standard","character_id":"noelle","name":"Standard Noelle Silva","short_name":"Standard","aliases":"[]","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"noelle-water-magic","character_id":"noelle","name":"Water Magic","description":"Water Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"noelle-standard","ability_id":"noelle-water-magic","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"noelle-standard","character_id":"noelle","cost":52,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"noelle-standard","role":"dps","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"noelle-standard","role":"controller","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"noelle-standard","trait":"area_damage"}}
 {"table":"character_versions","values":{"id":"mimosa-standard","character_id":"mimosa","name":"Standard Mimosa Vermillion","short_name":"Standard","aliases":"[]","description":"Plant Healing Magic and associated combat techniques; exact effects require matchup rules.","era":"Black Clover","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Black Clover anime/manga","parent_version_id":null,"created":1791398520000}}
 {"table":"abilities","values":{"id":"mimosa-plant-healing","character_id":"mimosa","name":"Plant Healing Magic","description":"Plant Healing Magic and associated combat techniques; exact effects require matchup rules.","category":"technique","created":1791398520000}}
 {"table":"version_abilities","values":{"version_id":"mimosa-standard","ability_id":"mimosa-plant-healing","status":"available","notes":""}}
