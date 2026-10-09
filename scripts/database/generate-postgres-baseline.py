@@ -13,7 +13,7 @@ root = pathlib.Path(__file__).resolve().parents[2]
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 for migration in sorted(glob.glob(str(root / "drizzle" / "[0-9]*.sql"))):
-    for statement in pathlib.Path(migration).read_text().split("--> statement-breakpoint"):
+    for statement in pathlib.Path(migration).read_text(encoding="utf-8").split("--> statement-breakpoint"):
         if statement.strip():
             db.executescript(statement)
 
@@ -57,5 +57,5 @@ for name, statement in db.execute("SELECT name,sql FROM sqlite_master WHERE type
 
 destination = root / "docs/migration/d1-schema-derivation.sql"
 destination.parent.mkdir(parents=True, exist_ok=True)
-destination.write_text("\n\n".join(out) + "\n")
+destination.write_text("\n\n".join(out) + "\n", encoding="utf-8")
 print(f"Wrote {destination.relative_to(root)} with {len(tables)} tables")
