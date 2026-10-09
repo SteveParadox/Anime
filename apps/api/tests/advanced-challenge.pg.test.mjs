@@ -28,6 +28,11 @@ test('official challenge publication, restrictions, community votes and auditabl
   try{
    const admin=await fixture(adminId),creator=await fixture(`creator-${crypto.randomUUID()}`),voter=await fixture(`voter-${crypto.randomUUID()}`),entrant=await fixture(`entrant-${crypto.randomUUID()}`);
    const definition={title:'Hold the Spirit Gate',description:'Secure this location against repeated attacks.',difficulty:'medium',objective:{type:'capture',location:'Spirit Gate',contestingVersions:['madara-edo-tensei'],holdSeconds:120},budget:100,minMembers:1,maxMembers:3,restrictions:{roleRequirements:[{role:'controller',min:1}],bannedCharacters:['goku'],franchise:'any'}};
+   // Every current canonical priced fighter must remain eligible for an
+   // unrestricted advanced event, including fighters seeded after migration 0002.
+   const entireRoster=await eligibleRoster(database(),challengeDefinitionSchema.parse({...definition,restrictions:{}}));
+   const storedPrices=await pool.query('SELECT COUNT(*)::int AS n FROM squad_version_costs WHERE cost>0');
+   assert.equal(entireRoster.length,storedPrices.rows[0].n,'New roster fighters must not vanish due to missing franchise backfill');
    const preview=await mutation('/api/challenge-management',{action:'preview',definition},admin);
    assert.equal(preview.statusCode,200,preview.payload);assert.equal(preview.json().feasible,true);
    const disabled=challengeDefinitionSchema.parse({...definition,restrictions:{...definition.restrictions,disabledAbilityCategories:['summoning']}});
@@ -73,6 +78,12 @@ test('official challenge publication, restrictions, community votes and auditabl
    const published=await mutation('/api/challenge-management',{action:'publish',id:idValue},admin);
    assert.equal(published.statusCode,200,published.payload);
    const challengeId=published.json().challengeId;
+   // Published roster prices are immutable even when UPDATE tries to move
+   // a record into an unpublished challenge. The old challenge must be checked.
+   const sandboxId=`unpublished-${crypto.randomUUID()}`;
+   await pool.query("INSERT INTO daily_squad_challenges (id,type,title,description,budget,min_members,max_members,rules_json,starts_at,ends_at,status,created) VALUES ($1,'open_build','Unpublished fixture','Private draft fixture',100,1,5,'{}',$2,$3,'scheduled',$2)",[sandboxId,Date.now()+300000,Date.now()+600000]);
+   const snapshotVersion=(await pool.query('SELECT version_id FROM daily_squad_challenge_costs WHERE challenge_id=$1 LIMIT 1',[challengeId])).rows[0].version_id;
+   await assert.rejects(pool.query('UPDATE daily_squad_challenge_costs SET challenge_id=$1 WHERE challenge_id=$2 AND version_id=$3',[sandboxId,challengeId,snapshotVersion]),/published_challenge_cost_immutable/);
    const current=(await get('/api/squad-challenges',entrant)).json().challenge;
    assert.equal(current.id,challengeId);
    assert.equal(current.objective.type,'capture');
