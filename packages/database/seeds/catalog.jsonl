@@ -923,13 +923,13 @@
 {"table":"version_combat_roles","values":{"version_id":"kensei-standard","role":"dps","priority":"primary","notes":""}}
 {"table":"version_combat_roles","values":{"version_id":"kensei-standard","role":"tank","priority":"secondary","notes":""}}
 {"table":"version_strategic_traits","values":{"version_id":"kensei-standard","trait":"close_range"}}
-{"table":"character_versions","values":{"id":"shiniji-standard","character_id":"shiniji","name":"Standard Shinji Hirako","short_name":"Standard","aliases":"[]","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
-{"table":"abilities","values":{"id":"shiniji-sakanade","character_id":"shiniji","name":"Sakanade","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
-{"table":"version_abilities","values":{"version_id":"shiniji-standard","ability_id":"shiniji-sakanade","status":"available","notes":""}}
-{"table":"squad_version_costs","values":{"version_id":"shiniji-standard","character_id":"shiniji","cost":59,"updated":1791398520000}}
-{"table":"version_combat_roles","values":{"version_id":"shiniji-standard","role":"controller","priority":"primary","notes":""}}
-{"table":"version_combat_roles","values":{"version_id":"shiniji-standard","role":"strategist","priority":"secondary","notes":""}}
-{"table":"version_strategic_traits","values":{"version_id":"shiniji-standard","trait":"crowd_control"}}
+{"table":"character_versions","values":{"id":"shinji-standard","character_id":"shinji","name":"Standard Shinji Hirako","short_name":"Standard","aliases":"[]","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
+{"table":"abilities","values":{"id":"shinji-sakanade","character_id":"shinji","name":"Sakanade","description":"Sakanade and associated combat techniques; exact effects require matchup rules.","category":"hax","created":1791398520000}}
+{"table":"version_abilities","values":{"version_id":"shinji-standard","ability_id":"shinji-sakanade","status":"available","notes":""}}
+{"table":"squad_version_costs","values":{"version_id":"shinji-standard","character_id":"shinji","cost":59,"updated":1791398520000}}
+{"table":"version_combat_roles","values":{"version_id":"shinji-standard","role":"controller","priority":"primary","notes":""}}
+{"table":"version_combat_roles","values":{"version_id":"shinji-standard","role":"strategist","priority":"secondary","notes":""}}
+{"table":"version_strategic_traits","values":{"version_id":"shinji-standard","trait":"crowd_control"}}
 {"table":"character_versions","values":{"id":"hiyori-standard","character_id":"hiyori","name":"Standard Hiyori Sarugaki","short_name":"Standard","aliases":"[]","description":"Kubikiri Orochi and associated combat techniques; exact effects require matchup rules.","era":"Bleach","arc":null,"sort_order":10,"canonical":1,"source_endpoint":"Bleach anime/manga","parent_version_id":null,"created":1791398520000}}
 {"table":"abilities","values":{"id":"hiyori-kubikiri","character_id":"hiyori","name":"Kubikiri Orochi","description":"Kubikiri Orochi and associated combat techniques; exact effects require matchup rules.","category":"weapon","created":1791398520000}}
 {"table":"version_abilities","values":{"version_id":"hiyori-standard","ability_id":"hiyori-kubikiri","status":"available","notes":""}}
