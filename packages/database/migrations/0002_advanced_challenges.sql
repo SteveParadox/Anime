@@ -159,6 +159,11 @@ BEGIN
   IF TG_OP='DELETE' THEN SELECT published_at INTO published FROM daily_squad_challenges WHERE id=OLD.challenge_id;
   ELSE SELECT published_at INTO published FROM daily_squad_challenges WHERE id=NEW.challenge_id; END IF;
   IF published IS NOT NULL THEN RAISE EXCEPTION 'published_challenge_cost_immutable'; END IF;
+  -- Also guard the original challenge when an UPDATE reassigns its cost row.
+  IF TG_OP='UPDATE' AND OLD.challenge_id IS DISTINCT FROM NEW.challenge_id THEN
+   SELECT published_at INTO published FROM daily_squad_challenges WHERE id=OLD.challenge_id;
+   IF published IS NOT NULL THEN RAISE EXCEPTION 'published_challenge_cost_immutable'; END IF;
+  END IF;
   IF TG_OP='DELETE' THEN RETURN OLD; END IF;
  END IF;
  IF TG_TABLE_NAME='squad_submissions' THEN
