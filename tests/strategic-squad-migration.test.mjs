@@ -6,7 +6,9 @@ const files=readdirSync('drizzle').filter(name=>/^00\d\d.*\.sql$/.test(name)).so
 function apply(db,path){
  for(const sql of readFileSync(path,'utf8').split('--> statement-breakpoint').map(s=>s.trim()).filter(Boolean))db.exec(sql);
 }
-function seed(db){for(const name of files.filter(n=>!n.startsWith('0010')))apply(db,'drizzle/'+name);}
+// Restore the historical database state before migration 0010. Migration 0011
+// depends on tactical tables added by 0010, so it must not be applied first.
+function seed(db){for(const name of files.filter(n=>Number(n.slice(0,4))<10))apply(db,'drizzle/'+name);}
 test('append-only 0010 preserves old saved squads, votes, submissions and nullable tactical snapshots',()=>{
  const db=new DatabaseSync(':memory:');
  try{
@@ -20,12 +22,17 @@ INSERT INTO squad_submission_members (submission_id,position,character_id,versio
   const legacy=db.prepare("SELECT roles_snapshot AS roles, traits_snapshot AS traits,cost_snapshot AS cost FROM squad_submission_members WHERE submission_id='old-sub'").get();
   assert.equal(legacy.roles,null);assert.equal(legacy.traits,null);assert.equal(legacy.cost,38);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM squad_submissions WHERE id='old-sub'").get().n,1);
+  apply(db,'drizzle/0011_add_more_combat_fighters.sql');
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM squad_submissions WHERE id='old-sub'").get().n,1);
+  assert.equal(db.prepare("SELECT roles_snapshot AS roles FROM squad_submission_members WHERE submission_id='old-sub'").get().roles,null);
+  assert.ok(db.prepare("SELECT COUNT(*) AS n FROM squad_version_costs WHERE version_id='sukuna-shibuya'").get().n===1);
  }finally{db.close()}
 });
 test('version-role mappings are constrained to valid versions, unique and supported roles',()=>{
  const db=new DatabaseSync(':memory:');
  try{
   seed(db);apply(db,'drizzle/0010_strategic_squad_roles.sql');
+  apply(db,'drizzle/0011_add_more_combat_fighters.sql');
   const aizen=db.prepare("SELECT role FROM version_combat_roles WHERE version_id='aizen-tybw' ORDER BY role").all().map(r=>r.role);
   const gojo=db.prepare("SELECT role FROM version_combat_roles WHERE version_id='gojo-shibuya' ORDER BY role").all().map(r=>r.role);
   assert.deepEqual(aizen,['controller','strategist']);assert.ok(gojo.includes('defense'));
