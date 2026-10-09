@@ -72,6 +72,9 @@ export async function POST(request:Request){
   if(data.action==='run_scheduler')return authJson(await schedulerTick(now));
   if(data.action==='preview'){
    if(!data.definition)throw conflict('Provide a challenge definition.');
+   // Bound expensive combinatorial feasibility searches for authenticated users.
+   const limit=await checkRateLimit('challenge-feasibility-preview',user.userId,10,60_000);
+   if(!limit.allowed)return authJson({error:'Challenge preview limit reached.'},429);
    return authJson(await feasibleRoster(db,data.definition));
   }
   let generated=false;
