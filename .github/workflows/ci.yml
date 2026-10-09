@@ -49,6 +49,8 @@ jobs:
         run: pnpm db:seed
       - name: PostgreSQL safeguards
         run: pnpm db:migrate
+      - name: Advanced challenge curation
+        run: pnpm db:seed
       - name: API and migration integration tests
         run: pnpm test:integration
       - name: Frontend and backend build

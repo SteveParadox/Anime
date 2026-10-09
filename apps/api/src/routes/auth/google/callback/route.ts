@@ -33,7 +33,7 @@ export async function GET(request:Request){
  if(!verified){await clearGoogleCookies();return fail(request,'google_identity')}
  const subject=verified.sub,email=normalizeEmail(verified.email);
  const displayName=safeText(verified.name,120)||email.split('@')[0]||'Anime fan',picture=safeText(verified.picture,1000)||null;
- let identity=await db.prepare(`SELECT user_id AS userId FROM auth_identities WHERE provider='google' AND provider_user_id=? LIMIT 1`).bind(subject).first<any>(),resolvedUserId:string;
+ const identity=await db.prepare(`SELECT user_id AS userId FROM auth_identities WHERE provider='google' AND provider_user_id=? LIMIT 1`).bind(subject).first<any>();let resolvedUserId:string;
  if(identity)resolvedUserId=identity.userId;
  else{
   const emailOwner=await db.prepare('SELECT id,email_verified AS emailVerified FROM users WHERE email_normalized=? LIMIT 1').bind(email).first<any>();

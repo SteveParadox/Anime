@@ -14,6 +14,7 @@ import {EVIDENCE_SOURCE_LABELS,FEAT_CATEGORIES,FEAT_CATEGORY_LABELS,EMPTY_EVIDEN
 import {abilitiesForVersion,characterVersionSearchText,versionById,versionsForCharacter,type CharacterVersion} from '@anime/domain/characters';
 import {filterCharacterCatalog} from '@anime/domain/character-discovery';
 import {DailySquadChallenge,DailySquadChallengeTeaser} from '@/components/daily-squad-challenge';
+import {ChallengeHub} from '@/components/challenge-hub';
 import {RoleBadges} from '@/components/squad-insights';
 import {MatchupLab} from '@/components/matchup-lab';
 import type {VersionRole} from '@anime/domain/squad-synergy';
@@ -116,6 +117,7 @@ function TournamentFighter({id,votes,selected,onClick,disabled}:any){const f=fig
 function Squads({data,shared,selected,members,points,toggle,squadName,setSquadName,strategy,setStrategy,busy,saveSquad,share,onChallenges}:any){return <>
  <Header eyebrow="BUILD UNDER PRESSURE." title="Daily Squad Challenge" copy="Choose exact character versions, solve the matchup inside the budget, then let the community judge the build." action={<button className="secondary" onClick={onChallenges}><GitCompareArrows size={17}/>Saved squad battles</button>}/>
  <DailySquadChallenge authenticated={data.user}/>
+ <ChallengeHub authenticated={Boolean(data.user)} isAdmin={Boolean(data.isAdmin)}/>
  <section className="saved-squad-lab">
   <div className="section-heading"><div><span className="eyebrow">REUSABLE TEAMS</span><h2>Saved squad lab</h2></div><span>Legacy 20-point format · exactly 5 fighters</span></div>
   <p className="saved-squad-explainer">Saved squads remain reusable character-only teams. Their versions were not recorded, so version-specific role analysis is unavailable rather than guessed. Daily challenge entries retain separate historical snapshots.</p>

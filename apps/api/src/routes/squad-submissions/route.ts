@@ -270,6 +270,7 @@ export async function POST(request:Request){
   const challenge=await findChallenge(db,input.challengeId);
   if(!challenge)return authJson({error:'Challenge not found.'},404);
   if(effectiveChallengeStatus(challenge,now)!=='active')return authJson({error:'This challenge is not accepting submissions.'},409);
+  if(challenge.sourceType==='rotation'&&await db.prepare("SELECT 1 FROM daily_squad_challenges WHERE source_type<>'rotation' AND status='active' AND starts_at<=? AND ends_at>? LIMIT 1").bind(now,now).first())return authJson({error:'An official challenge is active for this window.'},409);
   const {snapshots,totalCost}=await resolveSubmissionMembers(db,challenge,input.members);
   const existing=await db.prepare(`SELECT s.id,s.locked_at AS lockedAt,(SELECT COUNT(*) FROM squad_submission_votes v WHERE v.submission_id=s.id) AS votes FROM squad_submissions s WHERE s.challenge_id=? AND s.owner=? LIMIT 1`).bind(challenge.id,user.userId).first<ExistingSubmissionDbRow>();
   if(existing&&(existing.lockedAt||Number(existing.votes)>0))return authJson({error:'This squad is locked because community voting has started.'},409);

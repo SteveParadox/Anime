@@ -1,0 +1,5 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {"builder": "RAILPACK", "buildCommand": "pnpm --filter @anime/api build"},
+  "deploy": {"startCommand": "pnpm --filter @anime/api start:worker", "restartPolicyType": "ON_FAILURE"}
+}
