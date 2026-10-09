@@ -11,14 +11,12 @@ test('forged character and version pairings are rejected by canonical version ow
 });
 
 function squadPrices(){
- const migrations=[
-  readFileSync('drizzle/0006_daily_squad_challenges.sql','utf8'),
-  readFileSync('drizzle/0007_expand_squad_roster.sql','utf8')
- ];
- return migrations.flatMap(migration=>{
-  const seed=migration.split('INSERT INTO `squad_version_costs`')[1]||'';
-  return [...seed.matchAll(/\('([^']+)','([^']+)',(\d+),/g)].map(match=>({versionId:match[1],characterId:match[2],cost:Number(match[3])}));
- });
+ // PostgreSQL's seed catalog is the deployed source of truth; the historical
+ // SQLite migration files are append-only and grow as the roster expands.
+ const rows=readFileSync('packages/database/seeds/catalog.jsonl','utf8').trim().split(/\r?\n/);
+ return rows.map(line=>JSON.parse(line))
+  .filter(row=>row.table==='squad_version_costs')
+  .map(({values})=>({versionId:values.version_id,characterId:values.character_id,cost:values.cost}));
 }
 
 test('every canonical character version has exactly one baseline squad price with matching character ownership',()=>{
