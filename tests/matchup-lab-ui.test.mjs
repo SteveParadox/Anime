@@ -11,6 +11,7 @@ test('matchup lab retains the same two-fighter battle builder integration',()=>{
  assert.match(page,/createBattlePair=\{\(fighterAId:string,fighterBId:string\)=>/);
  assert.match(source,/onCreateMatchup\(fighterA!\.id,fighterB!\.id\)/);
  assert.match(source,/disabled=\{!ready\}/);
+ assert.match(source,/role="status" aria-live="polite"/);
  assert.match(source,/fighterA\.id!==fighterB\.id/);
 });
 
@@ -26,8 +27,9 @@ test('surprise matchup picks two distinct roster indices',()=>{
  assert.match(source,/if\(fighters\.length<2\)return/);
  assert.match(source,/const offset=1\+Math\.floor\(Math\.random\(\)\*\(fighters\.length-1\)\)/);
  assert.match(source,/const indexB=\(indexA\+offset\)%fighters\.length/);
- assert.match(source,/setFighterAId\(fighters\[indexA\]\.id\)/);
- assert.match(source,/setFighterBId\(fighters\[indexB\]\.id\)/);
+ assert.match(source,/setFighterAId\(randomA\)/);
+ assert.match(source,/setFighterBId\(randomB\)/);
+ assert.match(source,/onCreateMatchup\(randomA,randomB\)/);
 });
 
 test('matchup preview discloses catalog limitations and supports mobile layouts',()=>{
