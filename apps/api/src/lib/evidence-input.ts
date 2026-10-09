@@ -29,3 +29,14 @@ export const evidenceInput=z.discriminatedUnion('sourceType',[
  z.object({...extendedEvidence,sourceType:z.literal('light_novel'),sourceDetails:z.object({author:detailText,chapter:detailText,continuityRelation:z.enum(EVIDENCE_NOVEL_CONTINUITIES),volume:optionalDetail,edition:optionalDetail,pageOrLocation:optionalDetail}).strict()}).strict(),
  z.object({...extendedEvidence,sourceType:z.literal('game'),sourceDetails:z.object({developer:detailText,publisher:detailText,platform:detailText,sceneOrMission:detailText,continuityClassification:z.enum(EVIDENCE_GAME_CONTINUITIES),releaseVersion:optionalDetail,storyModeOrEvent:optionalDetail}).strict()}).strict()
 ]);
+
+/** Verify a citation URL belongs to the submitted domain. This is NOT publisher-authenticity verification. */
+export function matchesOfficialWebsiteDomain(sourceUrl:string,officialDomain:string):boolean{
+ try{
+  const url=new URL(sourceUrl);
+  if(url.protocol!=='https:'&&url.protocol!=='http:')return false;
+  const domain=officialDomain.trim().toLowerCase().replace(/^www\./,'');
+  const host=url.hostname.toLowerCase().replace(/^www\./,'');
+  return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(domain)&&(host===domain||host.endsWith('.'+domain));
+ }catch{return false;}
+}
