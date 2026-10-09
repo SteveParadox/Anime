@@ -6,7 +6,7 @@ import pg from 'pg';
 if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL is required');
 const source=new URL('../../packages/database/seeds/catalog.jsonl',import.meta.url);
 const advancedSource=new URL('../../packages/database/seeds/advanced-catalog.jsonl',import.meta.url);
-const allowed=new Set(['character_versions','abilities','version_abilities','squad_version_costs','version_combat_roles','version_strategic_traits','version_challenge_alignment']);
+const allowed=new Set(['character_versions','abilities','version_abilities','squad_version_costs','version_combat_roles','version_strategic_traits','version_challenge_alignment','character_franchises']);
 const quote=value=>'"'+value.replaceAll('"','""')+'"';
 const pool=new pg.Pool({connectionString:process.env.DATABASE_URL,max:1,connectionTimeoutMillis:5000});
 const client=await pool.connect();
