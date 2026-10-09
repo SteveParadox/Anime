@@ -201,7 +201,12 @@ export async function POST(req:Request){try{
    if(current.raw.versionId&&current.raw.versionId!==evidence.versionId)return json({error:'A version-scoped feat cannot be moved to another version. Create a new feat instead.'},400);
   }
   const duplicates=await potentialDuplicates(db,evidence,user.userId,d.action==='update_evidence'?d.evidenceId:undefined);
-  const exact=duplicates.find(x=>x.category===evidence.category&&x.title.trim().toLowerCase()===evidence.title.trim().toLowerCase()&&x.description.trim().toLowerCase()===evidence.description.trim().toLowerCase());
+  const metadataPairs=(values:Record<string,string>)=>JSON.stringify(Object.entries(values).filter(([,value])=>Boolean(value)).sort(([a],[b])=>a.localeCompare(b)));
+  const exact=duplicates.find(x=>{
+   if(x.category!==evidence.category||x.title.trim().toLowerCase()!==evidence.title.trim().toLowerCase()||x.description.trim().toLowerCase()!==evidence.description.trim().toLowerCase())return false;
+   if(evidence.sourceType==='anime'||evidence.sourceType==='manga')return true;
+   return x.continuityStatus===evidence.continuityStatus&&metadataPairs(x.sourceDetails||{})===metadataPairs(evidence.sourceDetails);
+  });
   if(exact)return json({error:'An identical feat already exists for this version at this source location.',existing:exact,potentialDuplicates:duplicates},409);
   if(d.action==='create_evidence'){
    const id=crypto.randomUUID();
