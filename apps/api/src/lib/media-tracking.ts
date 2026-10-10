@@ -53,7 +53,7 @@ export async function mediaHistory(userId:string,limit=100){
 
 export async function setTracking(userId:string,input:{mediaType:MediaType;mediaId:string;status:string;currentPosition:string|null;activityVisibility?:ActivityVisibility;source?:string}){
  assertStatus(input.status);
- return database().transaction(async db=>{
+ const result=await database().transaction(async db=>{
   await requireMedia(db,input.mediaType,input.mediaId);
   const previous=await db.prepare(`SELECT status,current_position AS "currentPosition",completed_count AS "completedCount",cycle,activity_visibility AS "activityVisibility",started_at AS "startedAt",completed_at AS "completedAt" FROM user_media_tracking WHERE user_id=? AND media_type=? AND media_id=? FOR UPDATE`).bind(userId,input.mediaType,input.mediaId).first<any>();
   const visibility=input.activityVisibility||previous?.activityVisibility||'private',timestamp=Date.now();
@@ -66,13 +66,14 @@ export async function setTracking(userId:string,input:{mediaType:MediaType;media
    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
    ON CONFLICT(user_id,media_type,media_id) DO UPDATE SET status=excluded.status,current_position=excluded.current_position,started_at=COALESCE(user_media_tracking.started_at,excluded.started_at),completed_at=excluded.completed_at,updated_at=excluded.updated_at,activity_visibility=excluded.activity_visibility`).bind(userId,input.mediaType,input.mediaId,next.status,next.currentPosition,next.completedCount,next.startedAt,next.completedAt,timestamp,next.cycle,'progress',visibility).run();
   await db.prepare(`INSERT INTO user_media_history (id,user_id,media_type,media_id,event_type,previous_value,new_value,source,visibility,created_at,dedupe_key)
-   VALUES (?,?,?,?,?,?,?::jsonb,?::jsonb,?,?,?,NULL)`).bind(crypto.randomUUID(),userId,input.mediaType,input.mediaId,previous?'tracking_updated':'tracking_added',previous?JSON.stringify(previous):null,JSON.stringify(next),input.source||'manual',visibility,timestamp).run();
+   VALUES (?,?,?,?,?,?::jsonb,?::jsonb,?,?,?,NULL)`).bind(crypto.randomUUID(),userId,input.mediaType,input.mediaId,previous?'tracking_updated':'tracking_added',previous?JSON.stringify(previous):null,JSON.stringify(next),input.source||'manual',visibility,timestamp).run();
   await mirrorLegacyWatchlist(db,userId,input.mediaType,input.mediaId,input.status);
-  if(input.status==='completed'){
-   await recordActivity({userId,eventType:'media_completed',subjectType:input.mediaType,subjectId:input.mediaId,mediaType:input.mediaType,mediaId:input.mediaId,visibility,metadata:{status:'completed'},dedupeKey:`media-completed:${input.mediaType}:${input.mediaId}:${next.cycle}`});
-  }
-  return {changed:true,tracking:next};
+  return {changed:true,tracking:next,visibility};
  });
+ if(result.changed&&input.status==='completed'){
+  await recordActivity({userId,eventType:'media_completed',subjectType:input.mediaType,subjectId:input.mediaId,mediaType:input.mediaType,mediaId:input.mediaId,visibility:result.visibility as ActivityVisibility,metadata:{status:'completed'},dedupeKey:`media-completed:${input.mediaType}:${input.mediaId}:${result.tracking.cycle}`});
+ }
+ return result;
 }
 
 export async function removeTracking(userId:string,mediaType:MediaType,mediaId:string){
@@ -99,7 +100,8 @@ export async function completeEpisode(userId:string,episodeId:string,source='man
  if(!result.meta.changes)return {changed:false};
  const completed=await db.prepare('SELECT COUNT(*) AS n FROM user_episode_completions u JOIN anime_episodes e ON e.id=u.episode_id WHERE u.user_id=? AND u.viewing_cycle=? AND e.anime_id=?').bind(userId,cycle,episode.animeId).first<{n:number}>();
  const position=episode.absoluteOrder!=null?String(episode.absoluteOrder):episode.episodeNumber;
- await setTracking(userId,{mediaType:'anime',mediaId:episode.animeId,status:'watching',currentPosition:position,source:'episode_completion'});
+ const existing=await db.prepare('SELECT status FROM user_media_tracking WHERE user_id=? AND media_type=? AND media_id=? LIMIT 1').bind(userId,'anime',episode.animeId).first<{status:string}>();
+ await setTracking(userId,{mediaType:'anime',mediaId:episode.animeId,status:existing?.status==='completed'?'completed':'watching',currentPosition:position,source:'episode_completion'});
  await db.prepare('UPDATE user_media_tracking SET current_item_id=?,completed_count=?,updated_at=? WHERE user_id=? AND media_type=? AND media_id=?').bind(episodeId,Number(completed?.n||0),timestamp,userId,'anime',episode.animeId).run();
  return {changed:true,completedCount:Number(completed?.n||0),currentPosition:position};
 }
@@ -124,9 +126,22 @@ export async function completeChapter(userId:string,chapterId:string,source='man
  if(!result.meta.changes)return {changed:false};
  const completed=await db.prepare('SELECT COUNT(*) AS n FROM user_chapter_completions u JOIN manga_chapters c ON c.id=u.chapter_id WHERE u.user_id=? AND u.reading_cycle=? AND c.manga_id=?').bind(userId,cycle,chapter.mangaId).first<{n:number}>();
  const position=chapter.chapterOrder!=null?String(chapter.chapterOrder):chapter.chapterNumber;
- await setTracking(userId,{mediaType:'manga',mediaId:chapter.mangaId,status:'reading',currentPosition:position,source:'chapter_completion'});
+ const existing=await db.prepare('SELECT status FROM user_media_tracking WHERE user_id=? AND media_type=? AND media_id=? LIMIT 1').bind(userId,'manga',chapter.mangaId).first<{status:string}>();
+ await setTracking(userId,{mediaType:'manga',mediaId:chapter.mangaId,status:existing?.status==='completed'?'completed':'reading',currentPosition:position,source:'chapter_completion'});
  await db.prepare('UPDATE user_media_tracking SET current_item_id=?,completed_count=?,updated_at=? WHERE user_id=? AND media_type=? AND media_id=?').bind(chapterId,Number(completed?.n||0),timestamp,userId,'manga',chapter.mangaId).run();
  return {changed:true,completedCount:Number(completed?.n||0),currentPosition:position};
+}
+
+export async function uncompleteChapter(userId:string,chapterId:string){
+ const db=database(),chapter=await db.prepare('SELECT manga_id AS "mangaId" FROM manga_chapters WHERE id=? LIMIT 1').bind(chapterId).first<{mangaId:string}>();
+ if(!chapter)throw Object.assign(new Error('Chapter not found.'),{status:404});
+ const cycle=await completionCycle(db,userId,'manga',chapter.mangaId);
+ const result=await db.prepare('DELETE FROM user_chapter_completions WHERE user_id=? AND chapter_id=? AND reading_cycle=?').bind(userId,chapterId,cycle).run();
+ if(!result.meta.changes)return {changed:false};
+ const latest=await db.prepare(`SELECT c.id,c.chapter_number AS "chapterNumber",c.chapter_order AS "chapterOrder",COUNT(*) OVER() AS n FROM user_chapter_completions u JOIN manga_chapters c ON c.id=u.chapter_id WHERE u.user_id=? AND u.reading_cycle=? AND c.manga_id=? ORDER BY c.chapter_order DESC NULLS LAST,c.id DESC LIMIT 1`).bind(userId,cycle,chapter.mangaId).first<any>();
+ const position=latest?(latest.chapterOrder!=null?String(latest.chapterOrder):latest.chapterNumber):null;
+ await db.prepare('UPDATE user_media_tracking SET current_item_id=?,current_position=?,completed_count=?,updated_at=? WHERE user_id=? AND media_type=? AND media_id=?').bind(latest?.id||null,position,Number(latest?.n||0),Date.now(),userId,'manga',chapter.mangaId).run();
+ return {changed:true,completedCount:Number(latest?.n||0),currentPosition:position};
 }
 
 export async function progressForMedia(userId:string,mediaType:MediaType,mediaId:string):Promise<ViewerProgress|null>{
