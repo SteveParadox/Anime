@@ -19,6 +19,7 @@ import {DailySquadChallenge,DailySquadChallengeTeaser} from '@/components/daily-
 import {ChallengeHub} from '@/components/challenge-hub';
 import {RoleBadges} from '@/components/squad-insights';
 import {Clubs as CommunityClubs,Discover as CommunityDiscover,ProfilePage as CommunityProfilePage} from '@/components/community/community-views';
+import {communityViewKey,shouldApplyCommunityResponse,updateClubDraft} from '@/components/community/route-state';
 import {MatchupLab} from '@/components/matchup-lab';
 import type {VersionRole} from '@anime/domain/squad-synergy';
 
@@ -52,16 +53,16 @@ export default function Home(){
  const [extraLoading,setExtraLoading]=useState(false),[loadedExtraKey,setLoadedExtraKey]=useState(''),extraRequest=useRef(0);
  const [clubId,setClubId]=useState('jjk'),[episode,setEpisode]=useState('0'),[postEpisode,setPostEpisode]=useState('0'),[clubDrafts,setClubDrafts]=useState<Record<string,string>>({});
  const body=clubDrafts[clubId]??'';
- const setBody=(next:string)=>setClubDrafts(previous=>({...previous,[clubId]:next}));
+ const setBody=(next:string)=>setClubDrafts(previous=>updateClubDraft(previous,clubId,next));
  const [profileDraft,setProfileDraft]=useState({handle:'',displayName:'',avatarUrl:'',bio:'',favoriteAnime:[] as string[],favoriteCharacters:[] as string[]}),[profileView,setProfileView]=useState<any>(null),[profileHandle,setProfileHandle]=useState('');
  const [commentDrafts,setCommentDrafts]=useState<Record<string,string>>({}),[challengeDraft,setChallengeDraft]=useState({challengerSquad:'',opponentSquad:'',rules:'Equal speed. Neutral arena. Win by incapacitation.'});
- const activeExtraKey=view==='clubs'?'clubs:'+clubId:view==='profile'?'profile:'+(profileHandle||'me'):view;
+ const activeExtraKey=communityViewKey(view,clubId,profileHandle);
  const activeExtraKeyRef=useRef(activeExtraKey);activeExtraKeyRef.current=activeExtraKey;
  const setView=(v:string)=>{if(v==='profile'){setProfileHandle('');setProfileView(null);}setViewState(v);history.pushState(null,'','/?view='+encodeURIComponent(v))};
  const selectClub=(id:string)=>{setClubId(id);setViewState('clubs');history.pushState(null,'','/?view=clubs&club='+encodeURIComponent(id))};
  const loadMain=useCallback(async(battle?:string)=>{try{const r=await apiFetch('/api/community'+(battle?'?battle='+encodeURIComponent(battle):''));const d:any=await r.json();if(!r.ok)throw Error(d.error);setData(d);setError('');return d as MainData}catch(e){setError((e as Error).message);return null}finally{setLoading(false)}},[]);
  const loadExtra=useCallback(async(v:string)=>{
-  const requestedKey=v==='clubs'?'clubs:'+clubId:v==='profile'?'profile:'+(profileHandle||'me'):v;
+  const requestedKey=communityViewKey(v,clubId,profileHandle);
   // Do not run an outdated callback after its originating route has changed.
   if(requestedKey!==activeExtraKeyRef.current)return;
   const request=++extraRequest.current;
@@ -74,7 +75,7 @@ export default function Home(){
    if(v==='profile')url='/api/community?profile='+(profileHandle?encodeURIComponent(profileHandle):'me');
    const r=await apiFetch(url);
    const d:any=await r.json();
-   if(request!==extraRequest.current||requestedKey!==activeExtraKeyRef.current)return;
+   if(!shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current))return;
    if(v==='profile'&&!profileHandle&&r.status===401){
     setProfileView({profile:null});setLoadedExtraKey(requestedKey);return;
    }
@@ -84,10 +85,10 @@ export default function Home(){
    if(v==='profile')setProfileView(d);
    setLoadedExtraKey(requestedKey);
   }catch(e){
-   if(request===extraRequest.current&&requestedKey===activeExtraKeyRef.current){
+   if(shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current)){
     setError((e as Error).message);setExtra(null);setProfileView(null);setLoadedExtraKey(requestedKey);
    }
-  }finally{if(request===extraRequest.current&&requestedKey===activeExtraKeyRef.current)setExtraLoading(false);}
+  }finally{if(shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current))setExtraLoading(false);}
  },[clubId,profileHandle]);
  useEffect(()=>{setReturnPath(location.pathname+location.search);const q=new URLSearchParams(location.search),v=q.get('view'),challengeSquad=q.get('challengeSquad');if(v&&publicViews.includes(v))setViewState(v);if(challengeSquad)setViewState('squads');const sharedProfile=q.get('profile');if(sharedProfile&&!challengeSquad){setProfileHandle(sharedProfile);setViewState('profile')}const club=q.get('club');if(club&&clubs.some(c=>c.id===club))setClubId(club);void loadMain().then(d=>{const b=d?.battles.find(b=>b.id===q.get('battle'));if(b){setActive(b);const mine=d?.myVotes.find(v=>v.battle===b.id);setSide(mine?.side||'a');setDifficulty(mine?.difficulty||(mine?.side==='draw'?'inconclusive':''));setReason(mine?.reason||'');setEvidence(mine?.evidence||'');void loadMain(b.id)}const squad=q.get('squad');if(squad)apiFetch('/api/community?squad='+encodeURIComponent(squad)).then(r=>r.json()).then((s:any)=>{if(s.squad){setShared(s.squad);setViewState('squads')}})});},[loadMain]);
  useEffect(()=>{const back=()=>{const q=new URLSearchParams(location.search),v=q.get('view'),handle=q.get('profile'),club=q.get('club');setProfileHandle(handle||'');setProfileView(null);setViewState(handle?'profile':v&&publicViews.includes(v)?v:'arena');if(club&&clubs.some(c=>c.id===club))setClubId(club);};window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);},[]);
