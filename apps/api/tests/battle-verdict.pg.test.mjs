@@ -7,10 +7,10 @@ test('PostgreSQL: eligible Battle Arena votes finalize once, and sparse matches 
   process.env.DATABASE_URL=process.env.TEST_DATABASE_URL;
   process.env.APP_BASE_URL='http://localhost:3000';
   const {database}=await import('../src/db/raw.ts');
-  const {finalizeBattle}=await import('../src/lib/battle-finalization.ts');
+  const {finalizeBattle,finalizeDueBattles}=await import('../src/lib/battle-finalization.ts');
   const {closePool}=await import('@anime/database/client');
   const db=database(),now=Date.now(),tag=crypto.randomUUID(),owner='arena-'+tag,
-   battleId='arena-a-'+tag,sparseId='arena-b-'+tag,created=now-8*86_400_000;
+   battleId='arena-a-'+tag,sparseId='arena-b-'+tag,invalidId='arena-invalid-'+tag,created=now-8*86_400_000;
   const payload={
    fighterAId:'naruto',fighterBId:'goku',
    fighterAVersionId:'naruto-six-paths',fighterBVersionId:'goku-saiyan-saga',
@@ -44,11 +44,21 @@ test('PostgreSQL: eligible Battle Arena votes finalize once, and sparse matches 
    assert.equal(sparse.status,'NO_CONTEST');
    assert.equal((await db.prepare('SELECT COUNT(*)::int AS n FROM battle_results WHERE battle_id IN (?,?)').bind(battleId,sparseId).first()).n,2);
    assert.equal((await db.prepare('SELECT COUNT(*)::int AS n FROM battle_result_audit WHERE battle_id=?').bind(battleId).first()).n,1);
+
+   // Ineligible historical battles must not starve future worker batches.
+   await db.prepare('INSERT INTO battles(id,owner,payload,created) VALUES (?,?,?,?)')
+    .bind(invalidId,owner,JSON.stringify({...payload,fighterAId:'unknown-fighter'}),created+1).run();
+   const sweep=await finalizeDueBattles(now);
+   assert.ok(sweep.inspected>=1);
+   const exclusion=await db.prepare('SELECT reason FROM battle_finalization_skips WHERE battle_id=?').bind(invalidId).first();
+   assert.match(exclusion?.reason||'',/not eligible|Invalid persisted/i);
+   assert.equal((await db.prepare('SELECT id FROM battles b LEFT JOIN battle_finalization_skips s ON s.battle_id=b.id WHERE b.id=? AND s.battle_id IS NULL').bind(invalidId).first()),undefined);
+
   }finally{
    await db.prepare('DELETE FROM battle_result_audit WHERE battle_id IN (?,?)').bind(battleId,sparseId).run();
    await db.prepare('DELETE FROM battle_results WHERE battle_id IN (?,?)').bind(battleId,sparseId).run();
    await db.prepare('DELETE FROM votes WHERE battle IN (?,?)').bind(battleId,sparseId).run();
-   await db.prepare('DELETE FROM battles WHERE id IN (?,?)').bind(battleId,sparseId).run();
+   await db.prepare('DELETE FROM battles WHERE id IN (?,?,?)').bind(battleId,sparseId,invalidId).run();
    await db.prepare('DELETE FROM users WHERE id=?').bind(owner).run();
    await closePool();
   }
