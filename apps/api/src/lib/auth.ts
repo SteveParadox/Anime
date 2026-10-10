@@ -90,6 +90,55 @@ async function mergeTrustedDuplicateIntoLegacy(db:DatabaseClient,sourceUserId:st
   db.prepare('UPDATE argument_evidence_links SET argument_user=? WHERE argument_user=?').bind(targetUserId,sourceUserId),
   db.prepare('UPDATE argument_evidence_links SET linked_by=? WHERE linked_by=?').bind(targetUserId,sourceUserId),
 
+  // Advanced challenges and Battle Arena analytics were added after the original
+  // identity-migration code. Move their ownership before deleting the duplicate user.
+  db.prepare('DELETE FROM challenge_proposal_votes s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM challenge_proposal_votes t WHERE t.user_id=? AND t.definition_id=s.definition_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE challenge_proposal_votes SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE challenge_definitions SET creator_user_id=? WHERE creator_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE challenge_lifecycle_audit SET actor_user_id=? WHERE actor_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE challenge_tournaments SET created_by=? WHERE created_by=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM challenge_tournament_participants s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM challenge_tournament_participants t WHERE t.user_id=? AND t.tournament_id=s.tournament_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE challenge_tournament_participants SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM challenge_tournament_results s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM challenge_tournament_results t WHERE t.user_id=? AND t.round_id=s.round_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE challenge_tournament_results SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE battle_collections SET owner_user_id=? WHERE owner_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE battle_result_audit SET actor_user_id=? WHERE actor_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE battle_rematches SET created_by=? WHERE created_by=?').bind(targetUserId,sourceUserId),
+
+  // Unified tracking: collapse composite-key collisions, then transfer ownership.
+  db.prepare('DELETE FROM user_media_tracking s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_media_tracking t WHERE t.user_id=? AND t.media_type=s.media_type AND t.media_id=s.media_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_media_tracking SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_episode_completions s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_episode_completions t WHERE t.user_id=? AND t.episode_id=s.episode_id AND t.viewing_cycle=s.viewing_cycle)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_episode_completions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_chapter_completions s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_chapter_completions t WHERE t.user_id=? AND t.chapter_id=s.chapter_id AND t.reading_cycle=s.reading_cycle)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_chapter_completions SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_media_history s WHERE s.user_id=? AND s.dedupe_key IS NOT NULL AND EXISTS (SELECT 1 FROM user_media_history t WHERE t.user_id=? AND t.dedupe_key=s.dedupe_key)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_media_history SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+
+  // Social relationships need collision and self-edge cleanup before ID transfer.
+  db.prepare('DELETE FROM user_follows WHERE (follower_user_id=? AND followed_user_id=?) OR (follower_user_id=? AND followed_user_id=?)').bind(sourceUserId,targetUserId,targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_follows s WHERE s.follower_user_id=? AND EXISTS (SELECT 1 FROM user_follows t WHERE t.follower_user_id=? AND t.followed_user_id=s.followed_user_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_follows SET follower_user_id=? WHERE follower_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_follows s WHERE s.followed_user_id=? AND EXISTS (SELECT 1 FROM user_follows t WHERE t.followed_user_id=? AND t.follower_user_id=s.follower_user_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_follows SET followed_user_id=? WHERE followed_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_blocks WHERE (blocker_user_id=? AND blocked_user_id=?) OR (blocker_user_id=? AND blocked_user_id=?)').bind(sourceUserId,targetUserId,targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_blocks s WHERE s.blocker_user_id=? AND EXISTS (SELECT 1 FROM user_blocks t WHERE t.blocker_user_id=? AND t.blocked_user_id=s.blocked_user_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_blocks SET blocker_user_id=? WHERE blocker_user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_blocks s WHERE s.blocked_user_id=? AND EXISTS (SELECT 1 FROM user_blocks t WHERE t.blocked_user_id=? AND t.blocker_user_id=s.blocker_user_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_blocks SET blocked_user_id=? WHERE blocked_user_id=?').bind(targetUserId,sourceUserId),
+
+  db.prepare('DELETE FROM user_activity_preferences WHERE user_id=? AND EXISTS (SELECT 1 FROM user_activity_preferences t WHERE t.user_id=?)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_activity_preferences SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_activity_events s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_activity_events t WHERE t.user_id=? AND t.dedupe_key=s.dedupe_key)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_activity_events SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_badges s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_badges t WHERE t.user_id=? AND t.badge_id=s.badge_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_badges SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM reputation_events s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM reputation_events t WHERE t.user_id=? AND t.event_type=s.event_type AND t.source_type=s.source_type AND t.source_id=s.source_id)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE reputation_events SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('DELETE FROM user_rank_history s WHERE s.user_id=? AND EXISTS (SELECT 1 FROM user_rank_history t WHERE t.user_id=? AND t.rank_id=s.rank_id AND t.rank_version=s.rank_version)').bind(sourceUserId,targetUserId),
+  db.prepare('UPDATE user_rank_history SET user_id=? WHERE user_id=?').bind(targetUserId,sourceUserId),
+  db.prepare('UPDATE media_sync_runs SET requested_by=? WHERE requested_by=?').bind(targetUserId,sourceUserId),
+
   db.prepare('DELETE FROM email_verification_tokens WHERE user_id=?').bind(sourceUserId),
 
   // Release the normalized email before assigning it to the legacy account.
