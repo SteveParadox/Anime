@@ -117,11 +117,12 @@ export async function POST(req:Request){try{
   if(d.evidence.trim().length<3&&(!structuredIds||!structuredIds.length))return json({error:'Add a source reference or choose at least one feat from the library.'},400);
   await db.transaction(async tx=>{
    const persisted=await tx.prepare('SELECT id,payload,created FROM battles WHERE id=? FOR UPDATE').bind(d.battle).first<{id:string;payload:string;created:number}>();
+   const voteNow=Date.now(); // Deadline must be checked after acquiring the battle lock.
    const starter=persisted?null:starterBattles.find(b=>b.id===d.battle);
    if(!persisted&&!starter)throw Object.assign(new Error('Battle not found.'),{status:404});
    if(persisted){
     const deadline=battleVotingEndsAt(Number(persisted.created));
-    if(now>=deadline)throw Object.assign(new Error('Voting has closed for this battle.'),{status:409});
+    if(voteNow>=deadline)throw Object.assign(new Error('Voting has closed for this battle.'),{status:409});
     if(await tx.prepare('SELECT 1 FROM battle_results WHERE battle_id=?').bind(d.battle).first())throw Object.assign(new Error('Battle verdict is already recorded.'),{status:409});
    }
    const battleRecord=persisted?JSON.parse(persisted.payload):starter!;
@@ -135,10 +136,10 @@ export async function POST(req:Request){try{
     if(allowedVersions.length===2&&rows.some((row:any)=>!row.versionId||!allowedVersions.includes(row.versionId)))throw Object.assign(new Error('Choose feats for the exact fighter versions.'),{status:400});
     if(allowedVersions.length!==2&&rows.some((row:any)=>row.versionId))throw Object.assign(new Error('Unversioned battles cannot accept version-scoped feats.'),{status:400});
    }
-   await tx.prepare('INSERT INTO votes (battle,user,side,difficulty,reason,evidence,created) VALUES (?,?,?,?,?,?,?) ON CONFLICT(battle,user) DO UPDATE SET side=excluded.side,difficulty=excluded.difficulty,reason=excluded.reason,evidence=excluded.evidence,created=excluded.created').bind(d.battle,user.userId,d.side,d.difficulty,d.reason,d.evidence,now).run();
+   await tx.prepare('INSERT INTO votes (battle,user,side,difficulty,reason,evidence,created) VALUES (?,?,?,?,?,?,?) ON CONFLICT(battle,user) DO UPDATE SET side=excluded.side,difficulty=excluded.difficulty,reason=excluded.reason,evidence=excluded.evidence,created=excluded.created').bind(d.battle,user.userId,d.side,d.difficulty,d.reason,d.evidence,voteNow).run();
    if(structuredIds){
     await tx.prepare('DELETE FROM argument_evidence_links WHERE battle=? AND argument_user=? AND linked_by=?').bind(d.battle,user.userId,user.userId).run();
-    for(const evidenceId of structuredIds)await tx.prepare('INSERT OR IGNORE INTO argument_evidence_links (battle,argument_user,evidence_id,linked_by,created) VALUES (?,?,?,?,?)').bind(d.battle,user.userId,evidenceId,user.userId,now).run();
+    for(const evidenceId of structuredIds)await tx.prepare('INSERT OR IGNORE INTO argument_evidence_links (battle,argument_user,evidence_id,linked_by,created) VALUES (?,?,?,?,?)').bind(d.battle,user.userId,evidenceId,user.userId,voteNow).run();
    }
   });
   id=d.battle;
