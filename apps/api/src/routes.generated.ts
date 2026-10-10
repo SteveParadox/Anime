@@ -20,6 +20,8 @@ import * as handler18 from './routes/squad-submissions/vote/route';
 import * as handler19 from './routes/challenge-management/route';
 import * as handler20 from './routes/challenge-tournaments/route';
 
+import * as battleAnalytics from './routes/battle-analytics/route';
+
 export const routeHandlers=[
  {path:'/api/auth/complete-profile',handlers:handler0},
  {path:'/api/auth/forgot-password',handlers:handler1},
@@ -41,5 +43,6 @@ export const routeHandlers=[
  {path:'/api/squad-submissions',handlers:handler17},
  {path:'/api/squad-submissions/vote',handlers:handler18},
  {path:'/api/challenge-management',handlers:handler19},
- {path:'/api/challenge-tournaments',handlers:handler20}
+ {path:'/api/challenge-tournaments',handlers:handler20},
+ {path:'/api/battle-analytics',handlers:battleAnalytics}
 ] as const;
