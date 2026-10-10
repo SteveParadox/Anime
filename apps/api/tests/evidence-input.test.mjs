@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {evidenceInput,matchesOfficialWebsiteDomain} from '../apps/api/src/lib/evidence-input.ts';
+import {evidenceInput,matchesOfficialWebsiteDomain} from '../src/lib/evidence-input.ts';
 
 const common={characterId:'naruto',versionId:'naruto-six-paths',category:'ability',title:'Source-backed move',description:'A detailed description explaining a particular feat.'};
 const extended={...common,sourceTitle:'Official example publication',sourceLocation:'Page 42',sourceUrl:null,continuityStatus:'unknown'};
