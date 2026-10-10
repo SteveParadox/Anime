@@ -5,7 +5,8 @@ import {searchAniList,searchJikan} from '@/lib/media-providers';
 const now=()=>Date.now();
 const LIMIT_MAX=100;
 
-type MediaRow={id:string;metadataLocked:number};
+type MediaRow={id:string;metadataLocked:number;dataSource:string};
+const sourcePriority=(source:string)=>source==='local'?100:source==='anilist'?20:source==='jikan'?10:0;
 function safeLimit(value:number|undefined,defaultValue=24){return Math.max(1,Math.min(Number.isFinite(value)?Number(value):defaultValue,LIMIT_MAX));}
 
 export async function listMedia(mediaType:MediaType,options:{query?:string;limit?:number;offset?:number}={}){
@@ -51,7 +52,7 @@ function mediaSearchText(item:NormalizedMedia){
 }
 
 async function upsertAnime(db:DatabaseClient,id:string,item:NormalizedMedia,created:boolean){
- const timestamp=now(),existing=created?null:await db.prepare('SELECT metadata_locked AS "metadataLocked" FROM anime WHERE id=?').bind(id).first<MediaRow>();
+ const timestamp=now(),existing=created?null:await db.prepare('SELECT id,metadata_locked AS "metadataLocked",data_source AS "dataSource" FROM anime WHERE id=?').bind(id).first<MediaRow>();
  if(existing&&Boolean(existing.metadataLocked)){
   await db.prepare('UPDATE anime SET last_synced_at=?,updated_at=? WHERE id=?').bind(timestamp,timestamp,id).run();
   return;
@@ -61,12 +62,14 @@ async function upsertAnime(db:DatabaseClient,id:string,item:NormalizedMedia,crea
   await db.prepare(`INSERT INTO anime (id,title_canonical,title_english,title_romaji,title_native,alternative_titles,synopsis,format,release_status,release_year,start_date,end_date,episode_count,duration_minutes,genres,tags,studios,cover_image_url,banner_image_url,official_website,data_source,last_synced_at,metadata_complete,metadata_locked,search_text,created_at,updated_at)
    VALUES (?,?,?,?,?,?::jsonb,?,?,?,?,?,?,?,?,?::jsonb,?::jsonb,?::jsonb,?,?,?,?,?,0,0,?,?,?)`).bind(id,item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.synopsis,item.format,item.status,item.releaseYear,item.startDate,item.endDate,item.itemCount,item.durationMinutes,genres,tags,studios,item.coverImageUrl,item.bannerImageUrl,item.officialWebsite,item.provider,timestamp,search,timestamp,timestamp).run();
  }else{
-  await db.prepare(`UPDATE anime SET title_canonical=?,title_english=COALESCE(?,title_english),title_romaji=COALESCE(?,title_romaji),title_native=COALESCE(?,title_native),alternative_titles=?::jsonb,synopsis=COALESCE(?,synopsis),format=COALESCE(?,format),release_status=COALESCE(?,release_status),release_year=COALESCE(?,release_year),start_date=COALESCE(?,start_date),end_date=COALESCE(?,end_date),episode_count=COALESCE(?,episode_count),duration_minutes=COALESCE(?,duration_minutes),genres=?::jsonb,tags=?::jsonb,studios=?::jsonb,cover_image_url=COALESCE(?,cover_image_url),banner_image_url=COALESCE(?,banner_image_url),official_website=COALESCE(?,official_website),data_source=?,last_synced_at=?,search_text=?,updated_at=? WHERE id=?`).bind(item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.synopsis,item.format,item.status,item.releaseYear,item.startDate,item.endDate,item.itemCount,item.durationMinutes,genres,tags,studios,item.coverImageUrl,item.bannerImageUrl,item.officialWebsite,item.provider,timestamp,search,timestamp,id).run();
+  const mayOverride=sourcePriority(item.provider)>=sourcePriority(existing?.dataSource||'');
+  if(mayOverride)await db.prepare(`UPDATE anime SET title_canonical=?,title_english=COALESCE(?,title_english),title_romaji=COALESCE(?,title_romaji),title_native=COALESCE(?,title_native),alternative_titles=?::jsonb,synopsis=COALESCE(?,synopsis),format=COALESCE(?,format),release_status=COALESCE(?,release_status),release_year=COALESCE(?,release_year),start_date=COALESCE(?,start_date),end_date=COALESCE(?,end_date),episode_count=COALESCE(?,episode_count),duration_minutes=COALESCE(?,duration_minutes),genres=?::jsonb,tags=?::jsonb,studios=?::jsonb,cover_image_url=COALESCE(?,cover_image_url),banner_image_url=COALESCE(?,banner_image_url),official_website=COALESCE(?,official_website),data_source=?,last_synced_at=?,search_text=?,updated_at=? WHERE id=?`).bind(item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.synopsis,item.format,item.status,item.releaseYear,item.startDate,item.endDate,item.itemCount,item.durationMinutes,genres,tags,studios,item.coverImageUrl,item.bannerImageUrl,item.officialWebsite,item.provider,timestamp,search,timestamp,id).run();
+  else await db.prepare(`UPDATE anime SET title_english=COALESCE(title_english,?),title_romaji=COALESCE(title_romaji,?),title_native=COALESCE(title_native,?),synopsis=COALESCE(synopsis,?),format=COALESCE(format,?),release_status=COALESCE(release_status,?),release_year=COALESCE(release_year,?),start_date=COALESCE(start_date,?),end_date=COALESCE(end_date,?),episode_count=COALESCE(episode_count,?),duration_minutes=COALESCE(duration_minutes,?),cover_image_url=COALESCE(cover_image_url,?),banner_image_url=COALESCE(banner_image_url,?),official_website=COALESCE(official_website,?),last_synced_at=?,updated_at=? WHERE id=?`).bind(item.titleEnglish,item.titleRomaji,item.titleNative,item.synopsis,item.format,item.status,item.releaseYear,item.startDate,item.endDate,item.itemCount,item.durationMinutes,item.coverImageUrl,item.bannerImageUrl,item.officialWebsite,timestamp,timestamp,id).run();
  }
 }
 
 async function upsertManga(db:DatabaseClient,id:string,item:NormalizedMedia,created:boolean){
- const timestamp=now(),existing=created?null:await db.prepare('SELECT metadata_locked AS "metadataLocked" FROM manga WHERE id=?').bind(id).first<MediaRow>();
+ const timestamp=now(),existing=created?null:await db.prepare('SELECT id,metadata_locked AS "metadataLocked",data_source AS "dataSource" FROM manga WHERE id=?').bind(id).first<MediaRow>();
  if(existing&&Boolean(existing.metadataLocked)){
   await db.prepare('UPDATE manga SET last_synced_at=?,updated_at=? WHERE id=?').bind(timestamp,timestamp,id).run();
   return;
@@ -76,7 +79,9 @@ async function upsertManga(db:DatabaseClient,id:string,item:NormalizedMedia,crea
   await db.prepare(`INSERT INTO manga (id,title_canonical,title_english,title_romaji,title_native,alternative_titles,publication_status,start_date,end_date,total_chapters,total_volumes,genres,synopsis,cover_image_url,data_source,last_synced_at,metadata_complete,metadata_locked,search_text,created_at,updated_at)
    VALUES (?,?,?,?,?,?::jsonb,?,?,?,?,?,?::jsonb,?,?,?,?,0,0,?,?,?)`).bind(id,item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.status,item.startDate,item.endDate,item.itemCount,null,genres,item.synopsis,item.coverImageUrl,item.provider,timestamp,search,timestamp,timestamp).run();
  }else{
-  await db.prepare(`UPDATE manga SET title_canonical=?,title_english=COALESCE(?,title_english),title_romaji=COALESCE(?,title_romaji),title_native=COALESCE(?,title_native),alternative_titles=?::jsonb,publication_status=COALESCE(?,publication_status),start_date=COALESCE(?,start_date),end_date=COALESCE(?,end_date),total_chapters=COALESCE(?,total_chapters),genres=?::jsonb,synopsis=COALESCE(?,synopsis),cover_image_url=COALESCE(?,cover_image_url),data_source=?,last_synced_at=?,search_text=?,updated_at=? WHERE id=?`).bind(item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.status,item.startDate,item.endDate,item.itemCount,genres,item.synopsis,item.coverImageUrl,item.provider,timestamp,search,timestamp,id).run();
+  const mayOverride=sourcePriority(item.provider)>=sourcePriority(existing?.dataSource||'');
+  if(mayOverride)await db.prepare(`UPDATE manga SET title_canonical=?,title_english=COALESCE(?,title_english),title_romaji=COALESCE(?,title_romaji),title_native=COALESCE(?,title_native),alternative_titles=?::jsonb,publication_status=COALESCE(?,publication_status),start_date=COALESCE(?,start_date),end_date=COALESCE(?,end_date),total_chapters=COALESCE(?,total_chapters),genres=?::jsonb,synopsis=COALESCE(?,synopsis),cover_image_url=COALESCE(?,cover_image_url),data_source=?,last_synced_at=?,search_text=?,updated_at=? WHERE id=?`).bind(item.titleCanonical,item.titleEnglish,item.titleRomaji,item.titleNative,alt,item.status,item.startDate,item.endDate,item.itemCount,genres,item.synopsis,item.coverImageUrl,item.provider,timestamp,search,timestamp,id).run();
+  else await db.prepare(`UPDATE manga SET title_english=COALESCE(title_english,?),title_romaji=COALESCE(title_romaji,?),title_native=COALESCE(title_native,?),publication_status=COALESCE(publication_status,?),start_date=COALESCE(start_date,?),end_date=COALESCE(end_date,?),total_chapters=COALESCE(total_chapters,?),synopsis=COALESCE(synopsis,?),cover_image_url=COALESCE(cover_image_url,?),last_synced_at=?,updated_at=? WHERE id=?`).bind(item.titleEnglish,item.titleRomaji,item.titleNative,item.status,item.startDate,item.endDate,item.itemCount,item.synopsis,item.coverImageUrl,timestamp,timestamp,id).run();
  }
 }
 
