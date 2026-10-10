@@ -10,11 +10,14 @@ export type ActivityVisibility=typeof ACTIVITY_VISIBILITIES[number];
 export const MEDIA_PROVIDERS=['anilist','jikan'] as const;
 export type MediaProvider=typeof MEDIA_PROVIDERS[number];
 
+export type ExternalMediaId={provider:'anilist'|'myanimelist';externalId:string;canonicalUrl:string|null};
+
 export type NormalizedMedia={
  provider:MediaProvider;
  mediaType:MediaType;
  externalId:string;
  canonicalUrl:string|null;
+ externalIds:ExternalMediaId[];
  titleCanonical:string;
  titleEnglish:string|null;
  titleRomaji:string|null;
