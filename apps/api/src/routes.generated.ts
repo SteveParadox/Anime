@@ -21,6 +21,11 @@ import * as handler19 from './routes/challenge-management/route';
 import * as handler20 from './routes/challenge-tournaments/route';
 
 import * as battleAnalytics from './routes/battle-analytics/route';
+import * as media from './routes/media/route';
+import * as tracking from './routes/tracking/route';
+import * as social from './routes/social/route';
+import * as profileStats from './routes/profile-stats/route';
+import * as mediaSync from './routes/admin/media-sync/route';
 
 export const routeHandlers=[
  {path:'/api/auth/complete-profile',handlers:handler0},
@@ -44,5 +49,10 @@ export const routeHandlers=[
  {path:'/api/squad-submissions/vote',handlers:handler18},
  {path:'/api/challenge-management',handlers:handler19},
  {path:'/api/challenge-tournaments',handlers:handler20},
- {path:'/api/battle-analytics',handlers:battleAnalytics}
+ {path:'/api/battle-analytics',handlers:battleAnalytics},
+ {path:'/api/media',handlers:media},
+ {path:'/api/tracking',handlers:tracking},
+ {path:'/api/social',handlers:social},
+ {path:'/api/profile-stats',handlers:profileStats},
+ {path:'/api/admin/media-sync',handlers:mediaSync}
 ] as const;
