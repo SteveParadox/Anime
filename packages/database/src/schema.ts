@@ -324,3 +324,10 @@ export const battleCollectionItems=pgTable('battle_collection_items',{
  battleId:text('battle_id').notNull().references(()=>battles.id),
  position:integer('position').notNull(),addedAt:bigint('added_at',{mode:'number'}).notNull()
 },t=>[primaryKey({columns:[t.collectionId,t.battleId]}),index('idx_battle_collection_items_position').on(t.collectionId,t.position,t.battleId)]);
+
+/** Ineligible historical battles are explicitly excluded from retry loops. */
+export const battleFinalizationSkips=pgTable('battle_finalization_skips',{
+ battleId:text('battle_id').primaryKey().references(()=>battles.id,{onDelete:'cascade'}),
+ reason:text('reason').notNull(),
+ recordedAt:bigint('recorded_at',{mode:'number'}).notNull()
+});
