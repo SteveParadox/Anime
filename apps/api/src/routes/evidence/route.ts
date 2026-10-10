@@ -205,7 +205,7 @@ export async function POST(req:Request){try{
   const exact=duplicates.find(x=>{
    if(x.category!==evidence.category||x.title.trim().toLowerCase()!==evidence.title.trim().toLowerCase()||x.description.trim().toLowerCase()!==evidence.description.trim().toLowerCase())return false;
    if(evidence.sourceType==='anime'||evidence.sourceType==='manga')return true;
-   return x.continuityStatus===evidence.continuityStatus&&metadataPairs(x.sourceDetails||{})===metadataPairs(evidence.sourceDetails);
+   return x.continuityStatus===evidence.continuityStatus&&(x.sourceUrl||null)===(evidence.sourceUrl||null)&&metadataPairs(x.sourceDetails||{})===metadataPairs(evidence.sourceDetails);
   });
   if(exact)return json({error:'An identical feat already exists for this version at this source location.',existing:exact,potentialDuplicates:duplicates},409);
   if(d.action==='create_evidence'){
