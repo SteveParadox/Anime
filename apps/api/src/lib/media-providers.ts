@@ -81,7 +81,7 @@ function normalizeAniListMedia(value:unknown,mediaType:MediaType):NormalizedMedi
  const studios=Array.isArray(studiosRow.nodes)?studiosRow.nodes.flatMap(item=>item&&typeof item==='object'&&!Array.isArray(item)&&text((item as Record<string,unknown>).name)?[String((item as Record<string,unknown>).name)]:[]):[];
  const cover=row.coverImage&&typeof row.coverImage==='object'&&!Array.isArray(row.coverImage)?row.coverImage as Record<string,unknown>:{};
  return {
-  provider:'anilist',mediaType,externalId:String(id),canonicalUrl:text(row.siteUrl),titleCanonical:canonical,
+  provider:'anilist',mediaType,externalId:String(id),canonicalUrl:text(row.siteUrl),externalIds:[{provider:'anilist',externalId:String(id),canonicalUrl:text(row.siteUrl)},...(integer(row.idMal)!=null?[{provider:'myanimelist' as const,externalId:String(integer(row.idMal)),canonicalUrl:integer(row.idMal)!=null?`https://myanimelist.net/${mediaType==='anime'?'anime':'manga'}/${integer(row.idMal)}`:null}]:[])],titleCanonical:canonical,
   titleEnglish:english,titleRomaji:romaji,titleNative:native,alternativeTitles:stringArray(row.synonyms),
   synopsis:text(row.description),format:text(row.format),status:normalizeProviderStatus(text(row.status)),
   releaseYear:integer(row.seasonYear)||integer((row.startDate as Record<string,unknown>|undefined)?.year),
@@ -128,7 +128,7 @@ function normalizeJikanMedia(value:unknown,mediaType:MediaType):NormalizedMedia|
  const studios=Array.isArray(row.studios)?row.studios.flatMap(item=>item&&typeof item==='object'&&!Array.isArray(item)&&text((item as Record<string,unknown>).name)?[String((item as Record<string,unknown>).name)]:[]):[];
  const year=integer(row.year)||Number(from?.slice(0,4))||null;
  return {
-  provider:'jikan',mediaType,externalId:String(id),canonicalUrl:text(row.url),titleCanonical:canonical,
+  provider:'jikan',mediaType,externalId:String(id),canonicalUrl:text(row.url),externalIds:[{provider:'myanimelist',externalId:String(id),canonicalUrl:text(row.url)}],titleCanonical:canonical,
   titleEnglish:text(row.title_english),titleRomaji:text(row.title),titleNative:text(row.title_japanese),
   alternativeTitles:[...new Set([...stringArray(row.title_synonyms),...titles])].filter(title=>title!==canonical),
   synopsis:text(row.synopsis),format:text(row.type),status:normalizeProviderStatus(text(row.status)),releaseYear:Number.isFinite(year)?year:null,
