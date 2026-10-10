@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 
 const page=readFileSync('apps/web/app/page.tsx','utf8');
 const ui=readFileSync('apps/web/components/daily-squad-challenge.tsx','utf8');
+const community=readFileSync('apps/web/components/community/community-views.tsx','utf8');
 
 test('direct challenge squad links mount the squad view',()=>{
  assert.match(page,/challengeSquad=q\.get\('challengeSquad'\)/);
@@ -45,9 +46,10 @@ test('fighter browser supports search, series, role, tag, cost, and deterministi
 
 
 test('profile favorites expose the complete fighter catalog including the expanded roster',()=>{
- assert.match(page,/One-Punch Man/);
- assert.match(page,/Favourite characters<div className="choice-chips">\{fighters\.map/);
- assert.doesNotMatch(page,/fighters\.slice\(0,14\)/);
+ assert.match(community,/One-Punch Man/);
+ assert.match(community,/fighters\.filter\(f=>/);
+ assert.match(community,/\.map\(f=><button/);
+ assert.doesNotMatch(community,/fighters\.slice\(0,14\)/);
 });
 
 test('moderator-removed challenge submissions are surfaced as unavailable to their owner',()=>{
