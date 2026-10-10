@@ -3,6 +3,7 @@
 import {useState, type Dispatch, type SetStateAction, type ReactNode} from 'react';
 import {ArrowRight, Check, Copy, Edit3, Flag, Lock, MessageCircle, Search, ShieldCheck, Trash2, Users, X} from 'lucide-react';
 import {clubs, fighters} from '@anime/domain/catalog';
+import {ProfileSocialPanel} from '@/components/profile-social-panel';
 
 type Save = (payload: Record<string, unknown>, success?: string) => Promise<unknown | null>;
 type Reload = () => Promise<void> | void;
@@ -85,7 +86,9 @@ export function ProfilePage({user,current,page,draft,setDraft,busy,signIn,savePr
  {editing&&owned&&<ProfileForm draft={draft} setDraft={setDraft} busy={busy} saveProfile={async()=>{if(await saveProfile())setEditing(false);}} onCancel={reset} compact/>}
  <div className="ac-profile-stat-grid"><div className="ac-surface"><strong>{page?.record?.total??0}</strong><span>Battle votes</span></div><div className="ac-surface"><strong>{squads.length}</strong><span>Recent squads</span></div><div className="ac-surface"><strong>{history.length}</strong><span>Recent challenge entries</span></div><div className="ac-surface"><strong>{page?.progress?.length??0}</strong><span>Active clubs</span></div></div>
  <div className="ac-profile-sections"><section className="ac-surface"><span className="ac-eyebrow">THE WATCHLIST</span><h2>Favourite anime</h2><FanFavorites values={p.favoriteAnime}/><h2>Favourite characters</h2><FanFavorites values={p.favoriteCharacters} characters/></section><section className="ac-surface"><span className="ac-eyebrow">TEAM STRATEGY</span><h2>Saved squads</h2>{squads.length?squads.map(s=><div className="ac-history" key={s.id}><strong>{s.name}</strong><p>{s.members.map(id=>fighters.find(f=>f.id===id)?.name||id).join(' · ')}</p><small>{s.strategy}</small></div>):<Notice>No saved squads yet.</Notice>}</section></div>
- <section className="ac-surface ac-history-panel"><span className="ac-eyebrow">COMPETITIVE HISTORY</span><h2>Squad challenge entries</h2>{history.length?history.map(e=><div className="ac-history ac-history-share" key={e.id}><div><small>{e.challengeTitle}</small><strong>{e.name}</strong><p>{e.totalCost} / {e.budget} points · {e.totalVotes} votes</p></div><button className="ac-button-subtle" type="button" onClick={()=>void share('challengeSquad',e.id)}><Copy size={14}/> Share</button></div>):<Notice>No challenge entries yet.</Notice>}</section></div>;
+ <section className="ac-surface ac-history-panel"><span className="ac-eyebrow">COMPETITIVE HISTORY</span><h2>Squad challenge entries</h2>{history.length?history.map(e=><div className="ac-history ac-history-share" key={e.id}><div><small>{e.challengeTitle}</small><strong>{e.name}</strong><p>{e.totalCost} / {e.budget} points · {e.totalVotes} votes</p></div><button className="ac-button-subtle" type="button" onClick={()=>void share('challengeSquad',e.id)}><Copy size={14}/> Share</button></div>):<Notice>No challenge entries yet.</Notice>}</section>
+ <ProfileSocialPanel handle={p.handle} user={user}/>
+ </div>;
 }
 const animeOptions=['Dragon Ball','Bleach','Naruto','One Piece','Demon Slayer','Attack on Titan','Jujutsu Kaisen','My Hero Academia','Chainsaw Man','Black Clover','One-Punch Man'];
 export function ProfileForm({draft,setDraft,busy,saveProfile,onCancel,compact=false}:{draft:ProfileDraft;setDraft:Dispatch<SetStateAction<ProfileDraft>>;busy:boolean;saveProfile:()=>Promise<boolean|void>;onCancel?:()=>void;compact?:boolean}){
