@@ -340,3 +340,168 @@ export const battleFinalizationSkips=pgTable('battle_finalization_skips',{
  reason:text('reason').notNull(),
  recordedAt:bigint('recorded_at',{mode:'number'}).notNull()
 });
+
+
+// Canonical media catalogue, unified user tracking, social graph, activity, badges and rank history.
+export const anime=pgTable('anime',{
+ id:text('id').primaryKey(),legacyKey:text('legacy_key'),titleCanonical:text('title_canonical').notNull(),
+ titleEnglish:text('title_english'),titleRomaji:text('title_romaji'),titleNative:text('title_native'),
+ alternativeTitles:jsonb('alternative_titles').notNull().default([]),synopsis:text('synopsis'),format:text('format'),
+ releaseStatus:text('release_status'),releaseYear:integer('release_year'),startDate:text('start_date'),endDate:text('end_date'),
+ episodeCount:integer('episode_count'),durationMinutes:integer('duration_minutes'),genres:jsonb('genres').notNull().default([]),
+ tags:jsonb('tags').notNull().default([]),studios:jsonb('studios').notNull().default([]),coverImageUrl:text('cover_image_url'),
+ bannerImageUrl:text('banner_image_url'),officialWebsite:text('official_website'),dataSource:text('data_source').notNull().default('local'),
+ lastSyncedAt:bigint('last_synced_at',{mode:'number'}),metadataComplete:bigint('metadata_complete',{mode:'number'}).notNull().default(0),
+ metadataLocked:bigint('metadata_locked',{mode:'number'}).notNull().default(0),searchText:text('search_text').notNull().default(''),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_anime_legacy_key').on(t.legacyKey),index('idx_anime_status_year').on(t.releaseStatus,t.releaseYear)]);
+
+export const animeSeasons=pgTable('anime_seasons',{
+ id:text('id').primaryKey(),animeId:text('anime_id').notNull().references(()=>anime.id,{onDelete:'cascade'}),
+ seasonNumber:integer('season_number'),seasonLabel:text('season_label'),title:text('title').notNull(),releaseYear:integer('release_year'),
+ startDate:text('start_date'),endDate:text('end_date'),episodeCount:integer('episode_count'),
+ absoluteEpisodeStart:integer('absolute_episode_start'),absoluteEpisodeEnd:integer('absolute_episode_end'),
+ continuity:text('continuity'),sortOrder:integer('sort_order').notNull().default(0),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[index('idx_anime_seasons_anime_order').on(t.animeId,t.sortOrder,t.id)]);
+
+export const animeEpisodes=pgTable('anime_episodes',{
+ id:text('id').primaryKey(),animeId:text('anime_id').notNull().references(()=>anime.id,{onDelete:'cascade'}),
+ seasonId:text('season_id').references(()=>animeSeasons.id,{onDelete:'set null'}),episodeNumber:text('episode_number').notNull(),
+ absoluteOrder:integer('absolute_order'),title:text('title'),airDate:text('air_date'),durationMinutes:integer('duration_minutes'),
+ synopsis:text('synopsis'),episodeType:text('episode_type').notNull().default('standard'),canonClassification:text('canon_classification'),
+ spoilerLevel:integer('spoiler_level'),dataSource:text('data_source').notNull().default('local'),
+ lastSyncedAt:bigint('last_synced_at',{mode:'number'}),createdAt:bigint('created_at',{mode:'number'}).notNull(),
+ updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_anime_episode_number').on(t.animeId,t.episodeNumber),index('idx_anime_episodes_anime_order').on(t.animeId,t.absoluteOrder,t.id)]);
+
+export const manga=pgTable('manga',{
+ id:text('id').primaryKey(),legacyKey:text('legacy_key'),titleCanonical:text('title_canonical').notNull(),
+ titleEnglish:text('title_english'),titleRomaji:text('title_romaji'),titleNative:text('title_native'),
+ alternativeTitles:jsonb('alternative_titles').notNull().default([]),author:text('author'),illustrator:text('illustrator'),
+ publisher:text('publisher'),serializationMagazine:text('serialization_magazine'),publicationStatus:text('publication_status'),
+ startDate:text('start_date'),endDate:text('end_date'),totalChapters:integer('total_chapters'),totalVolumes:integer('total_volumes'),
+ genres:jsonb('genres').notNull().default([]),synopsis:text('synopsis'),coverImageUrl:text('cover_image_url'),
+ continuity:text('continuity'),dataSource:text('data_source').notNull().default('local'),
+ lastSyncedAt:bigint('last_synced_at',{mode:'number'}),metadataComplete:bigint('metadata_complete',{mode:'number'}).notNull().default(0),
+ metadataLocked:bigint('metadata_locked',{mode:'number'}).notNull().default(0),searchText:text('search_text').notNull().default(''),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_manga_legacy_key').on(t.legacyKey),index('idx_manga_status').on(t.publicationStatus)]);
+
+export const mangaChapters=pgTable('manga_chapters',{
+ id:text('id').primaryKey(),mangaId:text('manga_id').notNull().references(()=>manga.id,{onDelete:'cascade'}),
+ chapterNumber:text('chapter_number').notNull(),volumeNumber:text('volume_number'),title:text('title'),
+ publicationDate:text('publication_date'),chapterOrder:integer('chapter_order'),continuity:text('continuity'),
+ spoilerLevel:integer('spoiler_level'),dataSource:text('data_source').notNull().default('local'),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_manga_chapter_number').on(t.mangaId,t.chapterNumber),index('idx_manga_chapters_order').on(t.mangaId,t.chapterOrder,t.id)]);
+
+export const mediaExternalIds=pgTable('media_external_ids',{
+ mediaType:text('media_type').notNull(),mediaId:text('media_id').notNull(),provider:text('provider').notNull(),externalId:text('external_id').notNull(),
+ canonicalUrl:text('canonical_url'),verifiedAt:bigint('verified_at',{mode:'number'}),createdAt:bigint('created_at',{mode:'number'}).notNull(),
+ updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.mediaType,t.mediaId,t.provider]}),uniqueIndex('idx_media_external_identity').on(t.provider,t.mediaType,t.externalId)]);
+
+export const mediaRelationships=pgTable('media_relationships',{
+ id:text('id').primaryKey(),fromMediaType:text('from_media_type').notNull(),fromMediaId:text('from_media_id').notNull(),
+ toMediaType:text('to_media_type').notNull(),toMediaId:text('to_media_id').notNull(),relationType:text('relation_type').notNull(),
+ source:text('source').notNull().default('local'),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_media_relationship_identity').on(t.fromMediaType,t.fromMediaId,t.toMediaType,t.toMediaId,t.relationType),index('idx_media_relationships_from').on(t.fromMediaType,t.fromMediaId)]);
+
+export const mediaSyncRuns=pgTable('media_sync_runs',{
+ id:text('id').primaryKey(),provider:text('provider').notNull(),mode:text('mode').notNull(),status:text('status').notNull(),
+ requestedBy:text('requested_by'),query:text('query'),startedAt:bigint('started_at',{mode:'number'}).notNull(),
+ finishedAt:bigint('finished_at',{mode:'number'}),importedCount:integer('imported_count').notNull().default(0),
+ updatedCount:integer('updated_count').notNull().default(0),skippedCount:integer('skipped_count').notNull().default(0),
+ errorCount:integer('error_count').notNull().default(0),cursor:text('cursor'),detail:jsonb('detail').notNull().default({})
+},t=>[index('idx_media_sync_runs_provider_started').on(t.provider,t.startedAt)]);
+
+export const mediaSyncErrors=pgTable('media_sync_errors',{
+ id:text('id').primaryKey(),runId:text('run_id').notNull().references(()=>mediaSyncRuns.id,{onDelete:'cascade'}),provider:text('provider').notNull(),
+ externalId:text('external_id'),code:text('code'),message:text('message').notNull(),retryable:bigint('retryable',{mode:'number'}).notNull().default(0),
+ payload:jsonb('payload'),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[index('idx_media_sync_errors_run').on(t.runId,t.createdAt)]);
+
+export const clubMediaLinks=pgTable('club_media_links',{
+ clubId:text('club_id').primaryKey(),animeId:text('anime_id').notNull().references(()=>anime.id,{onDelete:'cascade'}),
+ createdAt:bigint('created_at',{mode:'number'}).notNull()
+});
+
+export const userMediaTracking=pgTable('user_media_tracking',{
+ userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),mediaType:text('media_type').notNull(),
+ mediaId:text('media_id').notNull(),status:text('status').notNull(),currentItemId:text('current_item_id'),currentPosition:text('current_position'),
+ completedCount:integer('completed_count').notNull().default(0),startedAt:bigint('started_at',{mode:'number'}),
+ completedAt:bigint('completed_at',{mode:'number'}),updatedAt:bigint('updated_at',{mode:'number'}).notNull(),
+ cycle:integer('cycle').notNull().default(1),spoilerMode:text('spoiler_mode').notNull().default('progress'),
+ activityVisibility:text('activity_visibility').notNull().default('private')
+},t=>[primaryKey({columns:[t.userId,t.mediaType,t.mediaId]}),index('idx_user_media_tracking_user_status').on(t.userId,t.status,t.updatedAt)]);
+
+export const userEpisodeCompletions=pgTable('user_episode_completions',{
+ userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ episodeId:text('episode_id').notNull().references(()=>animeEpisodes.id,{onDelete:'cascade'}),viewingCycle:integer('viewing_cycle').notNull().default(1),
+ completedAt:bigint('completed_at',{mode:'number'}).notNull(),completionSource:text('completion_source').notNull().default('manual'),
+ correctionNote:text('correction_note')
+},t=>[primaryKey({columns:[t.userId,t.episodeId,t.viewingCycle]}),index('idx_episode_completions_user_time').on(t.userId,t.completedAt)]);
+
+export const userChapterCompletions=pgTable('user_chapter_completions',{
+ userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ chapterId:text('chapter_id').notNull().references(()=>mangaChapters.id,{onDelete:'cascade'}),readingCycle:integer('reading_cycle').notNull().default(1),
+ completedAt:bigint('completed_at',{mode:'number'}).notNull(),completionSource:text('completion_source').notNull().default('manual'),
+ correctionNote:text('correction_note')
+},t=>[primaryKey({columns:[t.userId,t.chapterId,t.readingCycle]}),index('idx_chapter_completions_user_time').on(t.userId,t.completedAt)]);
+
+export const userMediaHistory=pgTable('user_media_history',{
+ id:text('id').primaryKey(),userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ mediaType:text('media_type').notNull(),mediaId:text('media_id').notNull(),eventType:text('event_type').notNull(),
+ previousValue:jsonb('previous_value'),newValue:jsonb('new_value'),source:text('source').notNull().default('manual'),
+ visibility:text('visibility').notNull().default('private'),createdAt:bigint('created_at',{mode:'number'}).notNull(),dedupeKey:text('dedupe_key')
+},t=>[uniqueIndex('idx_user_media_history_dedupe').on(t.userId,t.dedupeKey),index('idx_user_media_history_user_time').on(t.userId,t.createdAt)]);
+
+export const userFollows=pgTable('user_follows',{
+ followerUserId:text('follower_user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ followedUserId:text('followed_user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.followerUserId,t.followedUserId]}),index('idx_user_follows_followed').on(t.followedUserId,t.createdAt)]);
+
+export const userBlocks=pgTable('user_blocks',{
+ blockerUserId:text('blocker_user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ blockedUserId:text('blocked_user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),
+ createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[primaryKey({columns:[t.blockerUserId,t.blockedUserId]})]);
+
+export const userActivityPreferences=pgTable('user_activity_preferences',{
+ userId:text('user_id').primaryKey().references(()=>users.id,{onDelete:'cascade'}),profileVisibility:text('profile_visibility').notNull().default('public'),
+ publishBattles:bigint('publish_battles',{mode:'number'}).notNull().default(1),publishSquads:bigint('publish_squads',{mode:'number'}).notNull().default(1),
+ publishEvidence:bigint('publish_evidence',{mode:'number'}).notNull().default(1),publishDiscussions:bigint('publish_discussions',{mode:'number'}).notNull().default(1),
+ publishTracking:bigint('publish_tracking',{mode:'number'}).notNull().default(0),updatedAt:bigint('updated_at',{mode:'number'}).notNull()
+});
+
+export const userActivityEvents=pgTable('user_activity_events',{
+ id:text('id').primaryKey(),userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),eventType:text('event_type').notNull(),
+ subjectType:text('subject_type').notNull(),subjectId:text('subject_id').notNull(),mediaType:text('media_type'),mediaId:text('media_id'),
+ spoilerPosition:text('spoiler_position'),visibility:text('visibility').notNull().default('public'),metadata:jsonb('metadata').notNull().default({}),
+ createdAt:bigint('created_at',{mode:'number'}).notNull(),dedupeKey:text('dedupe_key').notNull()
+},t=>[uniqueIndex('idx_user_activity_event_dedupe').on(t.userId,t.dedupeKey),index('idx_user_activity_events_user_time').on(t.userId,t.createdAt),index('idx_user_activity_events_feed').on(t.visibility,t.createdAt)]);
+
+export const profileBadges=pgTable('profile_badges',{
+ id:text('id').primaryKey(),name:text('name').notNull(),description:text('description').notNull(),category:text('category').notNull(),
+ icon:text('icon').notNull(),criteriaVersion:integer('criteria_version').notNull().default(1),active:bigint('active',{mode:'number'}).notNull().default(1),
+ createdAt:bigint('created_at',{mode:'number'}).notNull()
+});
+
+export const userBadges=pgTable('user_badges',{
+ userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),badgeId:text('badge_id').notNull().references(()=>profileBadges.id,{onDelete:'cascade'}),
+ earnedAt:bigint('earned_at',{mode:'number'}).notNull(),sourceType:text('source_type').notNull(),sourceId:text('source_id').notNull(),
+ revokedAt:bigint('revoked_at',{mode:'number'}),revokeReason:text('revoke_reason')
+},t=>[primaryKey({columns:[t.userId,t.badgeId]}),index('idx_user_badges_user_time').on(t.userId,t.earnedAt)]);
+
+export const reputationEvents=pgTable('reputation_events',{
+ id:text('id').primaryKey(),userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),eventType:text('event_type').notNull(),
+ points:integer('points').notNull(),sourceType:text('source_type').notNull(),sourceId:text('source_id').notNull(),
+ weightVersion:integer('weight_version').notNull().default(1),createdAt:bigint('created_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_reputation_event_source').on(t.userId,t.eventType,t.sourceType,t.sourceId),index('idx_reputation_events_user_time').on(t.userId,t.createdAt)]);
+
+export const userRankHistory=pgTable('user_rank_history',{
+ id:text('id').primaryKey(),userId:text('user_id').notNull().references(()=>users.id,{onDelete:'cascade'}),rankId:text('rank_id').notNull(),
+ points:integer('points').notNull(),rankVersion:integer('rank_version').notNull().default(1),achievedAt:bigint('achieved_at',{mode:'number'}).notNull()
+},t=>[uniqueIndex('idx_user_rank_history_once').on(t.userId,t.rankId,t.rankVersion),index('idx_user_rank_history_user_time').on(t.userId,t.achievedAt)]);
