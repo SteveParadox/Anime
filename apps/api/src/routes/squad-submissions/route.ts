@@ -6,6 +6,7 @@ import {effectiveChallengeStatus,findChallenge,publicTarget,resolveSubmissionMem
 import {z} from 'zod';
 import {parseRoleSnapshot,parseTraitSnapshot} from '@/lib/version-strategy';
 import {analyzeSquadComposition,type VersionRole,type StrategicTrait} from '@anime/domain/squad-synergy';
+import {recordActivity} from '@/lib/activity';
 
 const idText=z.string().trim().min(1).max(180);
 const memberSchema=z.object({characterId:idText,versionId:idText}).strict();
@@ -289,6 +290,7 @@ export async function POST(request:Request){
    statements.push(db.prepare('INSERT INTO squad_submission_members (submission_id,position,character_id,version_id,character_name_snapshot,version_name_snapshot,cost_snapshot,roles_snapshot,traits_snapshot) VALUES (?,?,?,?,?,?,?,?,?)').bind(submissionId,member.position,member.characterId,member.versionId,member.characterName,member.versionName,member.cost,JSON.stringify(member.roles),JSON.stringify(member.traits)));
   }
   await db.batch(statements);
+  if(!existing)try{await recordActivity({userId:user.userId,eventType:'squad_submission_created',subjectType:'squad_submission',subjectId:submissionId,visibility:'public',metadata:{challengeId:challenge.id,name:input.name,totalCost},dedupeKey:`squad-submission:${submissionId}`});}catch(activityError){console.error('Squad activity write failed',activityError);}
   return authJson({ok:true,id:submissionId,totalCost,updated:Boolean(existing)});
  }catch(error:unknown){
   if(error instanceof z.ZodError)return authJson({error:'Invalid squad submission.',issues:error.issues},400);
