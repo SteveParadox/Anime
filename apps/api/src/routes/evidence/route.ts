@@ -2,6 +2,7 @@ import type {DatabaseClient, PreparedStatement} from '@/db/raw';
 import {database} from '@/db/raw';
 import {canContribute,getCurrentUser,isAdminUser,type CurrentUser} from '@/lib/auth';
 import {sameOrigin} from '@/lib/auth-request';
+import {recordActivity} from '@/lib/activity';
 import {fighters,starterBattles} from '@anime/domain/catalog';
 import {
  EVIDENCE_SOURCE_TYPES,
@@ -30,6 +31,7 @@ const mutationSchema=z.discriminatedUnion('action',[
 
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 const admin=(user?:CurrentUser|null)=>isAdminUser(user);
+async function activity(input:Parameters<typeof recordActivity>[0]){try{await recordActivity(input);}catch(error){console.error('Evidence activity write failed',error);}}
 const recordSelect=`SELECT er.id,er.character_id AS characterId,er.version_id AS versionId,er.ability_id AS abilityId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.source_title AS sourceTitle,er.source_location AS sourceLocation,er.source_url AS sourceUrl,er.source_details AS sourceDetails,er.continuity_status AS continuityStatus,er.source_language AS sourceLanguage,er.translation_provenance AS translationProvenance,er.submitted_by AS submittedBy,er.created,er.updated,er.deleted,COALESCE(p.handle,'anime_fan') AS submittedByHandle FROM evidence_records er LEFT JOIN profiles p ON p.user=er.submitted_by`;
 
 function publicRecord(row:any,userId?:string){
@@ -211,7 +213,7 @@ export async function POST(req:Request){try{
   if(d.action==='create_evidence'){
    const id=crypto.randomUUID();
    await db.prepare('INSERT INTO evidence_records (id,character_id,version_id,ability_id,source_type,series,category,title,description,episode,timestamp,chapter,page,source_title,source_location,source_url,source_details,continuity_status,source_language,translation_provenance,submitted_by,created,updated,deleted,deleted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL)').bind(id,evidence.characterId,evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,canonical.sourceTitle,canonical.sourceLocation,canonical.sourceUrl,canonical.sourceDetails,canonical.continuityStatus,canonical.sourceLanguage,canonical.translationProvenance,user.userId,now,now).run();
-   const created=await fetchRecord(db,id,user.userId);return json({ok:true,record:created?.view,potentialDuplicates:duplicates},201);
+   const created=await fetchRecord(db,id,user.userId);await activity({userId:user.userId,eventType:'evidence_created',subjectType:'evidence',subjectId:id,visibility:'public',metadata:{characterId:evidence.characterId,versionId:evidence.versionId,sourceType:evidence.sourceType},dedupeKey:`evidence-created:${id}`});return json({ok:true,record:created?.view,potentialDuplicates:duplicates},201);
   }
   await db.prepare('UPDATE evidence_records SET version_id=?,ability_id=?,source_type=?,series=?,category=?,title=?,description=?,episode=?,timestamp=?,chapter=?,page=?,source_title=?,source_location=?,source_url=?,source_details=?,continuity_status=?,source_language=?,translation_provenance=?,updated=? WHERE id=?').bind(evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,canonical.sourceTitle,canonical.sourceLocation,canonical.sourceUrl,canonical.sourceDetails,canonical.continuityStatus,canonical.sourceLanguage,canonical.translationProvenance,now,d.evidenceId).run();
   const updated=await fetchRecord(db,d.evidenceId,user.userId);return json({ok:true,record:updated?.view,potentialDuplicates:duplicates});
