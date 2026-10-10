@@ -13,9 +13,11 @@ export async function listMedia(mediaType:MediaType,options:{query?:string;limit
  const table=mediaType==='anime'?'anime':'manga';
  const statusColumn=mediaType==='anime'?'release_status':'publication_status';
  const countColumn=mediaType==='anime'?'episode_count':'total_chapters';
+ const formatExpr=mediaType==='anime'?'format':'NULL::text';
+ const releaseYearExpr=mediaType==='anime'?'release_year':'NULL::integer';
  const where=q?'WHERE lower(title_canonical) LIKE ? OR search_text LIKE ?':'';
  const binds=q?[`%${q}%`,`%${normalizeSearchText([q])}%`,limit,offset]:[limit,offset];
- const rows=(await db.prepare(`SELECT id,legacy_key AS "legacyKey",title_canonical AS "titleCanonical",title_english AS "titleEnglish",title_romaji AS "titleRomaji",title_native AS "titleNative",synopsis,format,${statusColumn} AS status,release_year AS "releaseYear",${countColumn} AS "itemCount",genres,tags,cover_image_url AS "coverImageUrl",banner_image_url AS "bannerImageUrl",data_source AS "dataSource",last_synced_at AS "lastSyncedAt" FROM ${table} ${where} ORDER BY COALESCE(release_year,0) DESC,title_canonical ASC LIMIT ? OFFSET ?`).bind(...binds).all<Record<string,unknown>>()).results;
+ const rows=(await db.prepare(`SELECT id,legacy_key AS "legacyKey",title_canonical AS "titleCanonical",title_english AS "titleEnglish",title_romaji AS "titleRomaji",title_native AS "titleNative",synopsis,${formatExpr} AS format,${statusColumn} AS status,${releaseYearExpr} AS "releaseYear",${countColumn} AS "itemCount",genres,cover_image_url AS "coverImageUrl",data_source AS "dataSource",last_synced_at AS "lastSyncedAt" FROM ${table} ${where} ORDER BY title_canonical ASC LIMIT ? OFFSET ?`).bind(...binds).all<Record<string,unknown>>()).results;
  return rows;
 }
 
