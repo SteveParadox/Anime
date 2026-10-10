@@ -69,6 +69,54 @@ test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoil
    const evidence=await mutation('/api/evidence',{action:'create_evidence',evidence:{characterId:'naruto',versionId:'naruto-six-paths',sourceType:'manga',category:'ability',title:'Fixture feat',description:'A documented fixture feat for the battle.',chapter:670}},owner.cookie);
    assert.equal(evidence.statusCode,201,evidence.payload);
    const evidenceId=evidence.json().record.id;
+
+   // Exercise the expanded evidence lifecycle against actual PostgreSQL and authenticated routes.
+   const officialSources=[
+    {sourceType:'databook',sourceDetails:{publisher:'Example Publishing',pageOrSection:'Page 42'}},
+    {sourceType:'official_guidebook',sourceDetails:{publisher:'Example Publishing',pageOrSection:'Section 2'}},
+    {sourceType:'creator_interview',sourceDetails:{subject:'Example Creator',publication:'Example Magazine',statementKind:'clarification'}},
+    {sourceType:'official_website',sourceUrl:'https://example.org/article',sourceDetails:{organization:'Example Org',officialDomain:'example.org',accessDate:'2026-10-09'}},
+    {sourceType:'light_novel',sourceDetails:{author:'Example Writer',chapter:'Chapter 7',continuityRelation:'spin_off'}},
+    {sourceType:'game',sourceDetails:{developer:'Example Studio',publisher:'Example Publishing',platform:'PC',sceneOrMission:'Mission 2',continuityClassification:'gameplay'}}
+   ];
+   for(const [i,source] of officialSources.entries()){
+    const original={
+     characterId:'naruto',versionId:'naruto-six-paths',category:'statement',
+     title:'Structured source feat '+source.sourceType,
+     description:'A source-specific fixture proving round-trip evidence behavior.',
+     sourceTitle:'Example publication '+source.sourceType,
+     sourceLocation:'Citation '+(i+1),sourceUrl:null,continuityStatus:'unknown',
+     ...source
+    };
+    const created=await mutation('/api/evidence',{action:'create_evidence',evidence:original},owner.cookie);
+    assert.equal(created.statusCode,201,source.sourceType+': '+created.payload);
+    const saved=created.json().record;
+    assert.equal(saved.sourceType,source.sourceType);
+    assert.deepEqual(saved.sourceDetails,source.sourceDetails);
+    assert.equal(saved.sourceTitle,original.sourceTitle);
+    assert.equal(saved.sourceLocation,original.sourceLocation);
+    const duplicate=await mutation('/api/evidence',{action:'create_evidence',evidence:original},owner.cookie);
+    assert.equal(duplicate.statusCode,409,'Exact duplicate must be rejected: '+source.sourceType);
+    const denied=await mutation('/api/evidence',{action:'update_evidence',evidenceId:saved.id,evidence:original},voter.cookie);
+    assert.equal(denied.statusCode,403,'Other contributors must not change evidence');
+    const amended={...original,title:original.title+' updated'};
+    const updated=await mutation('/api/evidence',{action:'update_evidence',evidenceId:saved.id,evidence:amended},owner.cookie);
+    assert.equal(updated.statusCode,200,updated.payload);
+    const filtered=await get('/api/evidence?version=naruto-six-paths&sourceType='+source.sourceType,owner.cookie);
+    assert.equal(filtered.statusCode,200,filtered.payload);
+    assert.equal(filtered.json().records.some(record=>record.id===saved.id&&record.title===amended.title),true);
+    if(source.sourceType==='official_website'){
+     const mismatched=await mutation('/api/evidence',{action:'create_evidence',evidence:{...original,sourceUrl:'https://attacker.example/article'}},owner.cookie);
+     assert.equal(mismatched.statusCode,400,'Claimed official domain must match the source URL');
+    }
+    if(source.sourceType==='game'){
+     const removed=await mutation('/api/evidence',{action:'delete_evidence',evidenceId:saved.id},owner.cookie);
+     assert.equal(removed.statusCode,200,removed.payload);
+     const afterDelete=await get('/api/evidence?version=naruto-six-paths&sourceType=game',owner.cookie);
+     assert.equal(afterDelete.json().records.some(record=>record.id===saved.id),false,'Deleted evidence must be hidden');
+    }
+   }
+
    assert.equal((await get('/api/evidence?version=naruto-six-paths')).json().records.some(record=>record.id===evidenceId),true);
    const battle=await mutation('/api/community',{action:'battle',fighterAId:'naruto',fighterBId:'goku',fighterAVersionId:'naruto-six-paths',fighterBVersionId:'goku-saiyan-saga',battleType:'knockout',location:'neutral_arena',speed:'equalized',knowledge:'none',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:''},owner.cookie);
    assert.equal(battle.statusCode,200,battle.payload);
