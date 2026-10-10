@@ -74,7 +74,7 @@ export function ProfilePage({user,current,page,draft,setDraft,busy,signIn,savePr
  const [editing,setEditing]=useState(false);
  const p=requestedHandle?page?.profile:(page?.profile||current);
  const owned=Boolean(user&&p&&(requestedHandle?p.owned:true));
- const reset=()=>{if(current)setDraft({handle:current.handle,displayName:current.displayName,avatarUrl:current.avatarUrl||'',bio:current.bio,favoriteAnime:[...current.favoriteAnime],favoriteCharacters:[...current.favoriteCharacters]});setEditing(false);};
+ const reset=()=>{if(current){const original={handle:current.handle,displayName:current.displayName,avatarUrl:current.avatarUrl||'',bio:current.bio,favoriteAnime:[...current.favoriteAnime],favoriteCharacters:[...current.favoriteCharacters]};if(JSON.stringify(draft)!==JSON.stringify(original)&&!window.confirm('Discard unsaved profile changes?'))return;setDraft(original);}setEditing(false);};
  if(loading)return <div className="ac-community"><Notice>Loading fan profile...</Notice></div>;
  if(requestedHandle&&!p)return <div className="ac-community"><SectionHeading eyebrow="FAN PROFILE" title="Profile unavailable" description="This public profile does not exist or is not available."/><Notice>Check the profile link or return to Discover.</Notice></div>;
  if(!requestedHandle&&!user)return <div className="ac-community"><SectionHeading eyebrow="YOUR ANIME IDENTITY" title="Create your fan profile" description="Sign in to save your favourites, squads, and community activity."/><button className="ac-button" onClick={signIn}>Sign in <ArrowRight size={17}/></button></div>;
