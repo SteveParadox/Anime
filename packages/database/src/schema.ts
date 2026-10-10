@@ -1,4 +1,4 @@
-import {pgTable,text,bigint,integer,primaryKey,index,uniqueIndex,check} from 'drizzle-orm/pg-core';
+import {pgTable,text,bigint,integer,jsonb,primaryKey,index,uniqueIndex,check} from 'drizzle-orm/pg-core';
 import {sql} from 'drizzle-orm';
 export const battles=pgTable('battles',{id:text('id').primaryKey(),owner:text('owner').notNull(),payload:text('payload').notNull(),created:bigint('created',{mode:'number'}).notNull()});
 export const votes=pgTable('votes',{argumentId:bigint('argument_id',{mode:'number'}).generatedByDefaultAsIdentity(),battle:text('battle').notNull(),user:text('user').notNull(),side:text('side').notNull(),difficulty:text('difficulty'),reason:text('reason').notNull(),evidence:text('evidence').notNull(),created:bigint('created',{mode:'number'}).notNull()},t=>[primaryKey({columns:[t.battle,t.user]}),uniqueIndex('idx_votes_argument_id').on(t.argumentId)]);
@@ -152,6 +152,13 @@ export const evidenceRecords=pgTable('evidence_records',{
  timestamp:text('timestamp'),
  chapter:bigint('chapter',{mode:'number'}),
  page:bigint('page',{mode:'number'}),
+ sourceTitle:text('source_title'),
+ sourceLocation:text('source_location'),
+ sourceUrl:text('source_url'),
+ sourceDetails:jsonb('source_details').$type<Record<string,string>>().notNull().default({}),
+ continuityStatus:text('continuity_status').notNull().default('unknown'),
+ sourceLanguage:text('source_language'),
+ translationProvenance:text('translation_provenance'),
  versionId:text('version_id'),
  abilityId:text('ability_id'),
  submittedBy:text('submitted_by').notNull(),

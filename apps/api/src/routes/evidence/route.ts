@@ -7,7 +7,6 @@ import {
  EVIDENCE_SOURCE_TYPES,
  FEAT_CATEGORIES,
  EMPTY_EVIDENCE_COUNTS,
- EVIDENCE_TIMESTAMP_PATTERN,
  normalizeEvidenceTimestamp,
  type EvidenceSourceType,
  type FeatCategory
@@ -19,22 +18,8 @@ import {
  versionById
 } from '@anime/domain/characters';
 import {z} from 'zod';
+import {idText,evidenceInput,matchesOfficialWebsiteDomain} from '@/lib/evidence-input';
 
-const idText=z.string().trim().min(1).max(180);
-const titleText=z.string().trim().min(3).max(120);
-const descriptionText=z.string().trim().min(10).max(1000);
-const commonEvidence={
- characterId:idText,
- versionId:idText,
- abilityId:idText.nullable().optional(),
- category:z.enum(FEAT_CATEGORIES),
- title:titleText,
- description:descriptionText
-};
-const evidenceInput=z.discriminatedUnion('sourceType',[
- z.object({...commonEvidence,sourceType:z.literal('anime'),episode:z.number().int().positive().max(100000),timestamp:z.string().trim().regex(EVIDENCE_TIMESTAMP_PATTERN,'Use MM:SS or HH:MM:SS.').nullable().optional()}).strict(),
- z.object({...commonEvidence,sourceType:z.literal('manga'),chapter:z.number().int().positive().max(100000),page:z.number().int().positive().max(100000).nullable().optional()}).strict()
-]);
 const mutationSchema=z.discriminatedUnion('action',[
  z.object({action:z.literal('create_evidence'),evidence:evidenceInput}).strict(),
  z.object({action:z.literal('update_evidence'),evidenceId:idText,evidence:evidenceInput}).strict(),
@@ -45,7 +30,7 @@ const mutationSchema=z.discriminatedUnion('action',[
 
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 const admin=(user?:CurrentUser|null)=>isAdminUser(user);
-const recordSelect=`SELECT er.id,er.character_id AS characterId,er.version_id AS versionId,er.ability_id AS abilityId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.submitted_by AS submittedBy,er.created,er.updated,er.deleted,COALESCE(p.handle,'anime_fan') AS submittedByHandle FROM evidence_records er LEFT JOIN profiles p ON p.user=er.submitted_by`;
+const recordSelect=`SELECT er.id,er.character_id AS characterId,er.version_id AS versionId,er.ability_id AS abilityId,er.source_type AS sourceType,er.series,er.category,er.title,er.description,er.episode,er.timestamp,er.chapter,er.page,er.source_title AS sourceTitle,er.source_location AS sourceLocation,er.source_url AS sourceUrl,er.source_details AS sourceDetails,er.continuity_status AS continuityStatus,er.source_language AS sourceLanguage,er.translation_provenance AS translationProvenance,er.submitted_by AS submittedBy,er.created,er.updated,er.deleted,COALESCE(p.handle,'anime_fan') AS submittedByHandle FROM evidence_records er LEFT JOIN profiles p ON p.user=er.submitted_by`;
 
 function publicRecord(row:any,userId?:string){
  const character=fighters.find(f=>f.id===row.characterId);
@@ -68,6 +53,13 @@ function publicRecord(row:any,userId?:string){
   timestamp:row.timestamp||null,
   chapter:row.chapter==null?null:Number(row.chapter),
   page:row.page==null?null:Number(row.page),
+  sourceTitle:row.sourceTitle||null,
+  sourceLocation:row.sourceLocation||null,
+  sourceUrl:row.sourceUrl||null,
+  sourceDetails:(()=>{try{const value=typeof row.sourceDetails==='string'?JSON.parse(row.sourceDetails):row.sourceDetails;return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}catch{return {}}})(),
+  continuityStatus:row.continuityStatus||'unknown',
+  sourceLanguage:row.sourceLanguage||null,
+  translationProvenance:row.translationProvenance||null,
   submittedByHandle:row.submittedByHandle||'anime_fan',
   created:Number(row.created),
   updated:Number(row.updated),
@@ -88,7 +80,20 @@ async function battleById(db:DatabaseClient,id:string){
  try{return JSON.parse(row.payload) as Record<string,unknown>}catch{return null}
 }
 
+function extendedSource(evidence:z.infer<typeof evidenceInput>){
+ if(evidence.sourceType==='anime'||evidence.sourceType==='manga')return {sourceTitle:null,sourceLocation:null,sourceUrl:null,sourceDetails:'{}',continuityStatus:'unknown',sourceLanguage:null,translationProvenance:null};
+ return {
+  sourceTitle:evidence.sourceTitle.trim(),
+  sourceLocation:evidence.sourceLocation.trim(),
+  sourceUrl:evidence.sourceUrl||null,
+  sourceDetails:JSON.stringify(evidence.sourceDetails),
+  continuityStatus:evidence.continuityStatus,
+  sourceLanguage:evidence.sourceLanguage||null,
+  translationProvenance:evidence.translationProvenance||null
+ };
+}
 function canonicalValues(evidence:z.infer<typeof evidenceInput>){
+ if(evidence.sourceType==='official_website'&&!matchesOfficialWebsiteDomain(evidence.sourceUrl,evidence.sourceDetails.officialDomain))return null;
  const character=fighters.find(f=>f.id===evidence.characterId);
  const version=versionById(evidence.versionId);
  if(!character||!version||!version.canonical||version.characterId!==character.id)return null;
@@ -106,13 +111,15 @@ function canonicalValues(evidence:z.infer<typeof evidenceInput>){
   episode:evidence.sourceType==='anime'?evidence.episode:null,
   timestamp:evidence.sourceType==='anime'?normalizeEvidenceTimestamp(evidence.timestamp):null,
   chapter:evidence.sourceType==='manga'?evidence.chapter:null,
-  page:evidence.sourceType==='manga'?(evidence.page||null):null
+  page:evidence.sourceType==='manga'?(evidence.page||null):null,
+  ...extendedSource(evidence)
  };
 }
 
 function locationClause(evidence:z.infer<typeof evidenceInput>){
  if(evidence.sourceType==='anime')return {sql:`er.character_id=? AND er.version_id=? AND er.source_type='anime' AND er.episode=? AND COALESCE(er.timestamp,'')=? AND er.deleted=0`,params:[evidence.characterId,evidence.versionId,evidence.episode,normalizeEvidenceTimestamp(evidence.timestamp)||'']};
- return {sql:`er.character_id=? AND er.version_id=? AND er.source_type='manga' AND er.chapter=? AND COALESCE(er.page,0)=? AND er.deleted=0`,params:[evidence.characterId,evidence.versionId,evidence.chapter,evidence.page||0]};
+ if(evidence.sourceType==='manga')return {sql:`er.character_id=? AND er.version_id=? AND er.source_type='manga' AND er.chapter=? AND COALESCE(er.page,0)=? AND er.deleted=0`,params:[evidence.characterId,evidence.versionId,evidence.chapter,evidence.page||0]};
+ return {sql:'er.character_id=? AND er.version_id=? AND er.source_type=? AND lower(er.source_title)=? AND lower(er.source_location)=? AND er.deleted=0',params:[evidence.characterId,evidence.versionId,evidence.sourceType,evidence.sourceTitle.toLowerCase(),evidence.sourceLocation.toLowerCase()]};
 }
 
 async function potentialDuplicates(db:DatabaseClient,evidence:z.infer<typeof evidenceInput>,userId?:string,excludeId?:string){
@@ -152,8 +159,8 @@ export async function GET(req:Request){try{
   const like=`%${q}%`;
   const qLower=q.toLowerCase();
   const versionMatches=characterVersions.filter(v=>[v.name,v.shortName||'',v.arc||'',v.era||'',...v.aliases].some(x=>x.toLowerCase().includes(qLower))).map(v=>v.id);
-  const searchParts=['er.title LIKE ? COLLATE NOCASE','er.description LIKE ? COLLATE NOCASE','er.series LIKE ? COLLATE NOCASE','er.category LIKE ? COLLATE NOCASE'];
-  params.push(like,like,like,like);
+  const searchParts=['er.title ILIKE ?','er.description ILIKE ?','er.series ILIKE ?','er.category ILIKE ?','er.source_title ILIKE ?','er.source_location ILIKE ?'];
+  params.push(like,like,like,like,like,like);
   if(versionMatches.length){searchParts.push(`er.version_id IN (${versionMatches.map(()=>'?').join(',')})`);params.push(...versionMatches);}
   conditions.push(`(${searchParts.join(' OR ')})`);
  }
@@ -185,7 +192,7 @@ export async function POST(req:Request){try{
 
  if(d.action==='create_evidence'||d.action==='update_evidence'){
   const evidence=d.evidence,canonical=canonicalValues(evidence);
-  if(!canonical)return json({error:'Choose a valid character version and an ability available to that version.'},400);
+  if(!canonical)return json({error:'Invalid character/version/ability or source domain. Check the evidence metadata.'},400);
   if(d.action==='update_evidence'){
    const current=await fetchRecord(db,d.evidenceId,user.userId,true);
    if(!current||current.raw.deleted)return json({error:'Evidence not found.'},404);
@@ -194,14 +201,19 @@ export async function POST(req:Request){try{
    if(current.raw.versionId&&current.raw.versionId!==evidence.versionId)return json({error:'A version-scoped feat cannot be moved to another version. Create a new feat instead.'},400);
   }
   const duplicates=await potentialDuplicates(db,evidence,user.userId,d.action==='update_evidence'?d.evidenceId:undefined);
-  const exact=duplicates.find(x=>x.category===evidence.category&&x.title.trim().toLowerCase()===evidence.title.trim().toLowerCase()&&x.description.trim().toLowerCase()===evidence.description.trim().toLowerCase());
+  const metadataPairs=(values:Record<string,string>)=>JSON.stringify(Object.entries(values).filter(([,value])=>Boolean(value)).sort(([a],[b])=>a.localeCompare(b)));
+  const exact=duplicates.find(x=>{
+   if(x.category!==evidence.category||x.title.trim().toLowerCase()!==evidence.title.trim().toLowerCase()||x.description.trim().toLowerCase()!==evidence.description.trim().toLowerCase())return false;
+   if(evidence.sourceType==='anime'||evidence.sourceType==='manga')return true;
+   return x.continuityStatus===evidence.continuityStatus&&(x.sourceUrl||null)===(evidence.sourceUrl||null)&&metadataPairs(x.sourceDetails||{})===metadataPairs(evidence.sourceDetails);
+  });
   if(exact)return json({error:'An identical feat already exists for this version at this source location.',existing:exact,potentialDuplicates:duplicates},409);
   if(d.action==='create_evidence'){
    const id=crypto.randomUUID();
-   await db.prepare('INSERT INTO evidence_records (id,character_id,version_id,ability_id,source_type,series,category,title,description,episode,timestamp,chapter,page,submitted_by,created,updated,deleted,deleted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL)').bind(id,evidence.characterId,evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,user.userId,now,now).run();
+   await db.prepare('INSERT INTO evidence_records (id,character_id,version_id,ability_id,source_type,series,category,title,description,episode,timestamp,chapter,page,source_title,source_location,source_url,source_details,continuity_status,source_language,translation_provenance,submitted_by,created,updated,deleted,deleted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL)').bind(id,evidence.characterId,evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,canonical.sourceTitle,canonical.sourceLocation,canonical.sourceUrl,canonical.sourceDetails,canonical.continuityStatus,canonical.sourceLanguage,canonical.translationProvenance,user.userId,now,now).run();
    const created=await fetchRecord(db,id,user.userId);return json({ok:true,record:created?.view,potentialDuplicates:duplicates},201);
   }
-  await db.prepare('UPDATE evidence_records SET version_id=?,ability_id=?,source_type=?,series=?,category=?,title=?,description=?,episode=?,timestamp=?,chapter=?,page=?,updated=? WHERE id=?').bind(evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,now,d.evidenceId).run();
+  await db.prepare('UPDATE evidence_records SET version_id=?,ability_id=?,source_type=?,series=?,category=?,title=?,description=?,episode=?,timestamp=?,chapter=?,page=?,source_title=?,source_location=?,source_url=?,source_details=?,continuity_status=?,source_language=?,translation_provenance=?,updated=? WHERE id=?').bind(evidence.versionId,evidence.abilityId||null,evidence.sourceType,canonical.series,evidence.category,evidence.title,evidence.description,canonical.episode,canonical.timestamp,canonical.chapter,canonical.page,canonical.sourceTitle,canonical.sourceLocation,canonical.sourceUrl,canonical.sourceDetails,canonical.continuityStatus,canonical.sourceLanguage,canonical.translationProvenance,now,d.evidenceId).run();
   const updated=await fetchRecord(db,d.evidenceId,user.userId);return json({ok:true,record:updated?.view,potentialDuplicates:duplicates});
  }
 
