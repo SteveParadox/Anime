@@ -19,6 +19,7 @@ import {DailySquadChallenge,DailySquadChallengeTeaser} from '@/components/daily-
 import {ChallengeHub} from '@/components/challenge-hub';
 import {RoleBadges} from '@/components/squad-insights';
 import {Clubs as CommunityClubs,Discover as CommunityDiscover,ProfilePage as CommunityProfilePage} from '@/components/community/community-views';
+import {communityViewKey,shouldApplyCommunityResponse,updateClubDraft} from '@/components/community/route-state';
 import {MatchupLab} from '@/components/matchup-lab';
 import type {VersionRole} from '@anime/domain/squad-synergy';
 
@@ -49,33 +50,55 @@ export default function Home(){
  const [view,setViewState]=useState('arena'),[data,setData]=useState<MainData>(initial),[extra,setExtra]=useState<any>(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[busy,setBusy]=useState(false),[active,setActive]=useState<Battle|null>(null),[character,setCharacter]=useState<typeof fighters[number]|null>(null),[creating,setCreating]=useState(false),[filter,setFilter]=useState('all'),[returnPath,setReturnPath]=useState('/');
  const [draft,setDraft]=useState<BattleCreateInput>(initialBattleDraft),[side,setSide]=useState<VoteSide>('a'),[difficulty,setDifficulty]=useState<VoteDifficulty|''>(''),[reason,setReason]=useState(''),[evidence,setEvidence]=useState('');
  const [members,setMembers]=useState<string[]>([]),[squadName,setSquadName]=useState(''),[strategy,setStrategy]=useState(''),[shared,setShared]=useState<Squad|null>(null),[charQuery,setCharQuery]=useState('');
- const [extraLoading,setExtraLoading]=useState(false),extraRequest=useRef(0);
- const [clubId,setClubId]=useState('jjk'),[episode,setEpisode]=useState('0'),[postEpisode,setPostEpisode]=useState('0'),[body,setBody]=useState('');
+ const [extraLoading,setExtraLoading]=useState(false),[loadedExtraKey,setLoadedExtraKey]=useState(''),extraRequest=useRef(0);
+ const [clubId,setClubId]=useState('jjk'),[episode,setEpisode]=useState('0'),[postEpisode,setPostEpisode]=useState('0'),[clubDrafts,setClubDrafts]=useState<Record<string,string>>({});
+ const body=clubDrafts[clubId]??'';
+ const setBody=(next:string)=>setClubDrafts(previous=>updateClubDraft(previous,clubId,next));
  const [profileDraft,setProfileDraft]=useState({handle:'',displayName:'',avatarUrl:'',bio:'',favoriteAnime:[] as string[],favoriteCharacters:[] as string[]}),[profileView,setProfileView]=useState<any>(null),[profileHandle,setProfileHandle]=useState('');
  const [commentDrafts,setCommentDrafts]=useState<Record<string,string>>({}),[challengeDraft,setChallengeDraft]=useState({challengerSquad:'',opponentSquad:'',rules:'Equal speed. Neutral arena. Win by incapacitation.'});
- const setView=(v:string)=>{if(v==='profile'){setProfileHandle('');setProfileView(null);}setViewState(v);history.pushState(null,'','/?view='+encodeURIComponent(v))};
- const selectClub=(id:string)=>{setClubId(id);setViewState('clubs');history.pushState(null,'','/?view=clubs&club='+encodeURIComponent(id))};
+ const activeExtraKey=communityViewKey(view,clubId,profileHandle);
+ const activeExtraKeyRef=useRef(activeExtraKey);activeExtraKeyRef.current=activeExtraKey;
+ const setView=(v:string)=>{if(v==='profile'){setProfileHandle('');setProfileView(null);}setViewState(v);const path='/?view='+encodeURIComponent(v)+(v==='clubs'?'&club='+encodeURIComponent(clubId):'');history.pushState(null,'',path);setReturnPath(path)};
+ const selectClub=(id:string)=>{setClubId(id);setViewState('clubs');const path='/?view=clubs&club='+encodeURIComponent(id);history.pushState(null,'',path);setReturnPath(path)};
  const loadMain=useCallback(async(battle?:string)=>{try{const r=await apiFetch('/api/community'+(battle?'?battle='+encodeURIComponent(battle):''));const d:any=await r.json();if(!r.ok)throw Error(d.error);setData(d);setError('');return d as MainData}catch(e){setError((e as Error).message);return null}finally{setLoading(false)}},[]);
  const loadExtra=useCallback(async(v:string)=>{
+  const requestedKey=communityViewKey(v,clubId,profileHandle);
+  // Do not run an outdated callback after its originating route has changed.
+  if(requestedKey!==activeExtraKeyRef.current)return;
   const request=++extraRequest.current;
-  setExtra(null);setExtraLoading(true);
+  setExtra(null);setLoadedExtraKey('');setExtraLoading(true);setError('');
   if(v==='profile')setProfileView(null);
-  if(v==='characters'||v==='squads'||v==='arena'){setExtraLoading(false);return;}
+  if(v==='characters'||v==='squads'||v==='arena'){setLoadedExtraKey(requestedKey);setExtraLoading(false);return;}
   try{
    let url='/api/community?mode='+encodeURIComponent(v);
    if(v==='clubs')url='/api/community?club='+encodeURIComponent(clubId);
    if(v==='profile')url='/api/community?profile='+(profileHandle?encodeURIComponent(profileHandle):'me');
-   const r=await apiFetch(url);const d:any=await r.json();
-   if(request!==extraRequest.current)return;
+   const r=await apiFetch(url);
+   const d:any=await r.json();
+   if(!shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current))return;
+   if(v==='profile'&&!profileHandle&&r.status===401){
+    setProfileView({profile:null});setLoadedExtraKey(requestedKey);return;
+   }
    if(!r.ok)throw Error(d.error||'Could not load this section.');
-   setExtra(d);setError('');
+   setExtra(d);
    if(v==='clubs'){setEpisode(String(d.episode));setPostEpisode(String(d.episode));}
    if(v==='profile')setProfileView(d);
-  }catch(e){if(request===extraRequest.current){setError((e as Error).message);setExtra(null);setProfileView(null);}}
-  finally{if(request===extraRequest.current)setExtraLoading(false);}
+   setLoadedExtraKey(requestedKey);
+  }catch(e){
+   if(shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current)){
+    setError((e as Error).message);setExtra(null);setProfileView(null);setLoadedExtraKey(requestedKey);
+   }
+  }finally{if(shouldApplyCommunityResponse(requestedKey,activeExtraKeyRef.current,request,extraRequest.current))setExtraLoading(false);}
  },[clubId,profileHandle]);
  useEffect(()=>{setReturnPath(location.pathname+location.search);const q=new URLSearchParams(location.search),v=q.get('view'),challengeSquad=q.get('challengeSquad');if(v&&publicViews.includes(v))setViewState(v);if(challengeSquad)setViewState('squads');const sharedProfile=q.get('profile');if(sharedProfile&&!challengeSquad){setProfileHandle(sharedProfile);setViewState('profile')}const club=q.get('club');if(club&&clubs.some(c=>c.id===club))setClubId(club);void loadMain().then(d=>{const b=d?.battles.find(b=>b.id===q.get('battle'));if(b){setActive(b);const mine=d?.myVotes.find(v=>v.battle===b.id);setSide(mine?.side||'a');setDifficulty(mine?.difficulty||(mine?.side==='draw'?'inconclusive':''));setReason(mine?.reason||'');setEvidence(mine?.evidence||'');void loadMain(b.id)}const squad=q.get('squad');if(squad)apiFetch('/api/community?squad='+encodeURIComponent(squad)).then(r=>r.json()).then((s:any)=>{if(s.squad){setShared(s.squad);setViewState('squads')}})});},[loadMain]);
- useEffect(()=>{const back=()=>{const q=new URLSearchParams(location.search),v=q.get('view'),handle=q.get('profile'),club=q.get('club');setProfileHandle(handle||'');setProfileView(null);setViewState(handle?'profile':v&&publicViews.includes(v)?v:'arena');if(club&&clubs.some(c=>c.id===club))setClubId(club);};window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);},[]);
+ useEffect(()=>{const back=()=>{
+  const q=new URLSearchParams(location.search),v=q.get('view'),handle=q.get('profile'),club=q.get('club'),challengeSquad=q.get('challengeSquad'),squad=q.get('squad');
+  setProfileHandle(handle||'');setProfileView(null);
+  setViewState(challengeSquad||squad?'squads':handle?'profile':v&&publicViews.includes(v)?v:'arena');
+  setClubId(club&&clubs.some(c=>c.id===club)?club:'jjk');
+  setReturnPath(location.pathname+location.search);
+  if(squad){void apiFetch('/api/community?squad='+encodeURIComponent(squad)).then(r=>r.json()).then(d=>{if(new URLSearchParams(location.search).get('squad')===squad&&d.squad)setShared(d.squad);}).catch(()=>setError('Could not load shared squad.'));}
+ };window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);},[]);
  useEffect(()=>{void loadExtra(view)},[view,clubId,loadExtra]);
  useEffect(()=>{const context=(document as any).modelContext;if(!context?.registerTool)return;const life=new AbortController();Promise.resolve(context.registerTool({name:'open_anime_clash_section',title:'Open Anime Clash section',description:'Open a main Anime Clash area.',inputSchema:{type:'object',properties:{section:{type:'string',enum:['arena','characters','tournaments','squads','challenges','clubs','discover','profile','notifications']}},required:['section'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:async(input:any)=>{if(!publicViews.includes(input?.section))throw Error('Unknown section');setView(input.section);return {section:input.section};}},{signal:life.signal})).catch(()=>{});return()=>life.abort();},[]);
  useEffect(()=>{if(data.profile)setProfileDraft({handle:data.profile.handle,displayName:data.profile.displayName,avatarUrl:data.profile.avatarUrl||'',bio:data.profile.bio,favoriteAnime:data.profile.favoriteAnime,favoriteCharacters:data.profile.favoriteCharacters})},[data.profile]);
@@ -83,10 +106,10 @@ export default function Home(){
  async function share(kind:string,id:string){const url=location.origin+'/?'+kind+'='+encodeURIComponent(id);try{await navigator.clipboard.writeText(url);toast.success('Share link copied')}catch{history.replaceState(null,'',url);toast.success('Share link opened in the address bar')}}
  function openBattle(b:Battle){setData(d=>({...d,debate:[]}));setActive(b);const mine=data.myVotes.find(v=>v.battle===b.id);setSide(mine?.side||'a');setDifficulty(mine?.difficulty||(mine?.side==='draw'?'inconclusive':''));setReason(mine?.reason||'');setEvidence(mine?.evidence||'');void loadMain(b.id)}
  function toggleFighter(id:string){const selected=members.map(i=>fighter(i)!),points=selected.reduce((s,f)=>s+f.cost,0),f=fighter(id)!;if(members.includes(id))setMembers(members.filter(m=>m!==id));else if(members.length===5||points+f.cost>20)toast.error('Choose five fighters within 20 points.');else setMembers([...members,id])}
- function signIn(){location.href='/auth?return_to='+encodeURIComponent(returnPath)}
+ function signIn(){location.href='/auth?return_to='+encodeURIComponent(location.pathname+location.search)}
  async function signOut(){const r=await apiFetch('/api/auth/logout',{method:'POST'}),d:any=await r.json().catch(()=>({}));location.href=r.ok&&typeof d.redirectTo==='string'&&d.redirectTo.startsWith('/')&&!d.redirectTo.startsWith('//')?d.redirectTo:'/'}
  async function report(subjectType:string,subjectId:string){const reason=prompt('What should the moderators review?');if(reason&&reason.trim().length>=5)await save({action:'report',subjectType,subjectId,reason},'Report sent to moderators.')}
- const currentClub=clubs.find(c=>c.id===clubId)!,clubData=view==='clubs'?extra:null,selected=members.map(id=>fighter(id)!),points=selected.reduce((s,f)=>s+f.cost,0),voted=new Set(data.myVotes.map(v=>v.battle));
+ const currentClub=clubs.find(c=>c.id===clubId)!,clubData=view==='clubs'&&loadedExtraKey==='clubs:'+clubId?extra:null,selected=members.map(id=>fighter(id)!),points=selected.reduce((s,f)=>s+f.cost,0),voted=new Set(data.myVotes.map(v=>v.battle));
  const searchResults=fighters;
  const nav=[['arena','Battle Arena',Swords],['characters','Characters',Database],['tournaments','Tournaments',Trophy],['squads','Squad Builder',Users],['challenges','Squad Battles',GitCompareArrows],['clubs','Anime Clubs',ShieldCheck],['discover','Discover',Compass],['profile','Profile',UserRound],['notifications','Notifications',Bell]] as const;
  return <SidebarProvider style={{'--sidebar-width':'240px'} as React.CSSProperties}><Toaster theme="dark" position="bottom-right"/><Sidebar className="site-sidebar"><SidebarHeader><a className="brand" href="/"><span className="brand-icon"><Swords size={23}/></span>anime<span>clash</span><sup>β</sup></a></SidebarHeader><SidebarContent><div className="nav-label">COMMUNITY</div><SidebarMenu>{nav.map(([id,name,Icon])=><SidebarMenuItem key={id}><SidebarMenuButton size="lg" isActive={view===id} onClick={()=>setView(id)}><Icon/><span>{name}</span>{id==='notifications'&&data.unread>0&&<span className="nav-count">{data.unread}</span>}</SidebarMenuButton></SidebarMenuItem>)}{data.isAdmin&&<SidebarMenuItem><SidebarMenuButton size="lg" isActive={view==='moderation'} onClick={()=>setView('moderation')}><Settings/><span>Moderation</span></SidebarMenuButton></SidebarMenuItem>}</SidebarMenu><div className="side-divider"/><div className="nav-label">EPISODE BY EPISODE</div>{clubs.map(c=><button key={c.id} className="club-nav" onClick={()=>selectClub(c.id)}><span style={{color:c.color}}>{c.letters}</span>{c.name}</button>)}<div className="sidebar-note"><ShieldCheck size={22}/><strong>Your pace. Your story.</strong><p>Club discussions reveal only the episodes you have watched.</p></div></SidebarContent><SidebarFooter>{data.user?<div className="profile-session"><button className="profile" onClick={()=>setView('profile')}><Avatar name={data.profile?.displayName||'You'} src={data.profile?.avatarUrl}/><div><strong>{data.profile?.displayName||'Set up profile'}</strong><small>{data.profile?'@'+data.profile.handle:'Signed in'}</small></div></button><button className="logout-button" onClick={signOut}>Logout</button></div>:<div className="profile-session"><button className="profile" onClick={signIn}><Avatar name="You"/><div><strong>Sign in</strong><small>Join the community</small></div></button><a className="create-account-link" href={'/auth?mode=register&return_to='+encodeURIComponent(returnPath)}>Create account</a></div>}</SidebarFooter></Sidebar>
@@ -96,9 +119,19 @@ export default function Home(){
  {view==='tournaments'&&<Tournaments data={extra} busy={busy} vote={async(week:string,match:string,pick:string)=>{if(await save({action:'tournament_vote',week,match,pick},'Tournament vote saved.'))void loadExtra('tournaments')}}/>}
  {view==='squads'&&<Squads data={data} shared={shared} selected={selected} members={members} points={points} toggle={toggleFighter} squadName={squadName} setSquadName={setSquadName} strategy={strategy} setStrategy={setStrategy} busy={busy} saveSquad={async()=>{if(await save({action:'squad',name:squadName,members,strategy,challenge:data.challenge.day},'Squad saved.')){setMembers([]);setSquadName('');setStrategy('');void loadMain()}}} share={share} onChallenges={()=>setView('challenges')}/>}
  {view==='challenges'&&<Challenges data={extra} draft={challengeDraft} setDraft={setChallengeDraft} busy={busy} create={async()=>{if(await save({action:'squad_challenge',...challengeDraft},'Squad challenge opened.'))void loadExtra('challenges')}} vote={async(challenge:string,side:string)=>{if(await save({action:'challenge_vote',challenge,side},'Challenge vote saved.'))void loadExtra('challenges')}}/>}
-  {view==='clubs'&&<CommunityClubs club={currentClub} clubId={clubId} setClubId={selectClub} data={clubData} episode={episode} setEpisode={setEpisode} postEpisode={postEpisode} setPostEpisode={setPostEpisode} body={body} setBody={setBody} busy={busy} save={save} reload={()=>loadExtra('clubs')} report={report} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');history.pushState(null,'','/?profile='+encodeURIComponent(handle))}}/>}
-  {view==='discover'&&<CommunityDiscover data={extra} current={data.profile} user={data.user} save={save} reload={()=>loadExtra('discover')} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');history.pushState(null,'','/?profile='+encodeURIComponent(handle))}}/>}
-  {view==='profile'&&<CommunityProfilePage key={profileHandle||'me'} user={data.user} current={data.profile} page={profileView} requestedHandle={profileHandle} loading={extraLoading||!profileView} draft={profileDraft} setDraft={setProfileDraft} busy={busy} signIn={signIn} saveProfile={async()=>{if(await save({action:'profile',...profileDraft},'Profile saved.')){await loadMain();void loadExtra('profile');return true;}return false;}} share={share}/>}
+  {view==='clubs'&&<CommunityClubs loading={extraLoading} error={error} canContribute={Boolean(data.user&&data.auth?.emailVerified&&data.auth?.profileCompleted)} club={currentClub} clubId={clubId} setClubId={selectClub} data={clubData} episode={episode} setEpisode={setEpisode} postEpisode={postEpisode} setPostEpisode={setPostEpisode} body={body} setBody={setBody} busy={busy} save={save} reload={()=>loadExtra('clubs')} report={report} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');const path='/?profile='+encodeURIComponent(handle);history.pushState(null,'',path);setReturnPath(path)}}/>}
+  {view==='discover'&&<CommunityDiscover loading={extraLoading} error={error} data={loadedExtraKey==='discover'?extra:null} current={data.profile} user={data.user} save={save} reload={()=>loadExtra('discover')} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');const path='/?profile='+encodeURIComponent(handle);history.pushState(null,'',path);setReturnPath(path)}}/>}
+  {view==='profile'&&<CommunityProfilePage key={profileHandle||'me'} user={data.user} current={data.profile} page={loadedExtraKey===activeExtraKey?profileView:null} requestedHandle={profileHandle} loading={extraLoading||loadedExtraKey!==activeExtraKey} draft={profileDraft} setDraft={setProfileDraft} busy={busy} signIn={signIn} saveProfile={async()=>{
+  if(!await save({action:'profile',...profileDraft},'Profile saved.'))return false;
+  const refreshed=await loadMain();
+  const savedHandle=refreshed?.profile?.handle||profileDraft.handle;
+  if(profileHandle&&profileHandle!==savedHandle){
+   setProfileHandle(savedHandle);setProfileView(null);
+   const path='/?profile='+encodeURIComponent(savedHandle);
+   history.replaceState(null,'',path);setReturnPath(path);
+  }else void loadExtra('profile');
+  return true;
+ }} share={share}/>}
  {view==='notifications'&&<Notifications data={extra} save={save} reload={()=>loadExtra('notifications')}/>}
  {view==='moderation'&&<Moderation data={extra} save={save} reload={()=>loadExtra('moderation')}/>}
  <footer className="footer"><span>ANIME CLASH</span><p>Respect the fans. Back up the feats. Protect the plot twists.</p></footer></div></main>
