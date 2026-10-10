@@ -128,6 +128,8 @@ export const squadSubmissionVotes=pgTable('squad_submission_votes',{
  submissionId:text('submission_id').notNull(),
  user:text('user').notNull(),
  verdict:text('verdict').notNull(),
+ explanation:text('explanation').notNull().default(''),
+ difficulty:text('difficulty'),
  created:bigint('created',{mode:'number'}).notNull(),
  updated:bigint('updated',{mode:'number'}).notNull()
 },t=>[
