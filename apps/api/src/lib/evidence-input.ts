@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {isIP} from 'node:net';
 import {EVIDENCE_CONTINUITIES,EVIDENCE_TIMESTAMP_PATTERN,EVIDENCE_STATEMENT_KINDS,EVIDENCE_NOVEL_CONTINUITIES,EVIDENCE_GAME_CONTINUITIES,FEAT_CATEGORIES} from '@anime/domain/evidence';
 
 export const idText=z.string().trim().min(1).max(180);
@@ -37,6 +38,6 @@ export function matchesOfficialWebsiteDomain(sourceUrl:string,officialDomain:str
   if(url.protocol!=='https:'&&url.protocol!=='http:')return false;
   const domain=officialDomain.trim().toLowerCase().replace(/^www\./,'');
   const host=url.hostname.toLowerCase().replace(/^www\./,'');
-  return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(domain)&&(host===domain||host.endsWith('.'+domain));
+  return domain.split('.').length>=2&&domain.split('.').every(label=>/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))&&isIP(domain)===0&&isIP(host)===0&&(host===domain||host.endsWith('.'+domain));
  }catch{return false;}
 }
