@@ -121,7 +121,17 @@ export default function Home(){
  {view==='challenges'&&<Challenges data={extra} draft={challengeDraft} setDraft={setChallengeDraft} busy={busy} create={async()=>{if(await save({action:'squad_challenge',...challengeDraft},'Squad challenge opened.'))void loadExtra('challenges')}} vote={async(challenge:string,side:string)=>{if(await save({action:'challenge_vote',challenge,side},'Challenge vote saved.'))void loadExtra('challenges')}}/>}
   {view==='clubs'&&<CommunityClubs canContribute={Boolean(data.user&&data.auth?.emailVerified&&data.auth?.profileCompleted)} club={currentClub} clubId={clubId} setClubId={selectClub} data={clubData} episode={episode} setEpisode={setEpisode} postEpisode={postEpisode} setPostEpisode={setPostEpisode} body={body} setBody={setBody} busy={busy} save={save} reload={()=>loadExtra('clubs')} report={report} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');const path='/?profile='+encodeURIComponent(handle);history.pushState(null,'',path);setReturnPath(path)}}/>}
   {view==='discover'&&<CommunityDiscover data={loadedExtraKey==='discover'?extra:null} current={data.profile} user={data.user} save={save} reload={()=>loadExtra('discover')} openProfile={(handle:string)=>{setProfileHandle(handle);setProfileView(null);setViewState('profile');const path='/?profile='+encodeURIComponent(handle);history.pushState(null,'',path);setReturnPath(path)}}/>}
-  {view==='profile'&&<CommunityProfilePage key={profileHandle||'me'} user={data.user} current={data.profile} page={loadedExtraKey===activeExtraKey?profileView:null} requestedHandle={profileHandle} loading={extraLoading||loadedExtraKey!==activeExtraKey} draft={profileDraft} setDraft={setProfileDraft} busy={busy} signIn={signIn} saveProfile={async()=>{if(await save({action:'profile',...profileDraft},'Profile saved.')){await loadMain();void loadExtra('profile');return true;}return false;}} share={share}/>}
+  {view==='profile'&&<CommunityProfilePage key={profileHandle||'me'} user={data.user} current={data.profile} page={loadedExtraKey===activeExtraKey?profileView:null} requestedHandle={profileHandle} loading={extraLoading||loadedExtraKey!==activeExtraKey} draft={profileDraft} setDraft={setProfileDraft} busy={busy} signIn={signIn} saveProfile={async()=>{
+  if(!await save({action:'profile',...profileDraft},'Profile saved.'))return false;
+  const refreshed=await loadMain();
+  const savedHandle=refreshed?.profile?.handle||profileDraft.handle;
+  if(profileHandle&&profileHandle!==savedHandle){
+   setProfileHandle(savedHandle);setProfileView(null);
+   const path='/?profile='+encodeURIComponent(savedHandle);
+   history.replaceState(null,'',path);setReturnPath(path);
+  }else void loadExtra('profile');
+  return true;
+ }} share={share}/>}
  {view==='notifications'&&<Notifications data={extra} save={save} reload={()=>loadExtra('notifications')}/>}
  {view==='moderation'&&<Moderation data={extra} save={save} reload={()=>loadExtra('moderation')}/>}
  <footer className="footer"><span>ANIME CLASH</span><p>Respect the fans. Back up the feats. Protect the plot twists.</p></footer></div></main>
