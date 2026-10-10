@@ -97,6 +97,11 @@ test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoil
     assert.equal(saved.sourceLocation,original.sourceLocation);
     const duplicate=await mutation('/api/evidence',{action:'create_evidence',evidence:original},owner.cookie);
     assert.equal(duplicate.statusCode,409,'Exact duplicate must be rejected: '+source.sourceType);
+
+    if(source.sourceType==='databook'){
+     const distinctCitation=await mutation('/api/evidence',{action:'create_evidence',evidence:{...original,sourceUrl:'https://example.org/alternate-edition'}},owner.cookie);
+     assert.equal(distinctCitation.statusCode,201,'A different citation URL must not be classified as the identical evidence record: '+distinctCitation.payload);
+    }
     const denied=await mutation('/api/evidence',{action:'update_evidence',evidenceId:saved.id,evidence:original},voter.cookie);
     assert.equal(denied.statusCode,403,'Other contributors must not change evidence');
     const amended={...original,title:original.title+' updated'};
