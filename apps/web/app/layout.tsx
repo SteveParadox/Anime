@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+// Global community styles load after the base stylesheet for predictable precedence.
+import "../components/community/community.css";
 
 export const metadata: Metadata = {
   title: "Anime Clash | Battle. Build. Belong.",
