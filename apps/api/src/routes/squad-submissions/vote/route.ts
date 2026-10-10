@@ -34,7 +34,7 @@ export async function POST(request:Request){
 
   await db.batch([
    db.prepare('UPDATE squad_submissions SET locked_at=COALESCE(locked_at,?) WHERE id=?').bind(now,input.submissionId),
-   db.prepare(`INSERT INTO squad_submission_votes (submission_id,user,verdict,explanation,difficulty,created,updated) VALUES (?,?,?,?,?,?,?) ON CONFLICT(submission_id,user) DO UPDATE SET verdict=excluded.verdict,explanation=CASE WHEN ? THEN excluded.explanation ELSE squad_submission_votes.explanation END,difficulty=CASE WHEN ? THEN excluded.difficulty ELSE squad_submission_votes.difficulty END,updated=excluded.updated`).bind(input.submissionId,user.userId,input.verdict,input.explanation??'',input.difficulty??null,now,now,input.explanation!==undefined,input.difficulty!==undefined)
+   db.prepare(`INSERT INTO squad_submission_votes (submission_id,user,verdict,explanation,difficulty,created,updated) VALUES (?,?,?,?,?,?,?) ON CONFLICT(submission_id,user) DO UPDATE SET verdict=excluded.verdict,explanation=CASE WHEN ? THEN excluded.explanation WHEN squad_submission_votes.verdict=excluded.verdict THEN squad_submission_votes.explanation ELSE '' END,difficulty=CASE WHEN ? THEN excluded.difficulty WHEN squad_submission_votes.verdict=excluded.verdict THEN squad_submission_votes.difficulty ELSE NULL END,updated=excluded.updated`).bind(input.submissionId,user.userId,input.verdict,input.explanation??'',input.difficulty??null,now,now,input.explanation!==undefined,input.difficulty!==undefined)
   ]);
 
   const saved=await db.prepare('SELECT explanation,difficulty FROM squad_submission_votes WHERE submission_id=? AND user=?').bind(input.submissionId,user.userId).first<{explanation:string;difficulty:string|null}>();
