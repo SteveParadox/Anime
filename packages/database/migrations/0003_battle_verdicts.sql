@@ -69,3 +69,12 @@ CREATE TABLE battle_collection_items (
  PRIMARY KEY (collection_id,battle_id)
 );
 CREATE INDEX idx_battle_collection_items_position ON battle_collection_items(collection_id,position,battle_id);
+
+
+-- Ineligible historical battles must not indefinitely occupy the worker's
+-- bounded finalization batch. Record intentional exclusions for auditability.
+CREATE TABLE battle_finalization_skips (
+ battle_id text PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
+ reason text NOT NULL,
+ recorded_at bigint NOT NULL
+);
