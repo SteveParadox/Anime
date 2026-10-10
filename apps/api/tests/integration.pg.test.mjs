@@ -98,6 +98,31 @@ test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoil
    assert.equal(selfVote.statusCode,403);
    const publicVote=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes'},voter.cookie);
    assert.equal(publicVote.statusCode,200,publicVote.payload);
+
+   const explainedVote=await mutation('/api/squad-submissions/vote',{
+    submissionId,verdict:'yes',explanation:'The submitted squad has enough control to survive.',difficulty:'MID_DIFF'
+   },voter.cookie);
+   assert.equal(explainedVote.statusCode,200,explainedVote.payload);
+   assert.equal(explainedVote.json().difficulty,'MID_DIFF');
+   assert.equal(explainedVote.json().difficultyAppliesTo,'squad');
+   assert.equal(explainedVote.json().results.total,1,'Re-voting must not increase the tally');
+   const oldClientUpdate=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'no'},voter.cookie);
+   assert.equal(oldClientUpdate.statusCode,200,oldClientUpdate.payload);
+   assert.equal(oldClientUpdate.json().difficulty,'MID_DIFF','Legacy clients must preserve prior optional metadata');
+   assert.equal(oldClientUpdate.json().explanation,'The submitted squad has enough control to survive.');
+   assert.equal(oldClientUpdate.json().difficultyAppliesTo,'boss','Difficulty must be applied to the newly predicted winner');
+   assert.equal(oldClientUpdate.json().results.yes,0);
+   assert.equal(oldClientUpdate.json().results.no,1);
+   const cleared=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes',explanation:'',difficulty:null},voter.cookie);
+   assert.equal(cleared.statusCode,200,cleared.payload);
+   assert.equal(cleared.json().explanation,'');
+   assert.equal(cleared.json().difficulty,null);
+   assert.equal(cleared.json().results.total,1);
+   const invalidDifficulty=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes',difficulty:'CANON'},voter.cookie);
+   assert.equal(invalidDifficulty.statusCode,400);
+   const duplicateSelfVote=await mutation('/api/squad-submissions/vote',{submissionId,verdict:'yes',difficulty:'HIGH_DIFF'},owner.cookie);
+   assert.equal(duplicateSelfVote.statusCode,403);
+
    const locked=await mutation('/api/squad-submissions',{action:'submit',challengeId:daily.id,name:'Changed Squad',strategy:'This edit should fail after voting.',members:[{characterId:fighter.characterId,versionId:fighter.versionId}]},owner.cookie);
    assert.equal(locked.statusCode,409);
    const club=clubs[0];
