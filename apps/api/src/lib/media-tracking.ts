@@ -30,7 +30,10 @@ export async function syncLegacyWatchlistWrite(userId:string,legacyAnimeId:strin
  const db=database(),media=await db.prepare('SELECT id FROM anime WHERE legacy_key=? LIMIT 1').bind(legacyAnimeId).first<{id:string}>();
  if(!media)return false;
  if(status==='remove'){
-  await db.prepare("DELETE FROM user_media_tracking WHERE user_id=? AND media_type='anime' AND media_id=?").bind(userId,media.id).run();
+  await db.transaction(async tx=>{
+   await tx.prepare("DELETE FROM user_media_tracking WHERE user_id=? AND media_type='anime' AND media_id=?").bind(userId,media.id).run();
+   await tx.prepare('DELETE FROM watchlist WHERE "user"=? AND anime=?').bind(userId,legacyAnimeId).run();
+  });
   return true;
  }
  await setTracking(userId,{mediaType:'anime',mediaId:media.id,status,currentPosition:null,activityVisibility:'private',source:'legacy_watchlist'});
