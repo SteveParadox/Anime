@@ -72,6 +72,16 @@ test('real PostgreSQL: register, verify, battle, squad vote lock, and club spoil
    assert.equal((await get('/api/evidence?version=naruto-six-paths')).json().records.some(record=>record.id===evidenceId),true);
    const battle=await mutation('/api/community',{action:'battle',fighterAId:'naruto',fighterBId:'goku',fighterAVersionId:'naruto-six-paths',fighterBVersionId:'goku-saiyan-saga',battleType:'knockout',location:'neutral_arena',speed:'equalized',knowledge:'none',prepTime:'none',transformationsAllowed:true,standardEquipment:true,notes:''},owner.cookie);
    assert.equal(battle.statusCode,200,battle.payload);
+
+   const expiredBattleId='expired-'+crypto.randomUUID();
+   const expiredBase=await poolForLegacy.query('SELECT payload,owner FROM battles WHERE id=$1',[battle.json().id]);
+   assert.equal(expiredBase.rowCount,1);
+   await poolForLegacy.query('INSERT INTO battles(id,owner,payload,created) VALUES ($1,$2,$3,$4)',
+    [expiredBattleId,expiredBase.rows[0].owner,expiredBase.rows[0].payload,Date.now()-8*86_400_000]);
+   const tooLate=await mutation('/api/community',{action:'vote',battle:expiredBattleId,side:'a',difficulty:'mid',reason:'Voting after seven days must fail.',evidence:'Chapter 670'},voter.cookie);
+   assert.equal(tooLate.statusCode,409,tooLate.payload);
+   assert.equal((await poolForLegacy.query('SELECT COUNT(*)::int AS n FROM votes WHERE battle=$1',[expiredBattleId])).rows[0].n,0);
+
    const vote=await mutation('/api/community',{action:'vote',battle:battle.json().id,side:'a',difficulty:'mid',reason:'Naruto wins with sustained pressure.',evidence:'Naruto chapter 670'},voter.cookie);
    assert.equal(vote.statusCode,200,vote.payload);
    const debate=await get('/api/community?battle='+battle.json().id,owner.cookie);
