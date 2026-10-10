@@ -7,10 +7,12 @@ const views=readFileSync('apps/web/components/community/community-views.tsx','ut
 const styles=readFileSync('apps/web/components/community/community.css','utf8');
 
 test('community views use real section navigation with browser history',()=>{
- assert.match(page,/history\.pushState\(null,'','\/\?view='/);
+ assert.match(page,/const path='\/\?view='\+encodeURIComponent\(v\)/);
  assert.match(page,/addEventListener\('popstate',back\)/);
- assert.match(page,/history\.pushState\(null,'','\/\?profile='/);
+ assert.match(page,/const path='\/\?profile='\+encodeURIComponent\(handle\)/);
  assert.match(page,/\/\?view=clubs&club=/);
+ assert.match(page,/history\.pushState\(null,'',path\)/);
+ assert.match(page,/challengeSquad\|\|squad\?'squads'/);
 });
 
 test('late API responses cannot replace a newly selected club or public profile',()=>{
@@ -50,4 +52,15 @@ test('community design includes mobile and reduced-motion rules',()=>{
  assert.match(styles,/@media\(max-width:430px\)/);
  assert.match(styles,/@media\(max-width:700px\)/);
  assert.match(styles, /prefers-reduced-motion:reduce/);
+});
+
+test('audit fixes isolate loaded routes and enforce contribution requirements',()=>{
+ assert.match(page,/loadedExtraKey==='clubs:'\+clubId/);
+ assert.match(page,/loadedExtraKey===activeExtraKey\?profileView:null/);
+ assert.match(page,/updateClubDraft\(previous,clubId,next\)/);
+ assert.match(views,/if\(!canContribute\|\|!validPost/);
+ assert.match(views,/disabled=\{!canContribute\|\|busy\|\|!data/);
+ assert.match(views,/Recent squads/);
+ assert.match(views,/Recent challenge entries/);
+ assert.match(views,/\.\.\.fighters\.map\(f=>f.series\)/);
 });
