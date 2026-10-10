@@ -15,7 +15,7 @@ test('community views use real section navigation with browser history',()=>{
 
 test('late API responses cannot replace a newly selected club or public profile',()=>{
  assert.match(page,/extraRequest=useRef\(0\)/);
- assert.match(page,/request!==extraRequest\.current/);
+ assert.match(page,/shouldApplyCommunityResponse\(/);
  assert.match(page,/if\(v==='profile'\)setProfileView\(null\)/);
  assert.match(views,/requestedHandle\?page\?\.profile/);
  assert.match(views,/if\(requestedHandle&&!p\)/);
