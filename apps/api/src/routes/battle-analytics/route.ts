@@ -215,6 +215,9 @@ export async function POST(request:Request){
   if(input.action==='add_to_collection'){
    if(!await db.prepare('SELECT 1 FROM battles WHERE id=?').bind(input.battleId).first())return authJson({error:'Battle not found.'},404);
    await db.transaction(async tx=>{
+    // Serialize concurrent appends to avoid duplicate positions and deletion races.
+    const locked=await tx.prepare('SELECT id FROM battle_collections WHERE id=? AND owner_user_id=? FOR UPDATE').bind(collectionId,collection.ownerUserId).first();
+    if(!locked)throw fail('Collection no longer exists.',404);
     const position=await tx.prepare('SELECT COALESCE(MAX(position),-1)+1 AS next FROM battle_collection_items WHERE collection_id=?').bind(collectionId).first<{next:number}>();
     await tx.prepare('INSERT INTO battle_collection_items(collection_id,battle_id,position,added_at) VALUES (?,?,?,?) ON CONFLICT DO NOTHING').bind(collectionId,input.battleId,number(position?.next),now).run();
     await tx.prepare('UPDATE battle_collections SET updated_at=? WHERE id=?').bind(now,collectionId).run();
